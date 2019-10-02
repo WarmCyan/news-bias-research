@@ -81,6 +81,7 @@ GT_COLS = {
 
 def nela_load_labels():
     labels_df = pd.read_csv(os.path.join(DATA_RAW_PATH, "nela", "labels.csv"))
+    labels_df = labels_df.rename(columns={"Unnamed: 0": "Source"})
     return labels_df
 
 
