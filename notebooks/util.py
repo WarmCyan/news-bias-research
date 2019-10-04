@@ -3,6 +3,7 @@
 import os
 
 import pandas as pd
+import sqlite3
 
 DATA_RAW_PATH = "../data/raw/"
 
@@ -90,5 +91,18 @@ def nela_labels_gtsource(labels_df, gt_source):
     return labels_df[GT_COLS[gt_source]]
 
 
-def nela_load_articles():
-    pass
+# pass count of -1 for all articles from source
+def nela_load_articles_from_source(source_name, count=-1):
+    conn = sqlite3.connect("../data/raw/nela/articles.db")
+
+    count_string = ""
+    if count != -1:
+        count_string = "limit " + str(count)
+    
+    df = pd.read_sql_query("SELECT content FROM articles WHERE source='" + str(source_name) + "' " + count_string + ";", conn)
+    return df
+
+def nela_count_articles_from_source(source_name):
+    conn = sqlite3.connect("../data/raw/nela/articles.db")
+    df = pd.read_sql_query("SELECT COUNT(*) FROM articles WHERE source='" + str(source_name) + "';", conn)
+    return df
