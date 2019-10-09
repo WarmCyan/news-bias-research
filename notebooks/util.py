@@ -99,10 +99,19 @@ def nela_load_articles_from_source(source_name, count=-1):
     if count != -1:
         count_string = "limit " + str(count)
     
-    df = pd.read_sql_query("SELECT content FROM articles WHERE source='" + str(source_name) + "' " + count_string + ";", conn)
+    df = pd.read_sql_query("SELECT * FROM articles WHERE source='" + str(source_name) + "' " + count_string + ";", conn)
     return df
 
 def nela_count_articles_from_source(source_name):
     conn = sqlite3.connect("../data/raw/nela/articles.db")
     df = pd.read_sql_query("SELECT COUNT(*) FROM articles WHERE source='" + str(source_name) + "';", conn)
     return df
+
+def stack_dfs(df1, df2):
+    """ Appends df2 to the end of df1, but assigns df2 to df1 if df1 is None """
+    if df1 is None:
+        df1 = df2
+    else:
+        df1 = df1.append(df2, ignore_index=True)
+    
+    return df1
