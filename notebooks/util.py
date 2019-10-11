@@ -1,6 +1,7 @@
 """ Utility functions for jupyter notebooks """
 
 import os
+import re
 
 import pandas as pd
 import sqlite3
@@ -115,3 +116,11 @@ def stack_dfs(df1, df2):
         df1 = df1.append(df2, ignore_index=True)
     
     return df1
+
+def clean_newlines(content):
+    content = re.sub("(\r\n)+", " ", content)
+    return content
+    
+def clean_symbols(content):
+    content = re.sub(r'[\!"#$%&\*+,-./:;<=>?@^_`()|~=]', "", content)
+    return content
