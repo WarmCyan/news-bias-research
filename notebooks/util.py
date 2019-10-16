@@ -1,10 +1,11 @@
 """ Utility functions for jupyter notebooks """
 
+import logging
 import os
 import re
+import sqlite3
 
 import pandas as pd
-import sqlite3
 
 DATA_RAW_PATH = "../data/raw/"
 
@@ -99,14 +100,25 @@ def nela_load_articles_from_source(source_name, count=-1):
     count_string = ""
     if count != -1:
         count_string = "limit " + str(count)
-    
-    df = pd.read_sql_query("SELECT * FROM articles WHERE source='" + str(source_name) + "' " + count_string + ";", conn)
+
+    df = pd.read_sql_query(
+        "SELECT * FROM articles WHERE source='"
+        + str(source_name)
+        + "' "
+        + count_string
+        + ";",
+        conn,
+    )
     return df
+
 
 def nela_count_articles_from_source(source_name):
     conn = sqlite3.connect("../data/raw/nela/articles.db")
-    df = pd.read_sql_query("SELECT COUNT(*) FROM articles WHERE source='" + str(source_name) + "';", conn)
+    df = pd.read_sql_query(
+        "SELECT COUNT(*) FROM articles WHERE source='" + str(source_name) + "';", conn
+    )
     return df
+
 
 def stack_dfs(df1, df2):
     """ Appends df2 to the end of df1, but assigns df2 to df1 if df1 is None """
@@ -114,13 +126,58 @@ def stack_dfs(df1, df2):
         df1 = df2
     else:
         df1 = df1.append(df2, ignore_index=True)
-    
+
     return df1
+
 
 def clean_newlines(content):
     content = re.sub("(\r\n)+", " ", content)
     return content
-    
+
+
 def clean_symbols(content):
     content = re.sub(r'[\!"#$%&\*+,-./:;<=>?@^_`()|~=]', "", content)
     return content
+
+
+def check_output_necessary(output_path, overwrite):
+    """Determine whether a step is necessary by checking for its existence/overwrite combo.
+
+    Returns true if should continue with step, false if can skip.
+    """
+
+    logging.debug("Checking for existence of '%s'...", output_path)
+
+    if os.path.exists(output_path):
+        logging.debug("Output found.")
+        logging.info("Cached version found.")
+
+        # check if should overwite the existing output or not
+        if overwrite:
+            logging.debug("Overwrite requested, continuing...")
+            logging.warning("Overwriting an existing output '%s'!", output_path)
+            return True
+
+        logging.debug("No overwrite requested, skip step...")
+        return False
+
+    # if this point hit, the file doesn't exist yet
+    return True
+
+
+def init_logging(log_path=None):
+    """Sets up logging config, including associated file output."""
+    log_formatter = logging.Formatter(
+        "%(asctime)s - %(filename)s - %(levelname)s - %(message)s"
+    )
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+
+    if log_path is not None:
+        file_handler = logging.FileHandler(log_path)
+        file_handler.setFormatter(log_formatter)
+        root_logger.addHandler(file_handler)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(log_formatter)
+    root_logger.addHandler(console_handler)
