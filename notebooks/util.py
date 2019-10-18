@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 import re
 import sqlite3
 
@@ -131,7 +132,7 @@ def stack_dfs(df1, df2):
 
 
 def clean_newlines(content):
-    content = re.sub("(\r\n)+", " ", content)
+    content = re.sub("(\r\n)+", " ", str(content))
     return content
 
 
