@@ -2,9 +2,10 @@
 
 import logging
 import os
-import sys
+import pickle
 import re
 import sqlite3
+import sys
 
 import pandas as pd
 
@@ -92,6 +93,16 @@ def nela_load_labels():
 def nela_labels_gtsource(labels_df, gt_source):
     """ only return label columns from specified ground truth source """
     return labels_df[GT_COLS[gt_source]]
+
+
+def load_dataset(cache_path):
+    with open("../data/cache/" + cache_path, "rb") as infile:
+        obj = pickle.load(infile)
+    return obj
+
+
+def load_selection_dataset(name):
+    return pd.read_csv("../data/cache/" + name)
 
 
 # pass count of -1 for all articles from source
