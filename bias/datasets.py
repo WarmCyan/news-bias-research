@@ -212,6 +212,7 @@ def random_balanced_sample(
 
     for name in tqdm(source_name_array, "Querying sources", disable=(not verbose)):
         local_df = util.nela_load_articles_from_source(name)
+        local_df = local_df[local_df.content.notnull()]
         local_count = local_df.shape[0]
         if verbose:
             tqdm.write("{0} {1} articles".format(name, local_count))
