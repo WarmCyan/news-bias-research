@@ -9,7 +9,7 @@ def create_datasets():
 
     overwrite_w2v = False
     overwrite_glove = False
-    overwrite_tfidf = False
+    overwrite_tfidf = True
 
     datasets.create_word2vec(df_os_reliability, "os_reliable_w2v", overwrite=overwrite_w2v)
     datasets.create_word2vec(df_mbfc_reliability, "mbfc_reliable_w2v", overwrite=overwrite_w2v)
