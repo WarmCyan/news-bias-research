@@ -5,6 +5,7 @@ import os
 import pickle
 import re
 import sqlite3
+import inspect
 import sys
 
 import pandas as pd
@@ -193,3 +194,13 @@ def init_logging(log_path=None):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(log_formatter)
     root_logger.addHandler(console_handler)
+
+
+def dump_log(func):
+    """Decorator to print function call details - parameters names and effective values."""
+    def wrapper(*args, **kwargs):
+        func_args = inspect.signature(func).bind(*args, **kwargs).arguments
+        func_args_str =  ', '.join('{} = {!r}'.format(*item) for item in func_args.items())
+        logging.info(f'CALL::{func.__module__}.{func.__qualname__}({func_args_str})')
+        return func(*args, **kwargs)
+    return wrapper

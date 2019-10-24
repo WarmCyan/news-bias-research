@@ -15,13 +15,14 @@ import util
 import word2vec_creator
 
 
+@util.dump_log
 def get_selection_set(
-    problem, source, count, selection_random_seed, selection_overwrite
+    problem, source, count, random_seed, overwrite
 ):
     labels_df = util.nela_load_labels()
 
     name = "selection_{0}_{1}_{2}_{3}".format(
-        problem, source, count, selection_random_seed
+        problem, source, count, random_seed
     )
 
     if problem == "reliability":
@@ -43,14 +44,14 @@ def get_selection_set(
             reliable = list(labels_df[labels_df[ng_lbl] == 1.0].Source)
             unreliable = list(labels_df[labels_df[ng_lbl] == 0.0].Source)
 
-        create_binary_selection(
+        df = create_binary_selection(
             name + ".csv",
             reliable,
             unreliable,
             "reliable",
             count_per=count,
             reject_minimum=300,
-            overwrite=selection_overwrite,
+            overwrite=overwrite,
         )
 
     elif problem == "biased":
@@ -82,8 +83,39 @@ def get_selection_set(
             )
             unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
 
-    pass
+        df = create_binary_selection(
+            name + ".csv",
+            biased,
+            unbiased,
+            "biased",
+            count_per=count,
+            reject_minimum=300,
+            overwrite=selection_overwrite,
+        )
 
+    return df, name
+
+
+@util.dump_log
+def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False):
+    logging.info("Creating %s embedding %s...", embedding_type, output_name)
+    
+    path = "../data/cache/" + output_name + "_" + embedding_type
+    
+    try:
+        os.mkdir(path)
+    except:
+        pass
+    
+    embedding_df = None
+    if embedding_type == "w2v":
+        embedding_df = word2vec_creator.run_w2v(df, path + "/" + shaping, shaping=shaping, word_limit=-1, overwrite=False)
+    elif embedding_type == "glove":
+        embedding_df = word2vec_creator.run_glove(df, path + "/" + shaping, shaping=shaping, word_limit=-1, overwrite=False)
+    # TODO: fasttext
+
+    return embedding_df
+        
 
 def get_bias_selection_sets(extremes=False, overwrite=False):
     labels_df = util.nela_load_labels()

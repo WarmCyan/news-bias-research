@@ -23,7 +23,7 @@ def run_w2v(df, output, shaping="sequence", word_limit=-1):
             "../data/raw/models/GoogleNews-vectors-negative300.bin", binary=True
         )
 
-    vectorize_collection(df, output, model, shaping, word_limit)
+    return vectorize_collection(df, output, model, shaping, word_limit)
 
 
 def run_glove(df, output, shaping="sequence", word_limit=-1):
@@ -35,7 +35,7 @@ def run_glove(df, output, shaping="sequence", word_limit=-1):
             "../data/cache/models/glove2word2vec_pretrained.model"
         )
 
-    vectorize_collection(df, output, model, shaping, word_limit)
+    return vectorize_collection(df, output, model, shaping, word_limit)
 
 
 def clear_model():
@@ -59,6 +59,8 @@ def vectorize_collection(df, output, model, shaping, word_limit):
     with open(output + ".pkl", "wb") as outfile:
         pickle.dump(vector_collection, outfile)
         # np.save(vector_collection, outfile, allow_pickle=False)
+
+    return vector_collection
 
 
 def vectorize_document(doc, model, word_limit=-1):
