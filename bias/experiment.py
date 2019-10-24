@@ -1,8 +1,9 @@
 import datasets
 import util
 
+import lstm
 
-def experiment(
+def experiment_dataset(
     selection_problem,
     selection_source,
     selection_count,
@@ -10,7 +11,7 @@ def experiment(
     selection_overwrite,
     embedding_type,
     embedding_shape,
-    embedding_overwrite,
+    embedding_overwrite
 ):
     # get selection set
     selection_df, name = datasets.get_selection_set(
@@ -30,8 +31,10 @@ def experiment(
         overwrite=embedding_overwrite,
     )
 
-    # train model
-    pass
+    return embedding_df
+
+def experiment_model(df, model_type):
+    lstm.create_model() 
 
 
 if __name__ == "__main__":
