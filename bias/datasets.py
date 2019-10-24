@@ -5,6 +5,7 @@ Code to create, load, and manage datasets
 import json
 import logging
 import os
+import pickle
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -14,7 +15,155 @@ import util
 import word2vec_creator
 
 
-def get_selection_sets():
+def get_selection_set(
+    problem, source, count, selection_random_seed, selection_overwrite
+):
+    labels_df = util.nela_load_labels()
+
+    name = "selection_{0}_{1}_{2}_{3}".format(
+        problem, source, count, selection_random_seed
+    )
+
+    if problem == "reliability":
+        if source == "os":
+            reliable_lbl = "Open Sources, reliable"
+            unreliable_lbl = "Open Sources, unreliable"
+
+            unreliable = list(labels_df[labels_df[unreliable_lbl].notnull()].Source)
+            reliable = list(labels_df[labels_df[reliable_lbl].notnull()].Source)
+
+        if source == "mbfc":
+            lbl = "Media Bias / Fact Check, factual_reporting"
+
+            reliable = list(labels_df[labels_df[lbl] > 3].Source)
+            unreliable = list(labels_df[labels_df[lbl] <= 3].Source)
+
+        if source == "ng":
+            ng_lbl = "NewsGuard, overall_class"
+            reliable = list(labels_df[labels_df[ng_lbl] == 1.0].Source)
+            unreliable = list(labels_df[labels_df[ng_lbl] == 0.0].Source)
+
+        create_binary_selection(
+            name + ".csv",
+            reliable,
+            unreliable,
+            "reliable",
+            count_per=count,
+            reject_minimum=300,
+            overwrite=selection_overwrite,
+        )
+
+    elif problem == "biased":
+        if source == "mbfc":
+            mbfc_lbl = "Media Bias / Fact Check, label"
+            
+            biased = list(
+                labels_df[
+                    (labels_df[mbfc_lbl] == "left_bias")
+                    | (labels_df[mbfc_lbl] == "left_center_bias")
+                    | (labels_df[mbfc_lbl] == "right_center_bias")
+                    | (labels_df[mbfc_lbl] == "right_bias")
+                ].Source
+            )
+
+            unbiased = list(
+                labels_df[labels_df[mbfc_lbl] == "least_biased"].Source
+            )
+        
+        elif source == "as":
+            as_lbl = "Allsides, bias_rating"
+            biased = list(
+                labels_df[
+                    (labels_df[as_lbl] == "Left")
+                    | (labels_df[as_lbl] == "Right")
+                    | (labels_df[as_lbl] == "Lean Left")
+                    | (labels_df[as_lbl] == "Lean Right")
+                ].Source
+            )
+            unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
+
+    pass
+
+
+def get_bias_selection_sets(extremes=False, overwrite=False):
+    labels_df = util.nela_load_labels()
+
+    # ----------------------------
+    # Media Bias / Fact Check Bias
+    # ----------------------------
+
+    mbfc_lbl = "Media Bias / Fact Check, label"
+
+    if not extremes:
+        mbfc_biased = list(
+            labels_df[
+                (labels_df[mbfc_lbl] == "left_bias")
+                | (labels_df[mbfc_lbl] == "left_center_bias")
+                | (labels_df[mbfc_lbl] == "right_center_bias")
+                | (labels_df[mbfc_lbl] == "right_bias")
+            ].Source
+        )
+
+        mbfc_unbiased = list(labels_df[labels_df[mbfc_lbl] == "least_biased"].Source)
+    else:
+        mbfc_biased = list(
+            labels_df[
+                (labels_df[mbfc_lbl] == "left_bias")
+                | (labels_df[mbfc_lbl] == "left_center_bias")
+                | (labels_df[mbfc_lbl] == "right_center_bias")
+                | (labels_df[mbfc_lbl] == "right_bias")
+            ].Source
+        )
+
+        mbfc_unbiased = list(
+            labels_df[
+                (labels_df[mbfc_lbl] == "left_center_bias")
+                | (labels_df[mbfc_lbl] == "least_biased")
+                | (labels_df[mbfc_lbl] == "right_center_bias")
+            ].Source
+        )
+
+    df_mbfc_bias = create_binary_selection(
+        "mbfc_biased.csv",
+        mbfc_biased,
+        mbfc_unbiased,
+        "biased",
+        count_per=10000,
+        reject_minimum=301,
+        overwrite=overwrite,
+    )
+
+    # ----------------------------
+    # Allsides bias
+    # ----------------------------
+
+    as_lbl = "Allsides, bias_rating"
+
+    if not extremes:
+        as_biased = list(
+            labels_df[
+                (labels_df[as_lbl] == "Left")
+                | (labels_df[as_lbl] == "Right")
+                | (labels_df[as_lbl] == "Lean Left")
+                | (labels_df[as_lbl] == "Lean Right")
+            ].Source
+        )
+        as_unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
+
+    df_as_bias = create_binary_selection(
+        "as_bias.csv",
+        as_biased,
+        as_unbiased,
+        "biased",
+        count_per=10000,
+        reject_minimum=300,
+        overwrite=overwrite,
+    )
+
+    return df_mbfc_bias, df_as_bias
+
+
+def get_reliability_selection_sets(overwrite=False):
     labels_df = util.nela_load_labels()
 
     # ----------------------------
@@ -32,8 +181,9 @@ def get_selection_sets():
         os_reliable,
         os_unreliable,
         "reliable",
-        count_per=4676,
+        count_per=10000,
         reject_minimum=300,
+        overwrite=overwrite,
     )
 
     # ----------------------------
@@ -50,8 +200,9 @@ def get_selection_sets():
         mbfc_reliable,
         mbfc_unreliable,
         "reliable",
-        count_per=5000,
+        count_per=10000,
         reject_minimum=300,
+        overwrite=overwrite,
     )
 
     # ----------------------------
@@ -68,8 +219,9 @@ def get_selection_sets():
         ng_reliable,
         ng_unreliable,
         "reliable",
-        count_per=5000,
+        count_per=10000,
         reject_minimum=300,
+        overwrite=overwrite,
     )
 
     return df_os_reliability, df_mbfc_reliability, df_ng_reliability
@@ -127,6 +279,7 @@ def create_tfidf(df, output_name, max_features=10000, overwrite=False):
         os.mkdir(path)
     except:
         pass
+    print(df.content[df.content.isnull()])
 
     corpus = list(df.content)
     vectorizer = TfidfVectorizer(max_features=max_features)
@@ -157,6 +310,7 @@ def create_binary_selection(
     if not util.check_output_necessary(path, overwrite):
         logging.info("Loading %s...", path)
         df = pd.read_csv(path)
+        print(df[df.content.isnull()])
         return df
 
     df_positive, positive_counts, positive_rejected = random_balanced_sample(
@@ -182,7 +336,7 @@ def create_binary_selection(
     df = util.stack_dfs(df_positive, df_negative)
 
     logging.info("Caching...")
-    df.to_csv(path)
+    df.to_csv(path, encoding="utf-8")
     meta = {
         "postive_counts": positive_counts,
         "negative_counts": negative_counts,
@@ -212,7 +366,7 @@ def random_balanced_sample(
 
     for name in tqdm(source_name_array, "Querying sources", disable=(not verbose)):
         local_df = util.nela_load_articles_from_source(name)
-        local_df = local_df[local_df.content.notnull()]
+        local_df = local_df[(local_df.content.notnull()) & (local_df.content != "")]
         local_count = local_df.shape[0]
         if verbose:
             tqdm.write("{0} {1} articles".format(name, local_count))
@@ -278,4 +432,5 @@ def random_balanced_sample(
             returned_counts[name] = source_sample_df.shape[0]
             sample_df = util.stack_dfs(sample_df, source_sample_df)
 
+    print(sample_df.content[sample_df.content.isnull()])
     return sample_df, returned_counts, rejected
