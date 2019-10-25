@@ -1,52 +1,61 @@
 import keras
-from keras.layers import LSTM, Dense, TimeDistributed
+from keras.layers import LSTM, Dense, Masking
 from sklearn.model_selection import train_test_split
 
 import util
 
 
-def create_model(lstm_layer_sizes=[64, 32], fully_connected=[2]):
+def create_model(arch_num, layer_sizes, maxlen):
     model = keras.Sequential()
 
-    for i, layer in enumerate(lstm_layer_sizes):
+    model.add(Masking(mask_value=0.0, input_shape=(maxlen, 300)))
 
-        # check for last layer
-        if i == len(lstm_layer_sizes) - 1:
-            model.add(LSTM(layer))
-        elif i == 0:
-            model.add(LSTM(layer, return_sequences=True, input_shape=(None, 300)))
-        else:
-            model.add(LSTM(layer, return_sequences=True))
-
-    for layer in fully_connected:
-        model.add(
-            Dense(layer, activation="sigmoid")
-        )  # NOTE: sigmoid as in the "exploration" paper
+    if arch_num == 1:
+        model.add(LSTM(layer_sizes[0]))
+        model.add(Dense(layer_sizes[1], activation='softmax'))
+    elif arch_num == 2:
+        model.add(LSTM(layer_sizes[0]))
+        model.add(Dense(layer_sizes[1], activation='sigmoid'))
+        model.add(Dense(layer_sizes[2], activation='softmax'))
+    elif arch_num == 3:
+        model.add(LSTM(layer_sizes[0], return_sequences=True))
+        model.add(LSTM(layer_sizes[1]))
+        model.add(Dense(layer_sizes[2], activation='softmax'))
+    elif arch_num == 4:
+        model.add(LSTM(layer_sizes[0], return_sequences=True))
+        model.add(LSTM(layer_sizes[1]))
+        model.add(Dense(layer_sizes[2], activation='sigmoid'))
+        model.add(Dense(layer_sizes[3], activation='softmax'))
+    elif arch_num == 5:
+        model.add(LSTM(layer_sizes[0], return_sequences=True))
+        model.add(LSTM(layer_sizes[1]))
+        model.add(LSTM(layer_sizes[2]))
+        model.add(Dense(layer_sizes[3], activation='sigmoid'))
+        model.add(Dense(layer_sizes[4], activation='softmax'))
 
     return model
 
 
 def pad_data(data, maxlen=500):
-    padded = keras.preprocessing.sequence.pad_sequences(data, maxlen=500)
+    padded = keras.preprocessing.sequence.pad_sequences(data, maxlen=500, padding='post', dtype='float32')
     return padded
 
 
 # NOTE: assumes X is already padded and that y is already categorical
-def train_test(X, y, lstm_layer_sizes, fully_connected, epochs=1):
-    # X_train, X_test, y_train, y_test = train_test_split(
-    #     X, y, test_size=0.20, random_state=13
-    # )
+@util.dump_log
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs=1):
+    model = create_model(arch_num, layer_sizes, maxlen)
 
-    model = create_model(lstm_layer_sizes, fully_connected)
-
+    optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
     model.compile(
-        optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
+        optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
     )
     model.summary()
-    model.fit(
+    history = model.fit(
         X,
         y,
-        batch_size=64,
+        batch_size=batch_size,
+        #verbose=2,
         verbose=1,
         epochs=epochs,
         validation_split=0.2,
@@ -54,8 +63,4 @@ def train_test(X, y, lstm_layer_sizes, fully_connected, epochs=1):
         workers=4,
     )
 
-    return model
-
-
-def train(X, y, lstm_layer_sizes, fully_connected):
-    pass
+    return model, history

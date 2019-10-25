@@ -17,7 +17,7 @@ import word2vec_creator
 
 @util.dump_log
 def get_selection_set(
-    problem, source, count, random_seed, overwrite
+    problem, source, count, random_seed, reject_minimum, overwrite
 ):
     labels_df = util.nela_load_labels()
 
@@ -45,12 +45,12 @@ def get_selection_set(
             unreliable = list(labels_df[labels_df[ng_lbl] == 0.0].Source)
 
         df = create_binary_selection(
-            name + ".csv",
+            name,
             reliable,
             unreliable,
             "reliable",
             count_per=count,
-            reject_minimum=300,
+            reject_minimum=reject_minimum,
             overwrite=overwrite,
         )
 
@@ -84,13 +84,48 @@ def get_selection_set(
             unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
 
         df = create_binary_selection(
-            name + ".csv",
+            name,
             biased,
             unbiased,
             "biased",
             count_per=count,
-            reject_minimum=300,
-            overwrite=selection_overwrite,
+            reject_minimum=reject_minimum,
+            overwrite=overwrite,
+        )
+        
+    elif problem == "extreme_biased":
+        if source == "mbfc":
+            mbfc_lbl = "Media Bias / Fact Check, label"
+            
+            biased = list(
+                labels_df[
+                    (labels_df[mbfc_lbl] == "left_bias")
+                    | (labels_df[mbfc_lbl] == "right_bias")
+                ].Source
+            )
+
+            unbiased = list(
+                labels_df[labels_df[mbfc_lbl] == "least_biased"].Source
+            )
+        
+        elif source == "as":
+            as_lbl = "Allsides, bias_rating"
+            biased = list(
+                labels_df[
+                    (labels_df[as_lbl] == "Left")
+                    | (labels_df[as_lbl] == "Right")
+                ].Source
+            )
+            unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
+
+        df = create_binary_selection(
+            name,
+            biased,
+            unbiased,
+            "biased",
+            count_per=count,
+            reject_minimum=reject_minimum,
+            overwrite=overwrite,
         )
 
     return df, name
@@ -101,6 +136,13 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     logging.info("Creating %s embedding %s...", embedding_type, output_name)
     
     path = "../data/cache/" + output_name + "_" + embedding_type
+    path_and_name = path + "/" + shaping + ".pkl"
+    
+    if not util.check_output_necessary(path_and_name, overwrite):
+        # df = pickle.load(path_and_name)
+        with open(path_and_name, 'rb') as infile:
+            df = pickle.load(infile)
+        return df
     
     try:
         os.mkdir(path)
@@ -109,190 +151,12 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     
     embedding_df = None
     if embedding_type == "w2v":
-        embedding_df = word2vec_creator.run_w2v(df, path + "/" + shaping, shaping=shaping, word_limit=-1, overwrite=False)
+        embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1)
     elif embedding_type == "glove":
-        embedding_df = word2vec_creator.run_glove(df, path + "/" + shaping, shaping=shaping, word_limit=-1, overwrite=False)
+        embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1)
     # TODO: fasttext
 
     return embedding_df
-        
-
-def get_bias_selection_sets(extremes=False, overwrite=False):
-    labels_df = util.nela_load_labels()
-
-    # ----------------------------
-    # Media Bias / Fact Check Bias
-    # ----------------------------
-
-    mbfc_lbl = "Media Bias / Fact Check, label"
-
-    if not extremes:
-        mbfc_biased = list(
-            labels_df[
-                (labels_df[mbfc_lbl] == "left_bias")
-                | (labels_df[mbfc_lbl] == "left_center_bias")
-                | (labels_df[mbfc_lbl] == "right_center_bias")
-                | (labels_df[mbfc_lbl] == "right_bias")
-            ].Source
-        )
-
-        mbfc_unbiased = list(labels_df[labels_df[mbfc_lbl] == "least_biased"].Source)
-    else:
-        mbfc_biased = list(
-            labels_df[
-                (labels_df[mbfc_lbl] == "left_bias")
-                | (labels_df[mbfc_lbl] == "left_center_bias")
-                | (labels_df[mbfc_lbl] == "right_center_bias")
-                | (labels_df[mbfc_lbl] == "right_bias")
-            ].Source
-        )
-
-        mbfc_unbiased = list(
-            labels_df[
-                (labels_df[mbfc_lbl] == "left_center_bias")
-                | (labels_df[mbfc_lbl] == "least_biased")
-                | (labels_df[mbfc_lbl] == "right_center_bias")
-            ].Source
-        )
-
-    df_mbfc_bias = create_binary_selection(
-        "mbfc_biased.csv",
-        mbfc_biased,
-        mbfc_unbiased,
-        "biased",
-        count_per=10000,
-        reject_minimum=301,
-        overwrite=overwrite,
-    )
-
-    # ----------------------------
-    # Allsides bias
-    # ----------------------------
-
-    as_lbl = "Allsides, bias_rating"
-
-    if not extremes:
-        as_biased = list(
-            labels_df[
-                (labels_df[as_lbl] == "Left")
-                | (labels_df[as_lbl] == "Right")
-                | (labels_df[as_lbl] == "Lean Left")
-                | (labels_df[as_lbl] == "Lean Right")
-            ].Source
-        )
-        as_unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
-
-    df_as_bias = create_binary_selection(
-        "as_bias.csv",
-        as_biased,
-        as_unbiased,
-        "biased",
-        count_per=10000,
-        reject_minimum=300,
-        overwrite=overwrite,
-    )
-
-    return df_mbfc_bias, df_as_bias
-
-
-def get_reliability_selection_sets(overwrite=False):
-    labels_df = util.nela_load_labels()
-
-    # ----------------------------
-    # OpenSources Reliability
-    # ----------------------------
-
-    os_unreliable_lbl = "Open Sources, unreliable"
-    os_reliable_lbl = "Open Sources, reliable"
-
-    os_unreliable = list(labels_df[labels_df[os_unreliable_lbl].notnull()].Source)
-    os_reliable = list(labels_df[labels_df[os_reliable_lbl].notnull()].Source)
-
-    df_os_reliability = create_binary_selection(
-        "os_reliability.csv",
-        os_reliable,
-        os_unreliable,
-        "reliable",
-        count_per=10000,
-        reject_minimum=300,
-        overwrite=overwrite,
-    )
-
-    # ----------------------------
-    # Media Bias / Fact Check Reliability
-    # ----------------------------
-
-    mbfc_lbl = "Media Bias / Fact Check, factual_reporting"
-
-    mbfc_reliable = list(labels_df[labels_df[mbfc_lbl] > 3].Source)
-    mbfc_unreliable = list(labels_df[labels_df[mbfc_lbl] <= 3].Source)
-
-    df_mbfc_reliability = create_binary_selection(
-        "mbfc_reliability.csv",
-        mbfc_reliable,
-        mbfc_unreliable,
-        "reliable",
-        count_per=10000,
-        reject_minimum=300,
-        overwrite=overwrite,
-    )
-
-    # ----------------------------
-    # NewsGuard Reliability
-    # ----------------------------
-
-    ng_lbl = "NewsGuard, overall_class"
-
-    ng_reliable = list(labels_df[labels_df[ng_lbl] == 1.0].Source)
-    ng_unreliable = list(labels_df[labels_df[ng_lbl] == 0.0].Source)
-
-    df_ng_reliability = create_binary_selection(
-        "ng_reliability.csv",
-        ng_reliable,
-        ng_unreliable,
-        "reliable",
-        count_per=10000,
-        reject_minimum=300,
-        overwrite=overwrite,
-    )
-
-    return df_os_reliability, df_mbfc_reliability, df_ng_reliability
-
-
-def create_word2vec(df, output_name, overwrite=False):
-    logging.info("Creating word2vec %s...", output_name)
-
-    path = "../data/cache/" + output_name
-
-    if not util.check_output_necessary(path, overwrite):
-        return
-
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    word2vec_creator.run_w2v(df, path + "/sequence", shaping="sequence", word_limit=-1)
-    word2vec_creator.run_w2v(df, path + "/avg", shaping="avg", word_limit=-1)
-
-
-def create_glove(df, output_name, overwrite=False):
-    logging.info("Creating glove %s...", output_name)
-
-    path = "../data/cache/" + output_name
-
-    if not util.check_output_necessary(path, overwrite):
-        return
-
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    word2vec_creator.run_glove(
-        df, path + "/sequence", shaping="sequence", word_limit=-1
-    )
-    word2vec_creator.run_glove(df, path + "/avg", shaping="avg", word_limit=-1)
 
 
 def clear_vector_model():
@@ -341,7 +205,9 @@ def create_binary_selection(
 
     if not util.check_output_necessary(path, overwrite):
         logging.info("Loading %s...", path)
-        df = pd.read_csv(path)
+        # df = pd.read_csv(path)
+        df = pd.read_pickle(path)
+        #df = pd.read_csv(path)
         print(df[df.content.isnull()])
         return df
 
@@ -368,7 +234,8 @@ def create_binary_selection(
     df = util.stack_dfs(df_positive, df_negative)
 
     logging.info("Caching...")
-    df.to_csv(path, encoding="utf-8")
+    df.to_pickle(path, compression=None)
+    # df.to_csv(path, encoding="utf-8")
     meta = {
         "postive_counts": positive_counts,
         "negative_counts": negative_counts,
