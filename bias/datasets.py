@@ -219,6 +219,11 @@ def create_binary_selection(
         random_seed=random_seed,
         verbose=verbose,
     )
+
+    postive_max = df_positive.shape[0]
+    if positive_max < count_per and force_balance:
+        count_per = postive_max
+
     df_negative, negative_counts, negative_rejected = random_balanced_sample(
         negative_sources,
         count=count_per,
@@ -227,6 +232,19 @@ def create_binary_selection(
         random_seed=random_seed,
         verbose=verbose,
     )
+
+    # if too much let's reget positive so that they are balanced
+    negative_max = df_negative[0]
+    if negative_max < count_per and force_balance:
+        count_per = negative_max
+        df_positive, positive_counts, positive_rejected = random_balanced_sample(
+            positive_sources,
+            count=count_per,
+            reject_minimum=reject_minimum,
+            force_balance=force_balance,
+            random_seed=random_seed,
+            verbose=verbose,
+        )
 
     df_negative[col_title] = 0
     df_positive[col_title] = 1
