@@ -105,4 +105,5 @@ def experiment_model(
 if __name__ == "__main__":
     util.init_logging()
     
-    experiment_model("extreme_biased", "as", 5560, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
+    # experiment_model("extreme_biased", "as", 5560, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
+    datasets.create_selection_set_sources(10000, 500)
