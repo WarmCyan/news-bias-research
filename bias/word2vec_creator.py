@@ -2,6 +2,7 @@ import logging
 import pickle
 
 import gensim
+from gensim.models import fasttext
 import numpy as np
 from tqdm import tqdm
 
@@ -34,6 +35,17 @@ def run_glove(df, output, shaping="sequence", word_limit=-1):
         model = gensim.models.KeyedVectors.load_word2vec_format(
             "../data/cache/models/glove2word2vec_pretrained.model"
         )
+
+    return vectorize_collection(df, output, model, shaping, word_limit)
+
+
+def run_fasttext(df, output, shaping="sequence", word_limit=-1):
+    global model
+
+    if model is None:
+        logging.info("Loading fasttext model...")
+
+        model = gensim.models.fasttext.load_facebook_vectors('../data/raw/models/wiki.en.bin')
 
     return vectorize_collection(df, output, model, shaping, word_limit)
 

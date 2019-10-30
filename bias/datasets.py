@@ -257,7 +257,6 @@ def get_original_selection_set(problem, source):
             )
 
         return [left_biased, center_biased, right_biased]
-        
 
 
 @util.dump_log
@@ -304,7 +303,13 @@ def fill_source(selection_sources, problem, col_names, target_name, target_count
     
 
 @util.dump_log
-def create_selection_set_sources(target_count, reject_minimum):
+def create_selection_set_sources(target_count, reject_minimum, overwrite=False):
+      
+    path = "../data/cache/selection.json"
+    if not util.check_output_necessary(path, overwrite):
+        with open(path, 'r') as infile:
+            return json.load(infile)
+
     selection_sources = {
             "reliability": {
                 "os": {},
@@ -339,87 +344,17 @@ def create_selection_set_sources(target_count, reject_minimum):
                 }
             }
 
+    selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "large_center_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
 
-    selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", 15000, 500)
-    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", 15000, 500)
-    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", 15000, 500)
-    selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", 15000, 500)
-    selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", 15000, 500)
-    selection_sources = fill_source(selection_sources, "large_center_bias_direction", ["left", "center", "right"], "bias_direction", 15000, 500)
-
-
-    # for bias dir is ["left", "center", "right"]
-    
-
-    # # TODO: load if existing
-
-    # to_fix = []
-
-    # for key in selection_sources["reliability"].keys():
-    #     if key == "info":
-    #         continue
-
-    #     reliable, unreliable = get_original_selection_set("reliability", key)
-    #     selection_sources["reliability"][key]["reliable_original"] = reliable
-    #     selection_sources["reliability"][key]["unreliable_original"] = unreliable
-
-    #     reliable_copy = copy.deepcopy(reliable)
-    #     unreliable_copy = copy.deepcopy(unreliable)
-    #     selection_sources["reliability"][key]["reliable"] = reliable_copy
-    #     selection_sources["reliability"][key]["unreliable"] = unreliable_copy
-
-    #     to_fix.append({"reliable": reliable_copy, "unreliable": unreliable_copy})
-    # 
-    # conflicts, removed = remove_conflicts(to_fix, ["os", "mbfc", "ng"])
-    # selection_sources["reliability"]["info"]["conflicts"] = conflicts
-    # selection_sources["reliability"]["info"]["removed"] = removed
-    # 
-    # for key in selection_sources["reliability"].keys():
-    #     if key == "info":
-    #         continue
-
-    #     reliable = selection_sources["reliability"][key]["reliable"]
-    #     unreliable = selection_sources["reliability"][key]["unreliable"]
-
-    #     _, meta = create_binary_selection( "", reliable, unreliable, "reliable", count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True)
-
-    #     selection_sources["reliability"][key]["meta"] = meta
-    #     
-    # to_fix = []
-    # 
-    # for key in selection_sources["biased"].keys():
-    #     if key == "info":
-    #         continue
-    #     
-    #     biased, unbiased = get_original_selection_set("biased", key)
-    #     selection_sources["biased"][key]["biased_original"] = biased
-    #     selection_sources["biased"][key]["unbiased_original"] = unbiased
-
-    #     biased_copy = copy.deepcopy(biased)
-    #     unbiased_copy = copy.deepcopy(unbiased)
-    #     selection_sources["biased"][key]["biased"] = biased_copy
-    #     selection_sources["biased"][key]["unbiased"] = unbiased_copy
-
-    #     to_fix.append({"biased": biased_copy, "unbiased": unbiased_copy})
-    # 
-    # conflicts, removed = remove_conflicts(to_fix, ["mbfc", "as"])
-    # selection_sources["biased"]["info"]["conflicts"] = conflicts
-    # selection_sources["biased"]["info"]["removed"] = removed
-
-    # for key in selection_sources["biased"].keys():
-    #     if key == "info":
-    #         continue
-
-    #     biased = selection_sources["biased"][key]["biased"]
-    #     unbiased = selection_sources["biased"][key]["unbiased"]
-    #     
-    #     _, meta = create_binary_selection( "", biased, unbiased, "biased", count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True)
-
-    #     selection_sources["biased"][key]["meta"] = meta
         
     with open("../data/cache/selection.json", 'w') as outfile:
         json.dump(selection_sources, outfile)
-    print(selection_sources)
+    return selection_sources
 
 @util.dump_log
 def get_selection_set(
