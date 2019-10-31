@@ -148,7 +148,14 @@ if __name__ == "__main__":
     else: 
         #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
         #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)
-        datasets.create_selection_set_sources(15000, 500)
+        #datasets.create_selection_set_sources(15000, 500)
+        datasets.get_selection_set(problem="reliability", source="os", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="reliability", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="reliability", source="ng", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="extreme_biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        datasets.get_selection_set(problem="extreme_biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
 
 
     

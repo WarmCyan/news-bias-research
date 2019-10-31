@@ -430,7 +430,7 @@ def clear_vector_model():
 def create_tfidf(df, path, max_features=5000, overwrite=False):
     logging.info("Creating tfidf %s...", path)
 
-    if not util.check_output_necessary(path, overwrite):
+    if not util.check_output_necessary(path + "/tfidf.pkl", overwrite):
         return
 
     try:
