@@ -1,4 +1,6 @@
 import datasets
+import logging
+import argparse
 import util
 import json
 import keras
@@ -18,7 +20,8 @@ def experiment_dataset(
     selection_overwrite,
     embedding_type,
     embedding_shape,
-    embedding_overwrite
+    embedding_overwrite,
+    verbose=True
 ):
     # get selection set
     selection_df, name = datasets.get_selection_set(
@@ -28,6 +31,7 @@ def experiment_dataset(
         random_seed=selection_random_seed,
         reject_minimum=selection_reject_minimum,
         overwrite=selection_overwrite,
+        verbose=verbose
     )
 
     # create necessary embedding/vector form
@@ -60,7 +64,8 @@ def experiment_model(
     model_batch_size,
     model_learning_rate,
     model_epochs,
-    model_num
+    model_num,
+    verbose=True
 ):
     embed_df, sel_df, name = experiment_dataset(
         selection_problem,
@@ -71,7 +76,8 @@ def experiment_model(
         selection_overwrite,
         embedding_type,
         embedding_shape,
-        embedding_overwrite
+        embedding_overwrite,
+        verbose=verbose
     )
 
     X = embed_df
@@ -103,7 +109,46 @@ def experiment_model(
 
 
 if __name__ == "__main__":
-    util.init_logging()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--log", dest="log_path", default=None)
+    parser.add_argument("--experiment", dest="experiment_path", default=None)
+    parser.add_argument("--row", dest="experiment_row", type=int, default=None)
+    args = parser.parse_args()
     
-    # experiment_model("extreme_biased", "as", 5560, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
-    datasets.create_selection_set_sources(10000, 500)
+    util.init_logging(args.log_path)
+
+    if args.experiment_path is not None:
+        logging.info("=====================================================")
+        if args.experiment_row is not None:
+            logging.info("Experiment %s %i started...",args.experiment_path, args.experiment_row)
+        else:
+            logging.info("Experiment %s started...",args.experiment_path)
+        logging.info("=====================================================")
+
+        with open(args.experiment_path, 'r') as infile:
+            params = json.load(infile)
+
+        if args.experiment_row is not None:
+            params = params[args.experiment_row-1]
+
+        if params["type"] == "data":
+            experiment_dataset(
+                params["selection_problem"],
+                params["selection_source"],
+                params["selection_count"],
+                params["selection_random_seed"],
+                params["selection_reject_minimum"],
+                params["selection_overwrite"],
+                params["embedding_type"],
+                params["embedding_shape"],
+                params["embedding_overwrite"],
+                params["verbose"]
+            )
+    else: 
+        #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
+        #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)
+        datasets.create_selection_set_sources(15000, 500)
+
+
+    

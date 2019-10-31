@@ -260,7 +260,7 @@ def get_original_selection_set(problem, source):
 
 
 @util.dump_log
-def fill_source(selection_sources, problem, col_names, target_name, target_count, reject_minimum):
+def fill_source(selection_sources, problem, col_names, target_name, target_count, reject_minimum, verbose):
     to_fix = []
 
     source_list = list_difference(selection_sources[problem].keys(), ["info"])
@@ -282,6 +282,8 @@ def fill_source(selection_sources, problem, col_names, target_name, target_count
     conflicts, removed = remove_conflicts(to_fix, source_list)
     selection_sources[problem]["info"]["conflicts"] = conflicts
     selection_sources[problem]["info"]["removed"] = removed
+    selection_sources[problem]["info"]["target_name"] = target_name
+    selection_sources[problem]["info"]["col_names"] = col_names
     
     for key in source_list:
         
@@ -293,9 +295,9 @@ def fill_source(selection_sources, problem, col_names, target_name, target_count
             sets.append(selection_sources[problem][key][name])
 
         if len(sets) == 2:
-            _, meta = create_binary_selection("", sets[0], sets[1], target_name, count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True)
+            _, meta = create_binary_selection("", sets[0], sets[1], target_name, count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True, verbose=verbose)
         elif len(sets) == 3:
-            _, meta = create_ternary_selection("", sets[0], sets[1], sets[2], target_name, count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True)
+            _, meta = create_ternary_selection("", sets[0], sets[1], sets[2], target_name, count_per=target_count, reject_minimum=reject_minimum, overwrite=True, analysis_only=True, verbose=verbose)
             
         selection_sources[problem][key]["meta"] = meta
 
@@ -303,7 +305,7 @@ def fill_source(selection_sources, problem, col_names, target_name, target_count
     
 
 @util.dump_log
-def create_selection_set_sources(target_count, reject_minimum, overwrite=False):
+def create_selection_set_sources(target_count, reject_minimum, overwrite=False, verbose=True):
       
     path = "../data/cache/selection.json"
     if not util.check_output_necessary(path, overwrite):
@@ -344,12 +346,12 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False):
                 }
             }
 
-    selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum)
-    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum)
-    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum)
-    selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
-    selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
-    selection_sources = fill_source(selection_sources, "large_center_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
+    selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum, verbose)
+    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    # selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
+    # selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
+    # selection_sources = fill_source(selection_sources, "large_center_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
 
         
     with open("../data/cache/selection.json", 'w') as outfile:
@@ -358,115 +360,32 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False):
 
 @util.dump_log
 def get_selection_set(
-    problem, source, count, random_seed, reject_minimum, overwrite
+    problem, source, count, random_seed, reject_minimum, overwrite, verbose
 ):
     labels_df = util.nela_load_labels()
 
-    name = "selection_{0}_{1}_{2}_{3}".format(
-        problem, source, count, random_seed
+    selection_sources = create_selection_set_sources(count, reject_minimum, False, verbose)
+
+    name = "selection_{0}_{1}_{2}".format(
+        problem, source, random_seed
     )
 
-    if problem == "reliability":
-        if source == "os":
-            reliable_lbl = "Open Sources, reliable"
-            unreliable_lbl = "Open Sources, unreliable"
-
-            unreliable = list(labels_df[labels_df[unreliable_lbl].notnull()].Source)
-            reliable = list(labels_df[labels_df[reliable_lbl].notnull()].Source)
-
-        if source == "mbfc":
-            lbl = "Media Bias / Fact Check, factual_reporting"
-
-            reliable = list(labels_df[labels_df[lbl] > 3].Source)
-            unreliable = list(labels_df[labels_df[lbl] <= 3].Source)
-
-        if source == "ng":
-            ng_lbl = "NewsGuard, overall_class"
-            reliable = list(labels_df[labels_df[ng_lbl] == 1.0].Source)
-            unreliable = list(labels_df[labels_df[ng_lbl] == 0.0].Source)
-
+    if problem == "reliability" or problem == "biased" or problem == "extreme_biased":
+        list_pos_name = selection_sources[problem]["info"]["col_names"][0]
+        list_neg_name = selection_sources[problem]["info"]["col_names"][1]
+        
+        list_pos = selection_sources[problem][source][list_pos_name]
+        list_neg = selection_sources[problem][source][list_neg_name]
+        
         df, meta = create_binary_selection(
             name,
-            reliable,
-            unreliable,
-            "reliable",
-            count_per=count,
+            list_pos,
+            list_neg,
+            selection_sources[problem]["info"]["target_name"],
+            count_per=selection_sources[problem][source]["meta"]["count_per"],
             reject_minimum=reject_minimum,
             overwrite=overwrite,
-        )
-
-    elif problem == "biased":
-        if source == "mbfc":
-            mbfc_lbl = "Media Bias / Fact Check, label"
-            
-            biased = list(
-                labels_df[
-                    (labels_df[mbfc_lbl] == "left_bias")
-                    | (labels_df[mbfc_lbl] == "left_center_bias")
-                    | (labels_df[mbfc_lbl] == "right_center_bias")
-                    | (labels_df[mbfc_lbl] == "right_bias")
-                ].Source
-            )
-
-            unbiased = list(
-                labels_df[labels_df[mbfc_lbl] == "least_biased"].Source
-            )
-        
-        elif source == "as":
-            as_lbl = "Allsides, bias_rating"
-            biased = list(
-                labels_df[
-                    (labels_df[as_lbl] == "Left")
-                    | (labels_df[as_lbl] == "Right")
-                    | (labels_df[as_lbl] == "Lean Left")
-                    | (labels_df[as_lbl] == "Lean Right")
-                ].Source
-            )
-            unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
-
-        df, meta = create_binary_selection(
-            name,
-            biased,
-            unbiased,
-            "biased",
-            count_per=count,
-            reject_minimum=reject_minimum,
-            overwrite=overwrite,
-        )
-        
-    elif problem == "extreme_biased":
-        if source == "mbfc":
-            mbfc_lbl = "Media Bias / Fact Check, label"
-            
-            biased = list(
-                labels_df[
-                    (labels_df[mbfc_lbl] == "left_bias")
-                    | (labels_df[mbfc_lbl] == "right_bias")
-                ].Source
-            )
-
-            unbiased = list(
-                labels_df[labels_df[mbfc_lbl] == "least_biased"].Source
-            )
-        
-        elif source == "as":
-            as_lbl = "Allsides, bias_rating"
-            biased = list(
-                labels_df[
-                    (labels_df[as_lbl] == "Left")
-                    | (labels_df[as_lbl] == "Right")
-                ].Source
-            )
-            unbiased = list(labels_df[labels_df[as_lbl] == "Center"].Source)
-
-        df, meta = create_binary_selection(
-            name,
-            biased,
-            unbiased,
-            "biased",
-            count_per=count,
-            reject_minimum=reject_minimum,
-            overwrite=overwrite,
+            verbose=verbose,
         )
 
     return df, name
@@ -495,7 +414,11 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
         embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1)
     elif embedding_type == "glove":
         embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1)
-    # TODO: fasttext
+    elif embedding_type == "fasttext":
+        embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1)
+    elif embedding_type == "tfidf":
+        embedding_df = create_tfidf(df, path, overwrite=overwrite)
+        
 
     return embedding_df
 
@@ -504,10 +427,8 @@ def clear_vector_model():
     word2vec_creator.clear_model()
 
 
-def create_tfidf(df, output_name, max_features=10000, overwrite=False):
-    logging.info("Creating tfidf %s...", output_name)
-
-    path = "../data/cache/" + output_name
+def create_tfidf(df, path, max_features=5000, overwrite=False):
+    logging.info("Creating tfidf %s...", path)
 
     if not util.check_output_necessary(path, overwrite):
         return
@@ -527,6 +448,7 @@ def create_tfidf(df, output_name, max_features=10000, overwrite=False):
     with open(path + "/tfidf.pkl", "wb") as outfile:
         pickle.dump(tfidf_final_vectors, outfile)
 
+    return tfidf_final_vectors
 
 def create_binary_selection(
     output,
@@ -551,7 +473,7 @@ def create_binary_selection(
         df = pd.read_pickle(path)
         #df = pd.read_csv(path)
         print(df[df.content.isnull()])
-        return df
+        return df, None
 
     df_positive, positive_counts, positive_rejected = random_balanced_sample(
         positive_sources,

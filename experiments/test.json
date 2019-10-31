@@ -1,0 +1,13 @@
+{
+	"type": "data",
+	"selection_problem": "reliability",
+	"selection_source": "mbfc",
+	"selection_count": 15000,
+	"selection_random_seed": 13,
+	"selection_reject_minimum": 500,
+	"selection_overwrite": false,
+	"embedding_type": "tfidf",
+	"embedding_shape": "sequence",
+	"embedding_overwrite": false,
+	"verbose": false
+}
