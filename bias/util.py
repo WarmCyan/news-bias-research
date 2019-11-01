@@ -103,7 +103,8 @@ def load_dataset(cache_path):
 
 
 def load_selection_dataset(name):
-    return pd.read_csv("../data/cache/" + name)
+    # return pd.read_csv("../data/cache/" + name)
+    return pd.read_pickle("../data/cache/" + name)
 
 
 # pass count of -1 for all articles from source
