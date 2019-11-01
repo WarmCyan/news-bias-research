@@ -10,7 +10,7 @@ def create_model(arch_num, layer_sizes, maxlen):
     model = keras.Sequential()
 
     if arch_num == 1:
-        model.add(Conv1D(layer_sizes[0][0], kernel_size=layer_sizes[0][1], input_shape=(300, maxlen)))
+        model.add(Conv1D(layer_sizes[0][0], kernel_size=layer_sizes[0][1], input_shape=(300*500, maxlen)))
         model.add(Conv1D(layer_sizes[1][0], kernel_size=layer_sizes[1][1]))
         model.add(Flatten())
         model.add(Dense(layer_sizes[2], activation='relu'))

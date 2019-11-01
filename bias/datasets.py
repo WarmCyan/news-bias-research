@@ -301,6 +301,14 @@ def fill_source(selection_sources, problem, col_names, target_name, target_count
             
         selection_sources[problem][key]["meta"] = meta
 
+    # get the final source differences to make testing sets
+    for key in source_list:
+        for col in col_names:
+            selection_sources[problem][key][col + "_test"] = {}
+            for other_key in list_difference(source_list, [key]):
+                testing_sources = list_difference(selection_sources[problem][other_key][col], selection_sources[problem][key][col])
+                selection_sources[problem][key][col + "_test"][other_key] = testing_sources
+
     return selection_sources
     
 
@@ -347,8 +355,9 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False, 
             }
 
     selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum, verbose)
-    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
-    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    #selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    #selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    
     # selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
     # selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
     # selection_sources = fill_source(selection_sources, "large_center_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
