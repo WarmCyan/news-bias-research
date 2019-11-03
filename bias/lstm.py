@@ -1,4 +1,5 @@
 import keras
+from keras imort callbacks
 from keras.layers import LSTM, Dense, Masking, Dropout
 from sklearn.model_selection import train_test_split
 
@@ -58,10 +59,16 @@ def pad_data(data, maxlen=500):
 
 # NOTE: assumes X is already padded and that y is already categorical
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs=1):
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs=1, X_test, y_test):
     model = create_model(arch_num, layer_sizes, maxlen)
 
     optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+    
+    # fname = 'weights/keras-lstm.h5'
+    # model.load_weights(fname)
+    # cbks = [callbacks.ModelCheckpoint(filepath=fname, monitor='val_loss', save_best_only=True),
+    #         callbacks.EarlyStopping(monitor='val_loss', patience=3)]
+    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=5)]
 
     if layer_sizes[-1] == 1:
         model.compile(
@@ -81,6 +88,15 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
         validation_split=0.2,
         use_multiprocessing=True,
         workers=4,
+        callbacks=cbks
     )
 
-    return model, history
+    loss, acc = test(X_test, y_test, batch_size, model)
+
+    return model, history, loss, acc
+
+
+def test(X, y, batch_size, model):
+    loss, acc = model.evaluate(X, y, batch_size, show_accuracy=True)
+    logging.info('Test loss / test accuracy: %f / %f', loss, acc)
+    return loss, acc

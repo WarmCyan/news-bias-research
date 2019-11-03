@@ -57,6 +57,7 @@ def experiment_model(
     embedding_type,
     embedding_shape,
     embedding_overwrite,
+    test_source,
     model_type,
     model_arch_num,
     model_layer_sizes,
@@ -80,20 +81,25 @@ def experiment_model(
         verbose=verbose
     )
 
+    test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
+
     X = embed_df
     if selection_problem == "reliability":
         y = sel_df.reliable
+        y_test = test_selection_df.reliable
     elif selection_problem == "biased" or selection_problem == "extreme_biased":
         y = sel_df.biased
+        y_test = test_selection_df.biased
 
     # pad as needed
     if embedding_shape == "sequence":
         X = lstm.pad_data(X, maxlen=model_maxlen)
+        X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
 
-    y = keras.utils.to_categorical(y)
+    #y = keras.utils.to_categorical(y)
         
     if model_type == "lstm":
-        model, history = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
+        model, history = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test)
     elif model_type == "cnn":
         model, history = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
     elif model_type == "nn":

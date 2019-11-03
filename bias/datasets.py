@@ -432,6 +432,62 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     return embedding_df
 
 
+@util.dump_log
+def get_test_embedding_set(problem, source, source_test, count, reject_minimum, random_seed, embedding_type, shaping):
+
+    selection_sources = create_selection_set_sources(count, reject_minimum, False, False)
+    
+    selection_df, name = get_selection_set(
+        problem=problem,
+        source=source_test,
+        count=count,
+        random_seed=random_seed,
+        reject_minimum=reject_minimum,
+        overwrite=False,
+        verbose=False
+    )
+
+    # create necessary embedding/vector form
+    embedding_df = get_embedding_set(
+        selection_df,
+        embedding_type=embedding_type,
+        output_name=name,
+        shaping=shaping,
+        overwrite=False,
+    )
+
+    # get the sources to test against
+    cols = selection_sources[problem]["info"]["col_names"]
+    sources = []
+    for col in cols:
+        test_sources = selection_sources[problem][source][col + "_test"][source_test]
+        sources.extend(sources)
+
+    target_col = ""
+    if problem == "reliability":
+        target_col = "reliable"
+    elif problem == "biased":
+        target_col = "biased"
+    
+    test_sel_df = selection_df[selection_df.Source.isin(sources)]
+
+    actual_test_sel_df = None
+    test_embedding_df = []
+
+    selection_count = min(test_sel_df[target_col].value_counts())
+    for value in test_sel_df[target_col].value_counts().index.tolist():
+        balanced_test_df = test_sel_df.sample(selection_count, random_state=13)
+        
+        indices = balanced_test_df.index.tolist()
+        test_embedding_df_temp = [embedding_df[i] for i in indices]
+        test_embedding_df.extend(test_embedding_df_temp)
+        
+        actual_test_sel_df = util.stack_dfs(actual_test_sel_df, balanced_test_df)
+        
+    return actual_test_sel_df, test_embedding_df
+
+
+
 def clear_vector_model():
     word2vec_creator.clear_model()
 
