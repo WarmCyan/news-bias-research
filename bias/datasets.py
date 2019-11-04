@@ -355,8 +355,8 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False, 
             }
 
     selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum, verbose)
-    #selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
-    #selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
     
     # selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
     # selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
@@ -405,7 +405,7 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     logging.info("Creating %s embedding %s...", embedding_type, output_name)
     
     path = "../data/cache/" + output_name + "_" + embedding_type
-    path_and_name = path + "/" + shaping + ".pkl"
+    path_and_name = path + "/" + shaping + ".pkl.pkl"
     
     if not util.check_output_necessary(path_and_name, overwrite):
         # df = pickle.load(path_and_name)
@@ -461,7 +461,7 @@ def get_test_embedding_set(problem, source, source_test, count, reject_minimum, 
     sources = []
     for col in cols:
         test_sources = selection_sources[problem][source][col + "_test"][source_test]
-        sources.extend(sources)
+        sources.extend(test_sources)
 
     target_col = ""
     if problem == "reliability":
@@ -469,7 +469,7 @@ def get_test_embedding_set(problem, source, source_test, count, reject_minimum, 
     elif problem == "biased":
         target_col = "biased"
     
-    test_sel_df = selection_df[selection_df.Source.isin(sources)]
+    test_sel_df = selection_df[selection_df.source.isin(sources)]
 
     actual_test_sel_df = None
     test_embedding_df = []
@@ -485,7 +485,6 @@ def get_test_embedding_set(problem, source, source_test, count, reject_minimum, 
         actual_test_sel_df = util.stack_dfs(actual_test_sel_df, balanced_test_df)
         
     return actual_test_sel_df, test_embedding_df
-
 
 
 def clear_vector_model():

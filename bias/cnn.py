@@ -1,6 +1,8 @@
 import keras
+from keras import callbacks
 from keras.layers import Conv1D, Dense, Flatten
 from sklearn.model_selection import train_test_split
+import logging
 
 import util
 
@@ -20,23 +22,41 @@ def create_model(arch_num, layer_sizes, maxlen):
 
 # NOTE: assumes X is already padded and that y is already categorical
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs=1):
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name):
     model = create_model(arch_num, layer_sizes, maxlen)
 
     optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+    
+    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=3)]#, callbacks.ModelCheckpoint(filepath='../models/' + name + '.best.weights', verbose=1, save_best_only=True)]
+    
     model.compile(
         optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
     )
     model.summary()
+    
+    X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
+    
     history = model.fit(
         X,
         y,
         batch_size=batch_size,
         verbose=2,
         epochs=epochs,
-        validation_split=0.2,
-        use_multiprocessing=True,
-        workers=4,
+        validation_data=(X_val, y_val),
+        # validation_split=0.2,
+        # use_multiprocessing=True,
+        # workers=4,
+        callbacks=cbks
     )
+    
+    #model.load_weights("../models/" + name + ".best.weights")
+    
+    loss, acc = test(X_test, y_test, batch_size, model)
 
-    return model, history
+    return model, history.history, loss, acc
+
+
+def test(X, y, batch_size, model):
+    loss, acc = model.evaluate(X, y, batch_size, show_accuracy=True)
+    logging.info('Test loss / test accuracy: %f / %f', loss, acc)
+    return loss, acc

@@ -84,6 +84,7 @@ def experiment_model(
     test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
     X = embed_df
+    X_test = test_embedding_df
     if selection_problem == "reliability":
         y = sel_df.reliable
         y_test = test_selection_df.reliable
@@ -97,21 +98,23 @@ def experiment_model(
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
 
     #y = keras.utils.to_categorical(y)
+    
+    name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
-        model, history = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test)
+        model, history, loss, acc = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "cnn":
-        model, history = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
+        model, history, loss, acc = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, name)
     elif model_type == "nn":
         model, history = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
         pass
     elif model_type == "svm":
         pass
 
-    name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}.json'
 
-    with open("../data/output/" + name, "w") as outfile:
-        json.dump(history, outfile)
+    with open("../data/output/" + name + ".json", "w") as outfile:
+        results = {"history": history, "testing_loss": loss, "testing_acc": acc}
+        json.dump(results, outfile)
 
 
 if __name__ == "__main__":
@@ -151,7 +154,29 @@ if __name__ == "__main__":
                 params["embedding_overwrite"],
                 params["verbose"]
             )
-    else: 
+        elif params["type"] == "model":
+            experiment_model(
+                params["selection_problem"],
+                params["selection_source"],
+                params["selection_count"],
+                params["selection_random_seed"],
+                params["selection_reject_minimum"],
+                params["selection_overwrite"],
+                params["embedding_type"],
+                params["embedding_shape"],
+                params["embedding_overwrite"],
+                params["test_source"],
+                params["model_type"],
+                params["model_arch_num"],
+                params["model_layer_sizes"],
+                params["model_maxlen"],
+                params["model_batch_size"],
+                params["model_learning_rate"],
+                params["model_epochs"],
+                params["model_num"],
+                params["verbose"]
+                )
+    else:
         #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
         #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)
         datasets.create_selection_set_sources(15000, 500)

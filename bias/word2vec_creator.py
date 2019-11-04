@@ -68,8 +68,9 @@ def vectorize_collection(df, output, model, shaping, word_limit):
             averaged = np.mean(vectors, axis=0)  # TODO: verify axis is correct
             vector_collection.append(averaged)
 
-    with open(output + ".pkl", "wb") as outfile:
+    with open(output, "wb") as outfile:
         pickle.dump(vector_collection, outfile)
+        logging.info("Saved %s", output)
         # np.save(vector_collection, outfile, allow_pickle=False)
 
     return vector_collection

@@ -1,0 +1,19 @@
+#!/bin/bash
+sbatch lstm_reliability_0_0.sh
+sbatch lstm_reliability_0_1.sh
+sbatch lstm_reliability_0_2.sh
+sbatch lstm_reliability_0_3.sh
+sbatch lstm_reliability_0_4.sh
+sbatch lstm_reliability_0_5.sh
+sbatch lstm_reliability_0_6.sh
+sbatch lstm_reliability_0_7.sh
+sbatch lstm_reliability_0_8.sh
+sbatch lstm_reliability_0_9.sh
+sbatch lstm_reliability_0_10.sh
+sbatch lstm_reliability_0_11.sh
+sbatch lstm_reliability_0_12.sh
+sbatch lstm_reliability_0_13.sh
+sbatch lstm_reliability_0_14.sh
+sbatch lstm_reliability_0_15.sh
+sbatch lstm_reliability_0_16.sh
+sbatch lstm_reliability_0_17.sh

@@ -4,8 +4,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-n", dest="name", default=None, help="name")
 parser.add_argument("-e", dest="experiment_path", default=None, help="experiment file name", required=True)
 parser.add_argument("-r", dest="experiment_row", default=None, help="row")
-parser.add_argument("-m", dest="memory", default="32000", help="memory (32000)")
-parser.add_argument("-t", dest="time", default="1:00:00", help="time (1:00:00)")
+parser.add_argument("-m", dest="memory", default="96000", help="memory (96000)")
+parser.add_argument("-t", dest="time", default="6:00:00", help="time (6:00:00)")
 args = parser.parse_args()
 
 name = args.name
