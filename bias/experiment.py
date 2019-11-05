@@ -1,10 +1,12 @@
 import datasets
+import pickle
 import logging
 import argparse
 import util
 import json
 import keras
 import sys
+import pd
 
 import lstm
 import cnn
@@ -66,7 +68,8 @@ def experiment_model(
     model_learning_rate,
     model_epochs,
     model_num,
-    verbose=True
+    verbose=True,
+    params=None
 ):
     embed_df, sel_df, name = experiment_dataset(
         selection_problem,
@@ -102,9 +105,9 @@ def experiment_model(
     name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
-        model, history, loss, acc = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
+        model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "cnn":
-        model, history, loss, acc = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, name)
+        model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, name)
     elif model_type == "nn":
         model, history = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
         pass
@@ -112,9 +115,16 @@ def experiment_model(
         pass
 
 
+    # turn predictions into dataframe
+    #pred = pd.DataFrame({"predicted": predictions})
+    #pred.index = test_selection_df.index
+    test_selection_df["predicted"] = predictions
+
     with open("../data/output/" + name + ".json", "w") as outfile:
-        results = {"history": history, "testing_loss": loss, "testing_acc": acc}
+        results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params}
         json.dump(results, outfile)
+    with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
+        pickle.dump(test_selection_df, outfile)
 
 
 if __name__ == "__main__":
@@ -174,7 +184,8 @@ if __name__ == "__main__":
                 params["model_learning_rate"],
                 params["model_epochs"],
                 params["model_num"],
-                params["verbose"]
+                params["verbose"],
+                params
                 )
     else:
         #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)

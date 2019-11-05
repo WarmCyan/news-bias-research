@@ -1,0 +1,134 @@
+2019-10-31 15:34:50,436 - experiment.py - INFO - =====================================================
+2019-10-31 15:34:50,436 - experiment.py - INFO - Experiment ../experiments/data_gen.json 13 started...
+2019-10-31 15:34:50,436 - experiment.py - INFO - =====================================================
+2019-10-31 15:34:50,437 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:34:50,444 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:34:50,445 - util.py - INFO - Cached version found.
+2019-10-31 15:34:50,445 - datasets.py - INFO - Creating binary selection selection_biased_mbfc_13...
+2019-10-31 15:34:50,445 - util.py - INFO - Cached version found.
+2019-10-31 15:34:50,445 - datasets.py - INFO - Loading ../data/cache/selection_biased_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-10-31 15:34:50,487 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+3763  2018-09-20  ...      0
+3764  2018-10-18  ...      0
+3765  2018-03-19  ...      0
+3766  2018-02-22  ...      0
+3767  2018-02-27  ...      0
+
+[3768 rows x 5 columns], embedding_type = 'tfidf', output_name = 'selection_biased_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-10-31 15:34:50,487 - datasets.py - INFO - Creating tfidf embedding selection_biased_mbfc_13...
+2019-10-31 15:34:50,488 - datasets.py - INFO - Creating tfidf ../data/cache/selection_biased_mbfc_13_tfidf...
+Using TensorFlow backend.
+Series([], Name: content, dtype: object)
+2019-10-31 15:34:58,624 - experiment.py - INFO - =====================================================
+2019-10-31 15:34:58,624 - experiment.py - INFO - Experiment ../experiments/data_gen.json 14 started...
+2019-10-31 15:34:58,624 - experiment.py - INFO - =====================================================
+2019-10-31 15:34:58,625 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:34:58,632 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:34:58,632 - util.py - INFO - Cached version found.
+2019-10-31 15:34:58,633 - datasets.py - INFO - Creating binary selection selection_biased_mbfc_13...
+2019-10-31 15:34:58,633 - util.py - INFO - Cached version found.
+2019-10-31 15:34:58,633 - datasets.py - INFO - Loading ../data/cache/selection_biased_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-10-31 15:34:58,665 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+3763  2018-09-20  ...      0
+3764  2018-10-18  ...      0
+3765  2018-03-19  ...      0
+3766  2018-02-22  ...      0
+3767  2018-02-27  ...      0
+
+[3768 rows x 5 columns], embedding_type = 'w2v', output_name = 'selection_biased_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-10-31 15:34:58,665 - datasets.py - INFO - Creating w2v embedding selection_biased_mbfc_13...
+2019-10-31 15:34:58,666 - word2vec_creator.py - INFO - Loading word2vec model...
+2019-10-31 15:34:58,666 - utils_any2vec.py - INFO - loading projection weights from ../data/raw/models/GoogleNews-vectors-negative300.bin
+2019-10-31 15:35:59,509 - utils_any2vec.py - INFO - loaded (3000000, 300) matrix from ../data/raw/models/GoogleNews-vectors-negative300.bin
+Using TensorFlow backend.
+Creating vectors:   0%|          | 0/3768 [00:00<?, ?it/s]Creating vectors:   1%|          | 43/3768 [00:00<00:08, 428.59it/s]Creating vectors:   3%|▎         | 108/3768 [00:00<00:07, 476.78it/s]Creating vectors:   4%|▍         | 144/3768 [00:00<00:08, 432.30it/s]Creating vectors:   6%|▌         | 212/3768 [00:00<00:07, 484.59it/s]Creating vectors:   7%|▋         | 271/3768 [00:00<00:06, 510.05it/s]Creating vectors:   8%|▊         | 318/3768 [00:00<00:07, 480.59it/s]Creating vectors:  10%|█         | 393/3768 [00:00<00:06, 537.22it/s]Creating vectors:  12%|█▏        | 447/3768 [00:00<00:06, 529.86it/s]Creating vectors:  13%|█▎        | 502/3768 [00:00<00:06, 535.05it/s]Creating vectors:  16%|█▌        | 586/3768 [00:01<00:05, 599.68it/s]Creating vectors:  17%|█▋        | 649/3768 [00:01<00:05, 589.07it/s]Creating vectors:  20%|█▉        | 740/3768 [00:01<00:04, 658.00it/s]Creating vectors:  22%|██▏       | 833/3768 [00:01<00:04, 717.05it/s]Creating vectors:  24%|██▍       | 910/3768 [00:01<00:04, 693.00it/s]Creating vectors:  26%|██▌       | 983/3768 [00:01<00:03, 702.70it/s]Creating vectors:  28%|██▊       | 1056/3768 [00:01<00:04, 598.59it/s]Creating vectors:  31%|███       | 1160/3768 [00:01<00:03, 685.61it/s]Creating vectors:  33%|███▎      | 1237/3768 [00:01<00:03, 672.34it/s]Creating vectors:  35%|███▍      | 1310/3768 [00:02<00:03, 678.91it/s]Creating vectors:  37%|███▋      | 1382/3768 [00:02<00:03, 647.54it/s]Creating vectors:  38%|███▊      | 1450/3768 [00:02<00:04, 493.00it/s]Creating vectors:  40%|████      | 1523/3768 [00:02<00:04, 545.12it/s]Creating vectors:  43%|████▎     | 1605/3768 [00:02<00:03, 605.57it/s]Creating vectors:  45%|████▍     | 1694/3768 [00:02<00:03, 669.21it/s]Creating vectors:  47%|████▋     | 1768/3768 [00:02<00:03, 566.07it/s]Creating vectors:  49%|████▊     | 1833/3768 [00:03<00:03, 504.91it/s]Creating vectors:  50%|█████     | 1891/3768 [00:03<00:03, 502.22it/s]Creating vectors:  52%|█████▏    | 1946/3768 [00:03<00:04, 408.28it/s]Creating vectors:  53%|█████▎    | 1993/3768 [00:03<00:04, 364.78it/s]Creating vectors:  54%|█████▍    | 2035/3768 [00:03<00:05, 345.34it/s]Creating vectors:  55%|█████▌    | 2074/3768 [00:03<00:05, 310.16it/s]Creating vectors:  56%|█████▌    | 2109/3768 [00:03<00:05, 288.10it/s]Creating vectors:  57%|█████▋    | 2141/3768 [00:04<00:05, 280.68it/s]Creating vectors:  58%|█████▊    | 2171/3768 [00:04<00:05, 275.73it/s]Creating vectors:  58%|█████▊    | 2200/3768 [00:04<00:05, 267.51it/s]Creating vectors:  59%|█████▉    | 2228/3768 [00:04<00:06, 256.30it/s]Creating vectors:  60%|█████▉    | 2255/3768 [00:04<00:05, 256.72it/s]Creating vectors:  61%|██████    | 2284/3768 [00:04<00:05, 264.42it/s]Creating vectors:  61%|██████▏   | 2311/3768 [00:04<00:05, 261.27it/s]Creating vectors:  62%|██████▏   | 2340/3768 [00:04<00:05, 268.81it/s]Creating vectors:  63%|██████▎   | 2369/3768 [00:04<00:05, 273.47it/s]Creating vectors:  64%|██████▎   | 2397/3768 [00:05<00:05, 272.15it/s]Creating vectors:  64%|██████▍   | 2425/3768 [00:05<00:04, 269.61it/s]Creating vectors:  65%|██████▌   | 2455/3768 [00:05<00:04, 277.38it/s]Creating vectors:  66%|██████▌   | 2485/3768 [00:05<00:04, 281.79it/s]Creating vectors:  67%|██████▋   | 2514/3768 [00:05<00:04, 275.11it/s]Creating vectors:  68%|██████▊   | 2561/3768 [00:05<00:03, 313.74it/s]Creating vectors:  69%|██████▉   | 2609/3768 [00:05<00:03, 347.64it/s]Creating vectors:  70%|███████   | 2652/3768 [00:05<00:03, 367.50it/s]Creating vectors:  71%|███████▏  | 2694/3768 [00:05<00:02, 380.33it/s]Creating vectors:  73%|███████▎  | 2741/3768 [00:05<00:02, 403.38it/s]Creating vectors:  74%|███████▍  | 2784/3768 [00:06<00:02, 408.62it/s]Creating vectors:  75%|███████▌  | 2829/3768 [00:06<00:02, 417.02it/s]Creating vectors:  76%|███████▋  | 2875/3768 [00:06<00:02, 427.51it/s]Creating vectors:  77%|███████▋  | 2919/3768 [00:06<00:02, 404.83it/s]Creating vectors:  79%|███████▉  | 2968/3768 [00:06<00:01, 425.85it/s]Creating vectors:  80%|███████▉  | 3012/3768 [00:06<00:01, 416.13it/s]Creating vectors:  81%|████████  | 3055/3768 [00:06<00:01, 419.03it/s]Creating vectors:  82%|████████▏ | 3100/3768 [00:06<00:01, 427.31it/s]Creating vectors:  84%|████████▍ | 3157/3768 [00:06<00:01, 461.36it/s]Creating vectors:  86%|████████▌ | 3239/3768 [00:06<00:00, 530.38it/s]Creating vectors:  88%|████████▊ | 3317/3768 [00:07<00:00, 586.62it/s]Creating vectors:  90%|█████████ | 3400/3768 [00:07<00:00, 642.09it/s]Creating vectors:  93%|█████████▎| 3487/3768 [00:07<00:00, 695.74it/s]Creating vectors:  95%|█████████▍| 3565/3768 [00:07<00:00, 718.68it/s]Creating vectors:  97%|█████████▋| 3653/3768 [00:07<00:00, 759.53it/s]Creating vectors:  99%|█████████▉| 3733/3768 [00:07<00:00, 755.77it/s]Creating vectors: 100%|██████████| 3768/3768 [00:07<00:00, 492.62it/s]
+2019-10-31 15:36:23,615 - experiment.py - INFO - =====================================================
+2019-10-31 15:36:23,616 - experiment.py - INFO - Experiment ../experiments/data_gen.json 15 started...
+2019-10-31 15:36:23,616 - experiment.py - INFO - =====================================================
+2019-10-31 15:36:23,616 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:36:23,623 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:36:23,624 - util.py - INFO - Cached version found.
+2019-10-31 15:36:23,625 - datasets.py - INFO - Creating binary selection selection_biased_mbfc_13...
+2019-10-31 15:36:23,625 - util.py - INFO - Cached version found.
+2019-10-31 15:36:23,625 - datasets.py - INFO - Loading ../data/cache/selection_biased_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-10-31 15:36:23,657 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+3763  2018-09-20  ...      0
+3764  2018-10-18  ...      0
+3765  2018-03-19  ...      0
+3766  2018-02-22  ...      0
+3767  2018-02-27  ...      0
+
+[3768 rows x 5 columns], embedding_type = 'glove', output_name = 'selection_biased_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-10-31 15:36:23,657 - datasets.py - INFO - Creating glove embedding selection_biased_mbfc_13...
+2019-10-31 15:36:23,658 - word2vec_creator.py - INFO - Loading glove model...
+2019-10-31 15:36:23,658 - utils_any2vec.py - INFO - loading projection weights from ../data/cache/models/glove2word2vec_pretrained.model
+2019-10-31 15:36:59,220 - utils_any2vec.py - WARNING - duplicate word '����������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������' in ../data/cache/models/glove2word2vec_pretrained.model, ignoring all but first
+2019-10-31 15:45:36,247 - utils_any2vec.py - INFO - duplicate words detected, shrinking matrix size from 2196017 to 2196016
+2019-10-31 15:45:36,247 - utils_any2vec.py - INFO - loaded (2196016, 300) matrix from ../data/cache/models/glove2word2vec_pretrained.model
+Using TensorFlow backend.
+Creating vectors:   0%|          | 0/3768 [00:00<?, ?it/s]Creating vectors:   1%|          | 34/3768 [00:00<00:11, 328.24it/s]Creating vectors:   2%|▏         | 93/3768 [00:00<00:09, 377.43it/s]Creating vectors:   4%|▎         | 135/3768 [00:00<00:09, 385.87it/s]Creating vectors:   5%|▌         | 195/3768 [00:00<00:08, 429.72it/s]Creating vectors:   7%|▋         | 256/3768 [00:00<00:07, 467.75it/s]Creating vectors:   8%|▊         | 301/3768 [00:00<00:08, 386.62it/s]Creating vectors:   9%|▉         | 347/3768 [00:00<00:08, 405.44it/s]Creating vectors:  11%|█         | 414/3768 [00:00<00:07, 459.70it/s]Creating vectors:  12%|█▏        | 464/3768 [00:00<00:07, 469.74it/s]Creating vectors:  14%|█▍        | 524/3768 [00:01<00:06, 494.57it/s]Creating vectors:  16%|█▌        | 597/3768 [00:01<00:05, 544.96it/s]Creating vectors:  17%|█▋        | 655/3768 [00:01<00:05, 541.08it/s]Creating vectors:  20%|█▉        | 741/3768 [00:01<00:04, 608.71it/s]Creating vectors:  21%|██▏       | 807/3768 [00:01<00:04, 616.98it/s]Creating vectors:  24%|██▎       | 894/3768 [00:01<00:04, 672.73it/s]Creating vectors:  26%|██▌       | 965/3768 [00:01<00:04, 628.14it/s]Creating vectors:  27%|██▋       | 1031/3768 [00:01<00:04, 571.44it/s]Creating vectors:  29%|██▉       | 1092/3768 [00:01<00:04, 571.75it/s]Creating vectors:  31%|███▏      | 1183/3768 [00:02<00:04, 640.90it/s]Creating vectors:  33%|███▎      | 1252/3768 [00:02<00:04, 590.22it/s]Creating vectors:  35%|███▌      | 1331/3768 [00:02<00:03, 638.34it/s]Creating vectors:  37%|███▋      | 1399/3768 [00:02<00:04, 584.46it/s]Creating vectors:  39%|███▉      | 1461/3768 [00:02<00:05, 422.42it/s]Creating vectors:  41%|████      | 1539/3768 [00:02<00:04, 488.99it/s]Creating vectors:  43%|████▎     | 1631/3768 [00:02<00:03, 568.38it/s]Creating vectors:  45%|████▌     | 1703/3768 [00:03<00:03, 605.76it/s]Creating vectors:  47%|████▋     | 1773/3768 [00:03<00:03, 510.19it/s]Creating vectors:  49%|████▊     | 1833/3768 [00:03<00:04, 463.18it/s]Creating vectors:  50%|█████     | 1887/3768 [00:03<00:04, 468.46it/s]Creating vectors:  51%|█████▏    | 1939/3768 [00:03<00:04, 367.11it/s]Creating vectors:  53%|█████▎    | 1983/3768 [00:03<00:05, 338.08it/s]Creating vectors:  54%|█████▎    | 2023/3768 [00:03<00:05, 319.66it/s]Creating vectors:  55%|█████▍    | 2059/3768 [00:04<00:05, 296.94it/s]Creating vectors:  56%|█████▌    | 2092/3768 [00:04<00:06, 278.76it/s]Creating vectors:  56%|█████▋    | 2123/3768 [00:04<00:06, 265.45it/s]Creating vectors:  57%|█████▋    | 2152/3768 [00:04<00:06, 254.12it/s]Creating vectors:  58%|█████▊    | 2179/3768 [00:04<00:06, 247.55it/s]Creating vectors:  59%|█████▊    | 2205/3768 [00:04<00:06, 237.78it/s]Creating vectors:  59%|█████▉    | 2230/3768 [00:04<00:06, 233.21it/s]Creating vectors:  60%|█████▉    | 2256/3768 [00:04<00:06, 239.03it/s]Creating vectors:  61%|██████    | 2283/3768 [00:05<00:06, 246.80it/s]Creating vectors:  61%|██████▏   | 2309/3768 [00:05<00:05, 245.15it/s]Creating vectors:  62%|██████▏   | 2337/3768 [00:05<00:05, 253.38it/s]Creating vectors:  63%|██████▎   | 2363/3768 [00:05<00:05, 254.31it/s]Creating vectors:  63%|██████▎   | 2389/3768 [00:05<00:05, 243.84it/s]Creating vectors:  64%|██████▍   | 2414/3768 [00:05<00:05, 240.28it/s]Creating vectors:  65%|██████▍   | 2439/3768 [00:05<00:05, 238.60it/s]Creating vectors:  65%|██████▌   | 2463/3768 [00:05<00:05, 238.86it/s]Creating vectors:  66%|██████▌   | 2489/3768 [00:05<00:05, 242.96it/s]Creating vectors:  67%|██████▋   | 2514/3768 [00:06<00:05, 236.98it/s]Creating vectors:  68%|██████▊   | 2555/3768 [00:06<00:04, 271.31it/s]Creating vectors:  69%|██████▉   | 2596/3768 [00:06<00:03, 301.32it/s]Creating vectors:  70%|██████▉   | 2634/3768 [00:06<00:03, 320.55it/s]Creating vectors:  71%|███████   | 2669/3768 [00:06<00:03, 326.99it/s]Creating vectors:  72%|███████▏  | 2708/3768 [00:06<00:03, 342.91it/s]Creating vectors:  73%|███████▎  | 2746/3768 [00:06<00:02, 352.94it/s]Creating vectors:  74%|███████▍  | 2783/3768 [00:06<00:02, 355.81it/s]Creating vectors:  75%|███████▍  | 2822/3768 [00:06<00:02, 364.47it/s]Creating vectors:  76%|███████▌  | 2859/3768 [00:06<00:02, 362.29it/s]Creating vectors:  77%|███████▋  | 2896/3768 [00:07<00:02, 348.39it/s]Creating vectors:  78%|███████▊  | 2932/3768 [00:07<00:02, 350.94it/s]Creating vectors:  79%|███████▉  | 2976/3768 [00:07<00:02, 370.42it/s]Creating vectors:  80%|███████▉  | 3014/3768 [00:07<00:02, 358.60it/s]Creating vectors:  81%|████████  | 3054/3768 [00:07<00:01, 369.62it/s]Creating vectors:  82%|████████▏ | 3094/3768 [00:07<00:01, 374.58it/s]Creating vectors:  83%|████████▎ | 3135/3768 [00:07<00:01, 383.33it/s]Creating vectors:  85%|████████▍ | 3201/3768 [00:07<00:01, 436.62it/s]Creating vectors:  87%|████████▋ | 3276/3768 [00:07<00:00, 498.67it/s]Creating vectors:  89%|████████▊ | 3340/3768 [00:07<00:00, 531.91it/s]Creating vectors:  91%|█████████ | 3411/3768 [00:08<00:00, 573.63it/s]Creating vectors:  93%|█████████▎| 3486/3768 [00:08<00:00, 612.21it/s]Creating vectors:  94%|█████████▍| 3555/3768 [00:08<00:00, 631.76it/s]Creating vectors:  96%|█████████▋| 3631/3768 [00:08<00:00, 664.72it/s]Creating vectors:  98%|█████████▊| 3700/3768 [00:08<00:00, 652.99it/s]Creating vectors: 100%|██████████| 3768/3768 [00:08<00:00, 439.25it/s]
+2019-10-31 15:46:10,427 - experiment.py - INFO - =====================================================
+2019-10-31 15:46:10,427 - experiment.py - INFO - Experiment ../experiments/data_gen.json 16 started...
+2019-10-31 15:46:10,427 - experiment.py - INFO - =====================================================
+2019-10-31 15:46:10,428 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:46:10,437 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-10-31 15:46:10,437 - util.py - INFO - Cached version found.
+2019-10-31 15:46:10,438 - datasets.py - INFO - Creating binary selection selection_biased_mbfc_13...
+2019-10-31 15:46:10,439 - util.py - INFO - Cached version found.
+2019-10-31 15:46:10,439 - datasets.py - INFO - Loading ../data/cache/selection_biased_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-10-31 15:46:10,481 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+3763  2018-09-20  ...      0
+3764  2018-10-18  ...      0
+3765  2018-03-19  ...      0
+3766  2018-02-22  ...      0
+3767  2018-02-27  ...      0
+
+[3768 rows x 5 columns], embedding_type = 'fasttext', output_name = 'selection_biased_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-10-31 15:46:10,481 - datasets.py - INFO - Creating fasttext embedding selection_biased_mbfc_13...
+2019-10-31 15:46:10,500 - word2vec_creator.py - INFO - Loading fasttext model...
+2019-10-31 15:46:10,501 - _fasttext_bin.py - INFO - loading 2519370 words for fastText model from ../data/raw/models/wiki.en.bin
+2019-10-31 15:46:22,590 - word2vec.py - INFO - resetting layer weights
+2019-10-31 15:46:35,905 - word2vec.py - INFO - Updating model with new vocabulary
+2019-10-31 15:46:45,403 - word2vec.py - INFO - New added 2519370 unique words (50% of original 5038740) and increased the count of 2519370 pre-existing words (50% of original 5038740)
+2019-10-31 15:47:03,194 - word2vec.py - INFO - deleting the raw counts dictionary of 2519370 items
+2019-10-31 15:47:03,194 - word2vec.py - INFO - sample=0.0001 downsamples 650 most-common words
+2019-10-31 15:47:03,194 - word2vec.py - INFO - downsampling leaves estimated 4076481917 word corpus (103.2% of prior 3949186974)
+slurmstepd: error: Job 218273 exceeded memory limit (17325180 > 16384000), being killed
+slurmstepd: error: Exceeded job memory limit
+slurmstepd: error: *** JOB 218273 ON node007 CANCELLED AT 2019-10-31T15:47:17 ***

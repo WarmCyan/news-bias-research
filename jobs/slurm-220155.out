@@ -1,0 +1,374 @@
+2019-11-04 18:46:43,687 - experiment.py - INFO - =====================================================
+2019-11-04 18:46:43,687 - experiment.py - INFO - Experiment ../experiments/lstm_reliability_0.json 11 started...
+2019-11-04 18:46:43,687 - experiment.py - INFO - =====================================================
+2019-11-04 18:46:43,688 - util.py - INFO - CALL::__main__.experiment_model(selection_problem = 'reliability', selection_source = 'mbfc', selection_count = 15000, selection_random_seed = 13, selection_reject_minimum = 500, selection_overwrite = False, embedding_type = 'fasttext', embedding_shape = 'sequence', embedding_overwrite = False, test_source = 'ng', model_type = 'lstm', model_arch_num = 1, model_layer_sizes = [32, 1], model_maxlen = 500, model_batch_size = 128, model_learning_rate = 0.001, model_epochs = 100, model_num = 11, verbose = False)
+2019-11-04 18:46:43,688 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'reliability', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 18:46:43,697 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 18:46:43,698 - util.py - INFO - Cached version found.
+2019-11-04 18:46:43,699 - datasets.py - INFO - Creating binary selection selection_reliability_mbfc_13...
+2019-11-04 18:46:43,699 - util.py - INFO - Cached version found.
+2019-11-04 18:46:43,699 - datasets.py - INFO - Loading ../data/cache/selection_reliability_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, reliable]
+Index: []
+2019-11-04 18:46:43,840 - util.py - INFO - CALL::datasets.get_embedding_set(df =              date  ... reliable
+0      2018-10-19  ...        1
+1      2018-11-02  ...        1
+2      2018-07-26  ...        1
+3      2018-09-06  ...        1
+4      2018-07-29  ...        1
+...           ...  ...      ...
+29995  2018-11-16  ...        0
+29996  2018-08-30  ...        0
+29997  2018-10-22  ...        0
+29998  2018-09-24  ...        0
+29999  2018-08-07  ...        0
+
+[30000 rows x 5 columns], embedding_type = 'fasttext', output_name = 'selection_reliability_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-11-04 18:46:43,840 - datasets.py - INFO - Creating fasttext embedding selection_reliability_mbfc_13...
+2019-11-04 18:46:43,840 - util.py - INFO - Cached version found.
+2019-11-04 18:47:13,420 - util.py - INFO - CALL::datasets.get_test_embedding_set(problem = 'reliability', source = 'mbfc', source_test = 'ng', count = 15000, reject_minimum = 500, random_seed = 13, embedding_type = 'fasttext', shaping = 'sequence')
+2019-11-04 18:47:13,420 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 18:47:13,421 - util.py - INFO - Cached version found.
+2019-11-04 18:47:13,422 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'reliability', source = 'ng', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 18:47:13,432 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 18:47:13,432 - util.py - INFO - Cached version found.
+2019-11-04 18:47:13,433 - datasets.py - INFO - Creating binary selection selection_reliability_ng_13...
+2019-11-04 18:47:13,433 - util.py - INFO - Cached version found.
+2019-11-04 18:47:13,433 - datasets.py - INFO - Loading ../data/cache/selection_reliability_ng_13...
+Empty DataFrame
+Columns: [date, source, name, content, reliable]
+Index: []
+2019-11-04 18:47:13,562 - util.py - INFO - CALL::datasets.get_embedding_set(df =              date  ... reliable
+0      2018-10-19  ...        1
+1      2018-11-02  ...        1
+2      2018-07-26  ...        1
+3      2018-09-06  ...        1
+4      2018-07-29  ...        1
+...           ...  ...      ...
+29995  2018-10-15  ...        0
+29996  2018-03-16  ...        0
+29997  2018-07-30  ...        0
+29998  2018-06-07  ...        0
+29999  2018-03-25  ...        0
+
+[30000 rows x 5 columns], embedding_type = 'fasttext', output_name = 'selection_reliability_ng_13', shaping = 'sequence', overwrite = False)
+2019-11-04 18:47:13,562 - datasets.py - INFO - Creating fasttext embedding selection_reliability_ng_13...
+2019-11-04 18:47:13,562 - util.py - INFO - Cached version found.
+2019-11-04 18:48:02,671 - util.py - INFO - CALL::lstm.train_test(X = array([[[ 1.10646293e-01,  2.46692494e-01, -1.86581999e-01, ...,
+          1.01664305e-01,  3.73793274e-01, -6.64931238e-02],
+        [ 7.68563300e-02,  9.02585834e-02, -1.40170425e-01, ...,
+          3.77160758e-01,  8.33522156e-02, -1.03425264e-01],
+        [-8.81831944e-02,  1.51294917e-01, -1.39346093e-01, ...,
+          2.34741434e-01,  1.89881891e-01,  1.23064756e-01],
+        ...,
+        [-1.99643850e-01,  8.51161256e-02, -5.51894903e-02, ...,
+          3.71205777e-01,  3.82915884e-02,  1.34257883e-01],
+        [-2.16652617e-01, -7.84775198e-01,  7.56580532e-02, ...,
+         -1.48799285e-01,  3.90947521e-01, -2.26432938e-04],
+        [-6.31735250e-02,  2.92868763e-02, -2.13668093e-01, ...,
+          6.45613194e-01,  5.40610515e-02, -8.48921612e-02]],
+
+       [[-1.17682301e-01, -3.56011689e-01, -8.70583579e-02, ...,
+          5.68585098e-01,  1.54597372e-01, -1.08164184e-01],
+        [-5.42128570e-02, -2.53757536e-01, -2.79841095e-01, ...,
+          5.44097781e-01,  1.32982761e-01,  1.64452255e-01],
+        [ 2.57610112e-01,  4.98831831e-02,  2.52289057e-01, ...,
+          1.08197190e-01,  1.37962969e-02, -3.64561439e-01],
+        ...,
+        [ 8.46571550e-02, -2.25835592e-01,  9.64514166e-02, ...,
+          4.67291772e-02, -9.46208015e-02,  2.07790107e-01],
+        [-6.53335005e-02, -9.30305868e-02, -1.75706912e-02, ...,
+          1.66420817e-01, -1.30789831e-01,  3.53971347e-02],
+        [ 5.25628664e-02, -2.89900284e-02, -9.04368162e-02, ...,
+          1.59009710e-01, -5.67170493e-02,  1.46430545e-02]],
+
+       [[-1.91040244e-02, -1.16558693e-01,  6.42863587e-02, ...,
+          1.06767341e-01,  1.40036777e-01,  1.79268271e-01],
+        [-6.84454516e-02,  9.90869552e-02, -2.43080512e-01, ...,
+         -8.78797546e-02,  5.69664873e-02, -1.38231674e-02],
+        [-9.76965018e-03,  2.37883255e-02, -5.11916094e-02, ...,
+          5.75829819e-02,  1.14044942e-01, -1.86378196e-01],
+        ...,
+        [-6.53335005e-02, -9.30305868e-02, -1.75706912e-02, ...,
+          1.66420817e-01, -1.30789831e-01,  3.53971347e-02],
+        [-1.85014471e-01, -2.06560250e-02,  1.34678837e-02, ...,
+         -2.29123846e-01,  8.39859247e-04,  1.56484202e-01],
+        [ 2.59615839e-01,  1.75345838e-01, -1.25415593e-01, ...,
+          1.51663959e-01,  1.71437263e-01,  2.26934105e-01]],
+
+       ...,
+
+       [[-2.29947940e-01, -3.36110353e-01, -3.42730612e-01, ...,
+          6.78064466e-01, -2.38375261e-01,  1.06540777e-01],
+        [ 4.88038957e-02, -2.85277903e-01,  1.85573585e-02, ...,
+          1.39099985e-01, -1.37137026e-01, -3.97049040e-02],
+        [-1.59753054e-01, -1.19465984e-01,  1.20598011e-01, ...,
+          1.31681323e-01,  1.98780760e-01, -2.95312498e-02],
+        ...,
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00]],
+
+       [[-2.13409066e-01,  1.53531402e-01,  5.28795943e-02, ...,
+         -2.59371623e-02, -7.25070834e-02,  1.49890214e-01],
+        [ 1.15588129e-01,  3.01924556e-01, -1.14647746e-01, ...,
+          1.10476553e-01,  1.30744815e-01,  4.11643535e-02],
+        [ 1.10909179e-01, -3.20395529e-01, -2.96447486e-01, ...,
+          2.60324359e-01,  8.51185545e-02, -4.47163768e-02],
+        ...,
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00]],
+
+       [[ 6.82471097e-02,  5.72879892e-03, -2.74024643e-02, ...,
+          3.80787790e-01,  2.36114845e-01,  2.28827000e-02],
+        [ 1.31932333e-01,  2.70059884e-01, -1.56631514e-01, ...,
+          2.51724005e-01,  3.26280117e-01, -2.31422141e-01],
+        [ 4.37265188e-01, -6.99344873e-02, -1.58626765e-01, ...,
+          5.01633883e-02,  2.08815813e-01,  3.23267460e-01],
+        ...,
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00]]],
+      dtype=float32), y = 0        1
+1        1
+2        1
+3        1
+4        1
+        ..
+29995    0
+29996    0
+29997    0
+29998    0
+29999    0
+Name: reliable, Length: 30000, dtype: int64, arch_num = 1, layer_sizes = [32, 1], maxlen = 500, batch_size = 128, learning_rate = 0.001, epochs = 100, X_test = array([[[ 0.11558813,  0.30192456, -0.11464775, ...,  0.11047655,
+          0.13074481,  0.04116435],
+        [-0.19636568, -0.1720469 , -0.06290641, ...,  0.12052009,
+         -0.17928746, -0.33673677],
+        [ 0.08508689, -0.02380526, -0.34197396, ...,  0.04614022,
+          0.11688238, -0.21869057],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[-0.04652033, -0.2719743 , -0.51042414, ...,  0.37623858,
+         -0.11690081, -0.06886414],
+        [-0.00283159, -0.11638546,  0.03482633, ...,  0.2536098 ,
+          0.00567366,  0.18032125],
+        [ 0.11558813,  0.30192456, -0.11464775, ...,  0.11047655,
+          0.13074481,  0.04116435],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[ 0.0488039 , -0.2852779 ,  0.01855736, ...,  0.13909999,
+         -0.13713703, -0.0397049 ],
+        [-0.17334396, -0.24688481, -0.18030243, ...,  0.13713288,
+         -0.02506117, -0.04313388],
+        [-0.27571663, -0.47381637, -0.29332218, ...,  0.4896576 ,
+         -0.050811  ,  0.10647862],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       ...,
+
+       [[-0.19552287,  0.30178085, -0.17112266, ..., -0.19273886,
+          0.32051444,  0.03086928],
+        [-0.0653335 , -0.09303059, -0.01757069, ...,  0.16642082,
+         -0.13078983,  0.03539713],
+        [-0.04312706,  0.00082941, -0.22917214, ...,  0.08677281,
+          0.06569988, -0.19767803],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[ 0.0488039 , -0.2852779 ,  0.01855736, ...,  0.13909999,
+         -0.13713703, -0.0397049 ],
+        [ 0.11064629,  0.2466925 , -0.186582  , ...,  0.1016643 ,
+          0.37379327, -0.06649312],
+        [-0.21714383,  0.08094142,  0.11995021, ..., -0.13936973,
+          0.30060956,  0.06514852],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[-0.02735367, -0.0841364 ,  0.10840055, ...,  0.17473218,
+          0.06353445,  0.36011428],
+        [-0.40672803, -0.38599968, -0.39115945, ...,  0.06872786,
+          0.02727451,  0.6918858 ],
+        [-0.03153342,  0.0462785 , -0.12534021, ...,  0.11163039,
+         -0.05823138,  0.01197734],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]]], dtype=float32), y_test = 0       0
+1       0
+2       1
+3       0
+4       0
+       ..
+1711    1
+1712    1
+1713    0
+1714    1
+1715    0
+Name: reliable, Length: 1716, dtype: int64, name = 'selection_reliability_mbfc_13_lstm_1_11_500_128_0.001')
+Using TensorFlow backend.
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2019-11-04 18:48:02,671 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+2019-11-04 18:48:02,691 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+2019-11-04 18:48:02,700 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:133: The name tf.placeholder_with_default is deprecated. Please use tf.compat.v1.placeholder_with_default instead.
+
+2019-11-04 18:48:02,765 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:133: The name tf.placeholder_with_default is deprecated. Please use tf.compat.v1.placeholder_with_default instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+2019-11-04 18:48:02,771 - deprecation.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:2974: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+2019-11-04 18:48:03,100 - deprecation.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:2974: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2019-11-04 18:48:03,154 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3376: The name tf.log is deprecated. Please use tf.math.log instead.
+
+2019-11-04 18:48:03,158 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3376: The name tf.log is deprecated. Please use tf.math.log instead.
+
+2019-11-04 18:48:17.127935: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2019-11-04 18:48:17.135288: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2394370000 Hz
+2019-11-04 18:48:17.135463: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5558332a0680 executing computations on platform Host. Devices:
+2019-11-04 18:48:17.135478: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+2019-11-04 18:48:17.137951: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Could not dlopen library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cuda91/toolkit/9.1.85/extras/CUPTI/lib64:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda91/toolkit/9.1.85/targets/x86_64-linux/lib:/cm/local/apps/gcc/6.3.0/lib:/cm/local/apps/gcc/6.3.0/lib64:/cm/shared/apps/openmpi/gcc/64/1.10.3/lib64:/cm/shared/apps/slurm/17.02.10/lib64/slurm:/cm/shared/apps/slurm/17.02.10/lib64
+2019-11-04 18:48:17.137973: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: UNKNOWN ERROR (303)
+2019-11-04 18:48:17.137994: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (node037): /proc/driver/nvidia/version does not exist
+2019-11-04 18:48:17.315470: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+masking_1 (Masking)          (None, 500, 300)          0         
+_________________________________________________________________
+lstm_1 (LSTM)                (None, 32)                42624     
+_________________________________________________________________
+dense_1 (Dense)              (None, 1)                 33        
+=================================================================
+Total params: 42,657
+Trainable params: 42,657
+Non-trainable params: 0
+_________________________________________________________________
+Train on 24000 samples, validate on 6000 samples
+Epoch 1/100
+ - 358s - loss: 0.6436 - binary_accuracy: 0.5988 - val_loss: 0.6147 - val_binary_accuracy: 0.6275
+Epoch 2/100
+ - 346s - loss: 0.6079 - binary_accuracy: 0.6375 - val_loss: 0.6037 - val_binary_accuracy: 0.6367
+Epoch 3/100
+ - 348s - loss: 0.5918 - binary_accuracy: 0.6570 - val_loss: 0.5952 - val_binary_accuracy: 0.6487
+Epoch 4/100
+ - 360s - loss: 0.5753 - binary_accuracy: 0.6752 - val_loss: 0.5727 - val_binary_accuracy: 0.6727
+Epoch 5/100
+ - 362s - loss: 0.5617 - binary_accuracy: 0.6918 - val_loss: 0.5559 - val_binary_accuracy: 0.6990
+Epoch 6/100
+ - 360s - loss: 0.5434 - binary_accuracy: 0.7085 - val_loss: 0.5396 - val_binary_accuracy: 0.7118
+Epoch 7/100
+ - 347s - loss: 0.5235 - binary_accuracy: 0.7274 - val_loss: 0.5282 - val_binary_accuracy: 0.7223
+Epoch 8/100
+ - 346s - loss: 0.5082 - binary_accuracy: 0.7386 - val_loss: 0.5205 - val_binary_accuracy: 0.7298
+Epoch 9/100
+ - 357s - loss: 0.4959 - binary_accuracy: 0.7459 - val_loss: 0.5026 - val_binary_accuracy: 0.7438
+Epoch 10/100
+ - 358s - loss: 0.4863 - binary_accuracy: 0.7543 - val_loss: 0.4983 - val_binary_accuracy: 0.7470
+Epoch 11/100
+ - 358s - loss: 0.4744 - binary_accuracy: 0.7625 - val_loss: 0.4972 - val_binary_accuracy: 0.7440
+Epoch 12/100
+ - 356s - loss: 0.4659 - binary_accuracy: 0.7693 - val_loss: 0.4935 - val_binary_accuracy: 0.7533
+Epoch 13/100
+ - 317s - loss: 0.4539 - binary_accuracy: 0.7770 - val_loss: 0.4921 - val_binary_accuracy: 0.7558
+Epoch 14/100
+ - 333s - loss: 0.4489 - binary_accuracy: 0.7833 - val_loss: 0.4784 - val_binary_accuracy: 0.7648
+Epoch 15/100
+ - 294s - loss: 0.4393 - binary_accuracy: 0.7885 - val_loss: 0.4780 - val_binary_accuracy: 0.7637
+Epoch 16/100
+ - 270s - loss: 0.4296 - binary_accuracy: 0.7949 - val_loss: 0.4753 - val_binary_accuracy: 0.7643
+Epoch 17/100
+ - 269s - loss: 0.4200 - binary_accuracy: 0.7983 - val_loss: 0.4927 - val_binary_accuracy: 0.7542
+Epoch 18/100
+ - 270s - loss: 0.4172 - binary_accuracy: 0.8012 - val_loss: 0.4774 - val_binary_accuracy: 0.7665
+Epoch 19/100
+ - 279s - loss: 0.4098 - binary_accuracy: 0.8035 - val_loss: 0.4726 - val_binary_accuracy: 0.7693
+Epoch 20/100
+ - 280s - loss: 0.4017 - binary_accuracy: 0.8107 - val_loss: 0.4707 - val_binary_accuracy: 0.7707
+Epoch 21/100
+ - 280s - loss: 0.3988 - binary_accuracy: 0.8121 - val_loss: 0.4782 - val_binary_accuracy: 0.7643
+Epoch 22/100
+ - 278s - loss: 0.3953 - binary_accuracy: 0.8153 - val_loss: 0.4666 - val_binary_accuracy: 0.7785
+Epoch 23/100
+ - 282s - loss: 0.3868 - binary_accuracy: 0.8185 - val_loss: 0.4717 - val_binary_accuracy: 0.7745
+Epoch 24/100
+ - 283s - loss: 0.3789 - binary_accuracy: 0.8223 - val_loss: 0.4839 - val_binary_accuracy: 0.7667
+Epoch 25/100
+ - 281s - loss: 0.3729 - binary_accuracy: 0.8270 - val_loss: 0.4744 - val_binary_accuracy: 0.7675
+
+ 128/1716 [=>............................] - ETA: 6s
+ 256/1716 [===>..........................] - ETA: 6s
+ 384/1716 [=====>........................] - ETA: 5s
+ 512/1716 [=======>......................] - ETA: 5s
+ 640/1716 [==========>...................] - ETA: 4s
+ 768/1716 [============>.................] - ETA: 4s
+ 896/1716 [==============>...............] - ETA: 3s
+1024/1716 [================>.............] - ETA: 2s
+1152/1716 [===================>..........] - ETA: 2s
+1280/1716 [=====================>........] - ETA: 1s
+1408/1716 [=======================>......] - ETA: 1s
+1536/1716 [=========================>....] - ETA: 0s
+1664/1716 [============================>.] - ETA: 0s
+1716/1716 [==============================] - 7s 4ms/step
+2019-11-04 21:01:14,374 - lstm.py - INFO - Test loss / test accuracy: 0.803307 / 0.557110

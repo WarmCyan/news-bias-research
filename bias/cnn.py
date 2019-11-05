@@ -51,12 +51,13 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
     
     #model.load_weights("../models/" + name + ".best.weights")
     
-    loss, acc = test(X_test, y_test, batch_size, model)
+    loss, acc, predictions = test(X_test, y_test, batch_size, model)
 
     return model, history.history, loss, acc
 
 
 def test(X, y, batch_size, model):
+    predictions = model.predict(X, batch_size)
     loss, acc = model.evaluate(X, y, batch_size, show_accuracy=True)
     logging.info('Test loss / test accuracy: %f / %f', loss, acc)
-    return loss, acc
+    return loss, acc, predictions

@@ -1,0 +1,341 @@
+2019-11-04 17:31:06,037 - experiment.py - INFO - =====================================================
+2019-11-04 17:31:06,037 - experiment.py - INFO - Experiment ../experiments/lstm_reliability_0.json 0 started...
+2019-11-04 17:31:06,037 - experiment.py - INFO - =====================================================
+2019-11-04 17:31:06,038 - util.py - INFO - CALL::__main__.experiment_model(selection_problem = 'biased', selection_source = 'mbfc', selection_count = 15000, selection_random_seed = 13, selection_reject_minimum = 500, selection_overwrite = False, embedding_type = 'fasttext', embedding_shape = 'sequence', embedding_overwrite = False, test_source = 'as', model_type = 'lstm', model_arch_num = 1, model_layer_sizes = [32, 1], model_maxlen = 500, model_batch_size = 128, model_learning_rate = 0.001, model_epochs = 100, model_num = 18, verbose = False)
+2019-11-04 17:31:06,038 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'mbfc', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 17:31:06,056 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 17:31:06,056 - util.py - INFO - Cached version found.
+2019-11-04 17:31:06,058 - datasets.py - INFO - Creating binary selection selection_biased_mbfc_13...
+2019-11-04 17:31:06,058 - util.py - INFO - Cached version found.
+2019-11-04 17:31:06,058 - datasets.py - INFO - Loading ../data/cache/selection_biased_mbfc_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-11-04 17:31:06,152 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+3763  2018-09-20  ...      0
+3764  2018-10-18  ...      0
+3765  2018-03-19  ...      0
+3766  2018-02-22  ...      0
+3767  2018-02-27  ...      0
+
+[3768 rows x 5 columns], embedding_type = 'fasttext', output_name = 'selection_biased_mbfc_13', shaping = 'sequence', overwrite = False)
+2019-11-04 17:31:06,152 - datasets.py - INFO - Creating fasttext embedding selection_biased_mbfc_13...
+2019-11-04 17:31:06,152 - word2vec_creator.py - INFO - Loading fasttext model...
+2019-11-04 17:31:07,309 - _fasttext_bin.py - INFO - loading 2519370 words for fastText model from ../data/raw/models/wiki.en.bin
+2019-11-04 17:31:24,681 - word2vec.py - INFO - resetting layer weights
+2019-11-04 17:31:34,131 - word2vec.py - INFO - Updating model with new vocabulary
+2019-11-04 17:31:42,024 - word2vec.py - INFO - New added 2519370 unique words (50% of original 5038740) and increased the count of 2519370 pre-existing words (50% of original 5038740)
+2019-11-04 17:31:57,940 - word2vec.py - INFO - deleting the raw counts dictionary of 2519370 items
+2019-11-04 17:31:57,941 - word2vec.py - INFO - sample=0.0001 downsamples 650 most-common words
+2019-11-04 17:31:57,941 - word2vec.py - INFO - downsampling leaves estimated 4076481917 word corpus (103.2% of prior 3949186974)
+2019-11-04 17:34:39,035 - fasttext.py - INFO - loaded (4519370, 300) weight matrix for fastText model from ../data/raw/models/wiki.en.bin
+Using TensorFlow backend.
+Creating vectors:   0%|          | 0/3768 [00:00<?, ?it/s]Creating vectors:   1%|          | 37/3768 [00:00<00:10, 364.11it/s]Creating vectors:   3%|▎         | 96/3768 [00:00<00:08, 410.61it/s]Creating vectors:   4%|▎         | 133/3768 [00:00<00:09, 395.79it/s]Creating vectors:   5%|▍         | 187/3768 [00:00<00:08, 429.92it/s]Creating vectors:   6%|▋         | 239/3768 [00:00<00:07, 453.00it/s]Creating vectors:   7%|▋         | 281/3768 [00:00<00:07, 439.48it/s]Creating vectors:   9%|▊         | 328/3768 [00:00<00:07, 436.91it/s]Creating vectors:  11%|█         | 396/3768 [00:00<00:06, 483.84it/s]Creating vectors:  12%|█▏        | 446/3768 [00:00<00:06, 487.79it/s]Creating vectors:  13%|█▎        | 495/3768 [00:01<00:06, 477.23it/s]Creating vectors:  15%|█▌        | 566/3768 [00:01<00:06, 528.96it/s]Creating vectors:  16%|█▋        | 621/3768 [00:01<00:05, 525.41it/s]Creating vectors:  18%|█▊        | 682/3768 [00:01<00:05, 545.64it/s]Creating vectors:  20%|██        | 757/3768 [00:01<00:05, 593.72it/s]Creating vectors:  22%|██▏       | 835/3768 [00:01<00:04, 637.50it/s]Creating vectors:  24%|██▍       | 902/3768 [00:01<00:04, 616.00it/s]Creating vectors:  26%|██▌       | 967/3768 [00:01<00:04, 623.90it/s]Creating vectors:  27%|██▋       | 1031/3768 [00:01<00:04, 550.02it/s]Creating vectors:  29%|██▉       | 1089/3768 [00:02<00:04, 544.30it/s]Creating vectors:  31%|███       | 1176/3768 [00:02<00:04, 613.03it/s]Creating vectors:  33%|███▎      | 1242/3768 [00:02<00:04, 570.89it/s]Creating vectors:  35%|███▍      | 1304/3768 [00:02<00:04, 580.18it/s]Creating vectors:  36%|███▌      | 1365/3768 [00:02<00:04, 544.28it/s]Creating vectors:  38%|███▊      | 1422/3768 [00:02<00:04, 542.45it/s]Creating vectors:  39%|███▉      | 1478/3768 [00:02<00:06, 375.00it/s]Creating vectors:  41%|████▏     | 1557/3768 [00:02<00:04, 444.47it/s]Creating vectors:  44%|████▎     | 1644/3768 [00:03<00:04, 519.92it/s]Creating vectors:  45%|████▌     | 1709/3768 [00:03<00:03, 523.69it/s]Creating vectors:  47%|████▋     | 1771/3768 [00:03<00:04, 442.75it/s]Creating vectors:  48%|████▊     | 1824/3768 [00:03<00:04, 413.47it/s]Creating vectors:  50%|████▉     | 1872/3768 [00:03<00:04, 416.55it/s]Creating vectors:  51%|█████     | 1919/3768 [00:03<00:05, 345.78it/s]Creating vectors:  52%|█████▏    | 1959/3768 [00:03<00:05, 313.23it/s]Creating vectors:  53%|█████▎    | 1995/3768 [00:04<00:06, 288.51it/s]Creating vectors:  54%|█████▍    | 2028/3768 [00:04<00:06, 281.61it/s]Creating vectors:  55%|█████▍    | 2059/3768 [00:04<00:06, 257.21it/s]Creating vectors:  55%|█████▌    | 2087/3768 [00:04<00:07, 238.00it/s]Creating vectors:  56%|█████▌    | 2113/3768 [00:04<00:07, 227.19it/s]Creating vectors:  57%|█████▋    | 2138/3768 [00:04<00:07, 225.06it/s]Creating vectors:  57%|█████▋    | 2162/3768 [00:04<00:07, 224.10it/s]Creating vectors:  58%|█████▊    | 2186/3768 [00:04<00:07, 221.00it/s]Creating vectors:  59%|█████▊    | 2209/3768 [00:05<00:07, 211.31it/s]Creating vectors:  59%|█████▉    | 2231/3768 [00:05<00:07, 210.23it/s]Creating vectors:  60%|█████▉    | 2253/3768 [00:05<00:07, 209.42it/s]Creating vectors:  60%|██████    | 2278/3768 [00:05<00:06, 218.40it/s]Creating vectors:  61%|██████    | 2302/3768 [00:05<00:06, 222.06it/s]Creating vectors:  62%|██████▏   | 2326/3768 [00:05<00:06, 224.29it/s]Creating vectors:  62%|██████▏   | 2350/3768 [00:05<00:06, 226.33it/s]Creating vectors:  63%|██████▎   | 2374/3768 [00:05<00:06, 228.53it/s]Creating vectors:  64%|██████▎   | 2397/3768 [00:05<00:06, 223.14it/s]Creating vectors:  64%|██████▍   | 2421/3768 [00:06<00:06, 224.39it/s]Creating vectors:  65%|██████▍   | 2447/3768 [00:06<00:05, 231.55it/s]Creating vectors:  66%|██████▌   | 2473/3768 [00:06<00:05, 237.56it/s]Creating vectors:  66%|██████▋   | 2497/3768 [00:06<00:05, 230.02it/s]Creating vectors:  67%|██████▋   | 2526/3768 [00:06<00:05, 244.56it/s]Creating vectors:  68%|██████▊   | 2563/3768 [00:06<00:04, 272.06it/s]Creating vectors:  69%|██████▉   | 2605/3768 [00:06<00:03, 303.66it/s]Creating vectors:  70%|███████   | 2641/3768 [00:06<00:03, 317.97it/s]Creating vectors:  71%|███████   | 2678/3768 [00:06<00:03, 330.19it/s]Creating vectors:  72%|███████▏  | 2714/3768 [00:06<00:03, 336.10it/s]Creating vectors:  73%|███████▎  | 2751/3768 [00:07<00:02, 343.04it/s]Creating vectors:  74%|███████▍  | 2789/3768 [00:07<00:02, 352.91it/s]Creating vectors:  75%|███████▌  | 2827/3768 [00:07<00:02, 356.21it/s]Creating vectors:  76%|███████▌  | 2864/3768 [00:07<00:02, 359.81it/s]Creating vectors:  77%|███████▋  | 2901/3768 [00:07<00:02, 339.53it/s]Creating vectors:  78%|███████▊  | 2938/3768 [00:07<00:02, 346.64it/s]Creating vectors:  79%|███████▉  | 2981/3768 [00:07<00:02, 366.56it/s]Creating vectors:  80%|████████  | 3019/3768 [00:07<00:02, 355.25it/s]Creating vectors:  81%|████████  | 3057/3768 [00:07<00:01, 362.01it/s]Creating vectors:  82%|████████▏ | 3096/3768 [00:08<00:01, 367.23it/s]Creating vectors:  83%|████████▎ | 3137/3768 [00:08<00:01, 378.84it/s]Creating vectors:  85%|████████▌ | 3207/3768 [00:08<00:01, 438.38it/s]Creating vectors:  87%|████████▋ | 3281/3768 [00:08<00:00, 499.07it/s]Creating vectors:  89%|████████▊ | 3344/3768 [00:08<00:00, 530.76it/s]Creating vectors:  91%|█████████ | 3418/3768 [00:08<00:00, 577.13it/s]Creating vectors:  93%|█████████▎| 3493/3768 [00:08<00:00, 618.25it/s]Creating vectors:  95%|█████████▍| 3563/3768 [00:08<00:00, 640.60it/s]Creating vectors:  97%|█████████▋| 3639/3768 [00:08<00:00, 672.05it/s]Creating vectors:  98%|█████████▊| 3709/3768 [00:08<00:00, 653.06it/s]Creating vectors: 100%|██████████| 3768/3768 [00:09<00:00, 417.49it/s]2019-11-04 17:34:51,176 - word2vec_creator.py - INFO - Saved ../data/cache/selection_biased_mbfc_13_fasttext/sequence.pkl.pkl
+2019-11-04 17:35:01,830 - util.py - INFO - CALL::datasets.get_test_embedding_set(problem = 'biased', source = 'mbfc', source_test = 'as', count = 15000, reject_minimum = 500, random_seed = 13, embedding_type = 'fasttext', shaping = 'sequence')
+2019-11-04 17:35:01,831 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 17:35:01,831 - util.py - INFO - Cached version found.
+2019-11-04 17:35:01,832 - util.py - INFO - CALL::datasets.get_selection_set(problem = 'biased', source = 'as', count = 15000, random_seed = 13, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 17:35:01,840 - util.py - INFO - CALL::datasets.create_selection_set_sources(target_count = 15000, reject_minimum = 500, overwrite = False, verbose = False)
+2019-11-04 17:35:01,840 - util.py - INFO - Cached version found.
+2019-11-04 17:35:01,841 - datasets.py - INFO - Creating binary selection selection_biased_as_13...
+2019-11-04 17:35:01,841 - util.py - INFO - Cached version found.
+2019-11-04 17:35:01,841 - datasets.py - INFO - Loading ../data/cache/selection_biased_as_13...
+Empty DataFrame
+Columns: [date, source, name, content, biased]
+Index: []
+2019-11-04 17:35:02,089 - util.py - INFO - CALL::datasets.get_embedding_set(df =             date  ... biased
+0     2018-10-19  ...      1
+1     2018-11-02  ...      1
+2     2018-07-26  ...      1
+3     2018-09-06  ...      1
+4     2018-07-29  ...      1
+...          ...  ...    ...
+7853  2018-09-26  ...      0
+7854  2018-11-08  ...      0
+7855  2018-02-22  ...      0
+7856  2018-08-15  ...      0
+7857  2018-03-18  ...      0
+
+[7858 rows x 5 columns], embedding_type = 'fasttext', output_name = 'selection_biased_as_13', shaping = 'sequence', overwrite = False)
+2019-11-04 17:35:02,089 - datasets.py - INFO - Creating fasttext embedding selection_biased_as_13...
+
+Creating vectors:   0%|          | 0/7858 [00:00<?, ?it/s]Creating vectors:   0%|          | 27/7858 [00:00<00:29, 267.30it/s]Creating vectors:   1%|          | 59/7858 [00:00<00:27, 279.28it/s]Creating vectors:   1%|          | 96/7858 [00:00<00:25, 300.33it/s]Creating vectors:   2%|▏         | 131/7858 [00:00<00:24, 313.59it/s]Creating vectors:   2%|▏         | 170/7858 [00:00<00:23, 333.08it/s]Creating vectors:   3%|▎         | 235/7858 [00:00<00:19, 388.87it/s]Creating vectors:   3%|▎         | 275/7858 [00:00<00:19, 380.62it/s]Creating vectors:   4%|▍         | 314/7858 [00:00<00:22, 332.93it/s]Creating vectors:   5%|▍         | 355/7858 [00:00<00:21, 352.54it/s]Creating vectors:   5%|▌         | 431/7858 [00:01<00:17, 418.86it/s]Creating vectors:   6%|▌         | 487/7858 [00:01<00:16, 447.27it/s]Creating vectors:   7%|▋         | 547/7858 [00:01<00:15, 483.26it/s]Creating vectors:   8%|▊         | 615/7858 [00:01<00:13, 527.50it/s]Creating vectors:   9%|▊         | 672/7858 [00:01<00:14, 497.22it/s]Creating vectors:   9%|▉         | 725/7858 [00:01<00:16, 442.01it/s]Creating vectors:  10%|▉         | 773/7858 [00:01<00:17, 415.11it/s]Creating vectors:  10%|█         | 818/7858 [00:01<00:17, 407.94it/s]Creating vectors:  11%|█         | 861/7858 [00:02<00:16, 414.12it/s]Creating vectors:  12%|█▏        | 904/7858 [00:02<00:18, 373.33it/s]Creating vectors:  12%|█▏        | 944/7858 [00:02<00:20, 341.63it/s]Creating vectors:  13%|█▎        | 998/7858 [00:02<00:17, 383.64it/s]Creating vectors:  13%|█▎        | 1056/7858 [00:02<00:15, 426.71it/s]Creating vectors:  14%|█▍        | 1104/7858 [00:02<00:15, 431.91it/s]Creating vectors:  15%|█▍        | 1176/7858 [00:02<00:13, 489.93it/s]Creating vectors:  16%|█▌        | 1236/7858 [00:02<00:12, 516.55it/s]Creating vectors:  16%|█▋        | 1292/7858 [00:02<00:13, 501.84it/s]Creating vectors:  18%|█▊        | 1387/7858 [00:03<00:11, 583.97it/s]Creating vectors:  18%|█▊        | 1453/7858 [00:03<00:12, 528.03it/s]Creating vectors:  19%|█▉        | 1512/7858 [00:03<00:12, 517.50it/s]Creating vectors:  20%|█▉        | 1568/7858 [00:03<00:12, 520.91it/s]Creating vectors:  21%|██▏       | 1680/7858 [00:03<00:10, 617.66it/s]Creating vectors:  22%|██▏       | 1752/7858 [00:03<00:10, 586.02it/s]Creating vectors:  23%|██▎       | 1818/7858 [00:03<00:10, 555.93it/s]Creating vectors:  24%|██▍       | 1879/7858 [00:03<00:11, 518.11it/s]Creating vectors:  25%|██▍       | 1960/7858 [00:04<00:10, 579.94it/s]Creating vectors:  26%|██▌       | 2057/7858 [00:04<00:08, 658.39it/s]Creating vectors:  27%|██▋       | 2131/7858 [00:04<00:08, 659.00it/s]Creating vectors:  28%|██▊       | 2203/7858 [00:04<00:08, 653.05it/s]Creating vectors:  30%|██▉       | 2342/7858 [00:04<00:07, 775.21it/s]Creating vectors:  31%|███       | 2432/7858 [00:04<00:07, 740.80it/s]Creating vectors:  32%|███▏      | 2527/7858 [00:04<00:06, 792.36it/s]Creating vectors:  33%|███▎      | 2614/7858 [00:04<00:09, 558.13it/s]Creating vectors:  34%|███▍      | 2685/7858 [00:05<00:11, 431.77it/s]Creating vectors:  35%|███▍      | 2743/7858 [00:05<00:12, 420.35it/s]Creating vectors:  36%|███▌      | 2827/7858 [00:05<00:10, 494.45it/s]Creating vectors:  37%|███▋      | 2913/7858 [00:05<00:08, 565.18it/s]Creating vectors:  38%|███▊      | 2982/7858 [00:05<00:09, 495.10it/s]Creating vectors:  39%|███▉      | 3045/7858 [00:05<00:09, 527.97it/s]Creating vectors:  40%|███▉      | 3106/7858 [00:06<00:11, 397.65it/s]Creating vectors:  40%|████      | 3156/7858 [00:06<00:15, 302.45it/s]Creating vectors:  41%|████      | 3197/7858 [00:06<00:14, 322.04it/s]Creating vectors:  42%|████▏     | 3304/7858 [00:06<00:11, 407.41it/s]Creating vectors:  43%|████▎     | 3370/7858 [00:06<00:09, 457.27it/s]Creating vectors:  44%|████▎     | 3432/7858 [00:06<00:09, 448.90it/s]Creating vectors:  44%|████▍     | 3488/7858 [00:06<00:09, 454.74it/s]Creating vectors:  45%|████▌     | 3542/7858 [00:07<00:10, 393.51it/s]Creating vectors:  46%|████▌     | 3589/7858 [00:07<00:12, 342.38it/s]Creating vectors:  46%|████▌     | 3630/7858 [00:07<00:12, 347.39it/s]Creating vectors:  47%|████▋     | 3671/7858 [00:07<00:11, 363.10it/s]Creating vectors:  47%|████▋     | 3711/7858 [00:07<00:12, 329.83it/s]Creating vectors:  48%|████▊     | 3747/7858 [00:07<00:12, 317.57it/s]Creating vectors:  48%|████▊     | 3787/7858 [00:07<00:12, 338.10it/s]Creating vectors:  49%|████▉     | 3841/7858 [00:07<00:10, 379.01it/s]Creating vectors:  49%|████▉     | 3882/7858 [00:08<00:10, 382.09it/s]Creating vectors:  50%|████▉     | 3923/7858 [00:08<00:10, 380.09it/s]Creating vectors:  51%|█████     | 3989/7858 [00:08<00:08, 433.97it/s]Creating vectors:  52%|█████▏    | 4063/7858 [00:08<00:07, 495.13it/s]Creating vectors:  53%|█████▎    | 4129/7858 [00:08<00:07, 532.59it/s]Creating vectors:  53%|█████▎    | 4201/7858 [00:08<00:06, 577.35it/s]Creating vectors:  54%|█████▍    | 4277/7858 [00:08<00:05, 620.43it/s]Creating vectors:  55%|█████▌    | 4349/7858 [00:08<00:05, 642.95it/s]Creating vectors:  56%|█████▋    | 4426/7858 [00:08<00:05, 675.41it/s]Creating vectors:  57%|█████▋    | 4497/7858 [00:08<00:05, 658.06it/s]Creating vectors:  58%|█████▊    | 4571/7858 [00:09<00:04, 679.07it/s]Creating vectors:  59%|█████▉    | 4642/7858 [00:09<00:04, 686.60it/s]Creating vectors:  60%|█████▉    | 4712/7858 [00:09<00:04, 677.51it/s]Creating vectors:  61%|██████    | 4781/7858 [00:09<00:04, 650.21it/s]Creating vectors:  62%|██████▏   | 4848/7858 [00:09<00:04, 653.03it/s]Creating vectors:  63%|██████▎   | 4915/7858 [00:09<00:04, 657.65it/s]Creating vectors:  63%|██████▎   | 4983/7858 [00:09<00:04, 662.13it/s]Creating vectors:  64%|██████▍   | 5050/7858 [00:09<00:04, 657.99it/s]Creating vectors:  65%|██████▌   | 5116/7858 [00:09<00:04, 648.83it/s]Creating vectors:  66%|██████▌   | 5182/7858 [00:10<00:04, 643.42it/s]Creating vectors:  67%|██████▋   | 5252/7858 [00:10<00:03, 657.24it/s]Creating vectors:  68%|██████▊   | 5318/7858 [00:10<00:04, 630.26it/s]Creating vectors:  69%|██████▊   | 5383/7858 [00:10<00:03, 635.19it/s]Creating vectors:  69%|██████▉   | 5450/7858 [00:10<00:03, 644.39it/s]Creating vectors:  70%|███████   | 5519/7858 [00:10<00:03, 655.80it/s]Creating vectors:  71%|███████   | 5585/7858 [00:10<00:03, 642.07it/s]Creating vectors:  72%|███████▏  | 5650/7858 [00:10<00:03, 638.91it/s]Creating vectors:  73%|███████▎  | 5718/7858 [00:10<00:03, 650.59it/s]Creating vectors:  74%|███████▎  | 5788/7858 [00:10<00:03, 659.46it/s]Creating vectors:  75%|███████▍  | 5855/7858 [00:11<00:03, 657.52it/s]Creating vectors:  75%|███████▌  | 5921/7858 [00:11<00:03, 643.81it/s]Creating vectors:  76%|███████▋  | 5995/7858 [00:11<00:02, 669.85it/s]Creating vectors:  77%|███████▋  | 6063/7858 [00:11<00:02, 659.01it/s]Creating vectors:  78%|███████▊  | 6130/7858 [00:11<00:02, 651.46it/s]Creating vectors:  79%|███████▉  | 6196/7858 [00:11<00:02, 648.22it/s]Creating vectors:  80%|███████▉  | 6268/7858 [00:11<00:02, 667.54it/s]Creating vectors:  81%|████████  | 6339/7858 [00:11<00:02, 679.01it/s]Creating vectors:  82%|████████▏ | 6409/7858 [00:11<00:02, 682.27it/s]Creating vectors:  82%|████████▏ | 6482/7858 [00:11<00:01, 692.33it/s]Creating vectors:  83%|████████▎ | 6552/7858 [00:12<00:01, 677.78it/s]Creating vectors:  84%|████████▍ | 6620/7858 [00:12<00:01, 649.68it/s]Creating vectors:  85%|████████▌ | 6688/7858 [00:12<00:01, 657.40it/s]Creating vectors:  86%|████████▌ | 6755/7858 [00:12<00:01, 644.21it/s]Creating vectors:  87%|████████▋ | 6834/7858 [00:12<00:01, 678.71it/s]Creating vectors:  88%|████████▊ | 6903/7858 [00:12<00:01, 666.93it/s]Creating vectors:  89%|████████▊ | 6971/7858 [00:12<00:01, 649.67it/s]Creating vectors:  90%|████████▉ | 7037/7858 [00:12<00:01, 650.44it/s]Creating vectors:  90%|█████████ | 7104/7858 [00:12<00:01, 654.78it/s]Creating vectors:  91%|█████████ | 7170/7858 [00:13<00:01, 638.32it/s]Creating vectors:  92%|█████████▏| 7235/7858 [00:13<00:00, 631.18it/s]Creating vectors:  93%|█████████▎| 7299/7858 [00:13<00:00, 621.31it/s]Creating vectors:  94%|█████████▍| 7369/7858 [00:13<00:00, 640.94it/s]Creating vectors:  95%|█████████▍| 7434/7858 [00:13<00:00, 631.37it/s]Creating vectors:  95%|█████████▌| 7502/7858 [00:13<00:00, 641.63it/s]Creating vectors:  96%|█████████▋| 7572/7858 [00:13<00:00, 657.09it/s]Creating vectors:  97%|█████████▋| 7638/7858 [00:13<00:00, 634.91it/s]Creating vectors:  98%|█████████▊| 7704/7858 [00:13<00:00, 639.57it/s]Creating vectors:  99%|█████████▉| 7769/7858 [00:13<00:00, 632.99it/s]Creating vectors: 100%|█████████▉| 7838/7858 [00:14<00:00, 646.91it/s]Creating vectors: 100%|██████████| 7858/7858 [00:14<00:00, 556.65it/s]2019-11-04 17:35:21,946 - word2vec_creator.py - INFO - Saved ../data/cache/selection_biased_as_13_fasttext/sequence.pkl.pkl
+2019-11-04 17:35:43,546 - util.py - INFO - CALL::lstm.train_test(X = array([[[ 1.10646293e-01,  2.46692494e-01, -1.86581999e-01, ...,
+          1.01664305e-01,  3.73793274e-01, -6.64931238e-02],
+        [ 7.68563300e-02,  9.02585834e-02, -1.40170425e-01, ...,
+          3.77160758e-01,  8.33522156e-02, -1.03425264e-01],
+        [-8.81831944e-02,  1.51294917e-01, -1.39346093e-01, ...,
+          2.34741434e-01,  1.89881891e-01,  1.23064756e-01],
+        ...,
+        [-1.99643850e-01,  8.51161256e-02, -5.51894903e-02, ...,
+          3.71205777e-01,  3.82915884e-02,  1.34257883e-01],
+        [-2.16652617e-01, -7.84775198e-01,  7.56580532e-02, ...,
+         -1.48799285e-01,  3.90947521e-01, -2.26432938e-04],
+        [-6.31735250e-02,  2.92868763e-02, -2.13668093e-01, ...,
+          6.45613194e-01,  5.40610515e-02, -8.48921612e-02]],
+
+       [[-1.17682301e-01, -3.56011689e-01, -8.70583579e-02, ...,
+          5.68585098e-01,  1.54597372e-01, -1.08164184e-01],
+        [-5.42128570e-02, -2.53757536e-01, -2.79841095e-01, ...,
+          5.44097781e-01,  1.32982761e-01,  1.64452255e-01],
+        [ 2.57610112e-01,  4.98831831e-02,  2.52289057e-01, ...,
+          1.08197190e-01,  1.37962969e-02, -3.64561439e-01],
+        ...,
+        [ 8.46571550e-02, -2.25835592e-01,  9.64514166e-02, ...,
+          4.67291772e-02, -9.46208015e-02,  2.07790107e-01],
+        [-6.53335005e-02, -9.30305868e-02, -1.75706912e-02, ...,
+          1.66420817e-01, -1.30789831e-01,  3.53971347e-02],
+        [ 5.25628664e-02, -2.89900284e-02, -9.04368162e-02, ...,
+          1.59009710e-01, -5.67170493e-02,  1.46430545e-02]],
+
+       [[-1.91040244e-02, -1.16558693e-01,  6.42863587e-02, ...,
+          1.06767341e-01,  1.40036777e-01,  1.79268271e-01],
+        [-6.84454516e-02,  9.90869552e-02, -2.43080512e-01, ...,
+         -8.78797546e-02,  5.69664873e-02, -1.38231674e-02],
+        [-9.76965018e-03,  2.37883255e-02, -5.11916094e-02, ...,
+          5.75829819e-02,  1.14044942e-01, -1.86378196e-01],
+        ...,
+        [-6.53335005e-02, -9.30305868e-02, -1.75706912e-02, ...,
+          1.66420817e-01, -1.30789831e-01,  3.53971347e-02],
+        [-1.85014471e-01, -2.06560250e-02,  1.34678837e-02, ...,
+         -2.29123846e-01,  8.39859247e-04,  1.56484202e-01],
+        [ 2.59615839e-01,  1.75345838e-01, -1.25415593e-01, ...,
+          1.51663959e-01,  1.71437263e-01,  2.26934105e-01]],
+
+       ...,
+
+       [[-3.15334201e-02,  4.62784991e-02, -1.25340208e-01, ...,
+          1.11630388e-01, -5.82313798e-02,  1.19773448e-02],
+        [-1.12862878e-01, -6.61475305e-03, -1.18851222e-01, ...,
+          9.23618451e-02, -6.36673495e-02,  5.42930290e-02],
+        [-1.80439889e-01,  2.47154720e-02, -1.45770013e-01, ...,
+         -3.14948224e-02,  8.19901451e-02, -3.32221359e-01],
+        ...,
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00]],
+
+       [[-9.42324996e-02, -3.51448625e-01,  1.75230920e-01, ...,
+          1.65506974e-01, -2.37891108e-01, -4.15149778e-01],
+        [ 3.59272361e-02,  1.45170674e-01,  1.19259089e-01, ...,
+         -1.60822272e-03,  1.70798808e-01, -3.55121158e-02],
+        [-1.30622625e-01, -1.33448839e-01, -1.14764467e-01, ...,
+          2.70682603e-01,  2.03594670e-01, -1.70804724e-01],
+        ...,
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00]],
+
+       [[-9.95260924e-02,  2.60992140e-01, -1.60307288e-01, ...,
+          1.67502761e-01,  1.39695704e-02,  3.10996617e-03],
+        [-2.31248751e-01,  3.24515328e-02, -1.99048057e-01, ...,
+          2.49442965e-01,  1.11924119e-01,  2.58053979e-03],
+        [-5.66385426e-02, -1.62206426e-01, -2.14771777e-01, ...,
+          4.98207480e-01, -9.72644314e-02,  1.41516417e-01],
+        ...,
+        [ 7.69403875e-02,  2.97997594e-02,  1.74053274e-02, ...,
+          6.28221333e-02,  8.40461850e-02, -1.55874491e-01],
+        [-3.20261180e-01, -1.53280959e-01, -1.06014302e-02, ...,
+         -5.30439354e-02, -1.23618394e-01,  2.56397668e-02],
+        [ 1.23671740e-01, -1.39654979e-01,  4.48774993e-02, ...,
+          6.47402406e-02, -1.45810738e-01,  1.61754012e-01]]],
+      dtype=float32), y = 0       1
+1       1
+2       1
+3       1
+4       1
+       ..
+3763    0
+3764    0
+3765    0
+3766    0
+3767    0
+Name: biased, Length: 3768, dtype: int64, arch_num = 1, layer_sizes = [32, 1], maxlen = 500, batch_size = 128, learning_rate = 0.001, epochs = 100, X_test = array([[[-0.46119   , -0.13677718, -0.16344036, ...,  0.09715468,
+          0.19400062, -0.2732723 ],
+        [-0.02994515,  0.08308004, -0.04104295, ...,  0.03636632,
+         -0.04813555,  0.0014706 ],
+        [-0.0653335 , -0.09303059, -0.01757069, ...,  0.16642082,
+         -0.13078983,  0.03539713],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[ 0.13060409, -0.24614802, -0.3611326 , ...,  0.52605814,
+         -0.00321737,  0.12502684],
+        [-0.05817956, -0.17637824,  0.10551889, ...,  0.00369948,
+          0.21078448, -0.06505951],
+        [ 0.11007869,  0.2163079 , -0.25599802, ...,  0.18030141,
+          0.2585368 ,  0.4549764 ],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[ 0.0488039 , -0.2852779 ,  0.01855736, ...,  0.13909999,
+         -0.13713703, -0.0397049 ],
+        [-0.34619233, -0.3778557 , -0.41001242, ...,  0.60007787,
+         -0.03285208,  0.09296966],
+        [-0.24930939, -0.20222393, -0.31353986, ...,  0.4736933 ,
+         -0.00981001,  0.12932748],
+        ...,
+        [ 0.08465715, -0.22583559,  0.09645142, ...,  0.04672918,
+         -0.0946208 ,  0.2077901 ],
+        [-0.19964385,  0.08511613, -0.05518949, ...,  0.37120578,
+          0.03829159,  0.13425788],
+        [-0.42280197,  0.03094379, -0.03929907, ...,  0.12030606,
+          0.09006792,  0.10262479]],
+
+       ...,
+
+       [[ 0.10402443, -0.28820887, -0.1581829 , ...,  0.44013405,
+         -0.0976757 ,  0.22983965],
+        [-0.2582102 , -0.13758096,  0.1524627 , ...,  0.4209889 ,
+         -0.00346286, -0.04982402],
+        [-0.29236412, -0.07481179, -0.01008355, ...,  0.22820817,
+          0.03416799, -0.13905177],
+        ...,
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ],
+        [ 0.        ,  0.        ,  0.        , ...,  0.        ,
+          0.        ,  0.        ]],
+
+       [[-0.06143955,  0.13906698, -0.15250607, ...,  0.24073608,
+          0.125951  ,  0.03490083],
+        [ 0.01689694, -0.11444502, -0.21547213, ...,  0.28839853,
+          0.37177816,  0.06729508],
+        [ 0.00969127, -0.11593483, -0.09765814, ...,  0.26289877,
+          0.10505643,  0.21348692],
+        ...,
+        [-0.29615012, -0.13728623, -0.03058594, ..., -0.19955097,
+          0.16283746, -0.36261958],
+        [ 0.10402443, -0.28820887, -0.1581829 , ...,  0.44013405,
+         -0.0976757 ,  0.22983965],
+        [-0.3019585 , -0.29799792, -0.18311043, ...,  0.16148522,
+          0.02603397, -0.18891846]],
+
+       [[-0.3366008 ,  0.13889247, -0.06833051, ...,  0.14517018,
+          0.02905361,  0.07498858],
+        [ 0.18449165,  0.02410945, -0.17683437, ..., -0.316586  ,
+          0.19531205, -0.14401561],
+        [ 0.03081659,  0.15636598, -0.0983921 , ...,  0.08729087,
+          0.18826145, -0.11721837],
+        ...,
+        [-0.02117017, -0.19596815, -0.17565797, ..., -0.05063533,
+          0.20936574,  0.14376841],
+        [-0.02117017, -0.19596815, -0.17565797, ..., -0.05063533,
+          0.20936574,  0.14376841],
+        [ 0.23167726,  0.04862605, -0.2783578 , ...,  0.41013885,
+          0.05776004,  0.2907687 ]]], dtype=float32), y_test = 1194    1
+1371    1
+557     1
+2887    1
+1176    1
+       ..
+583     1
+2156    1
+246     1
+864     1
+1198    1
+Name: biased, Length: 686, dtype: int64, name = 'selection_biased_mbfc_13_lstm_1_18_500_128_0.001')
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+2019-11-04 17:35:43,546 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+2019-11-04 17:35:43,563 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+2019-11-04 17:35:43,570 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:133: The name tf.placeholder_with_default is deprecated. Please use tf.compat.v1.placeholder_with_default instead.
+
+2019-11-04 17:35:43,624 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:133: The name tf.placeholder_with_default is deprecated. Please use tf.compat.v1.placeholder_with_default instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+2019-11-04 17:35:43,629 - deprecation.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:2974: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+2019-11-04 17:35:43,853 - deprecation.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:2974: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+2019-11-04 17:35:43,902 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+
+WARNING:tensorflow:From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3376: The name tf.log is deprecated. Please use tf.math.log instead.
+
+2019-11-04 17:35:43,906 - deprecation_wrapper.py - WARNING - From /home/tntech.edu/namartinda42/.conda/envs/tensorflow-gpu/lib/python3.7/site-packages/keras/backend/tensorflow_backend.py:3376: The name tf.log is deprecated. Please use tf.math.log instead.
+
+2019-11-04 17:35:46.090186: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2019-11-04 17:35:46.096467: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2394455000 Hz
+2019-11-04 17:35:46.096568: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5555fb0416a0 executing computations on platform Host. Devices:
+2019-11-04 17:35:46.096581: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): <undefined>, <undefined>
+2019-11-04 17:35:46.099937: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Could not dlopen library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cuda91/toolkit/9.1.85/extras/CUPTI/lib64:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda91/toolkit/9.1.85/targets/x86_64-linux/lib:/cm/local/apps/gcc/6.3.0/lib:/cm/local/apps/gcc/6.3.0/lib64:/cm/shared/apps/openmpi/gcc/64/1.10.3/lib64:/cm/shared/apps/slurm/17.02.10/lib64/slurm:/cm/shared/apps/slurm/17.02.10/lib64
+2019-11-04 17:35:46.099964: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: UNKNOWN ERROR (303)
+2019-11-04 17:35:46.099985: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (node028): /proc/driver/nvidia/version does not exist
+2019-11-04 17:35:46.266918: W tensorflow/compiler/jit/mark_for_compilation_pass.cc:1412] (One-time warning): Not using XLA:CPU for cluster because envvar TF_XLA_FLAGS=--tf_xla_cpu_global_jit was not set.  If you want XLA:CPU, either set that envvar, or use experimental_jit_scope to enable XLA:CPU.  To confirm that XLA is active, pass --vmodule=xla_compilation_cache=1 (as a proper command-line flag, not via TF_XLA_FLAGS) or set the envvar XLA_FLAGS=--xla_hlo_profile.
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+masking_1 (Masking)          (None, 500, 300)          0         
+_________________________________________________________________
+lstm_1 (LSTM)                (None, 32)                42624     
+_________________________________________________________________
+dense_1 (Dense)              (None, 1)                 33        
+=================================================================
+Total params: 42,657
+Trainable params: 42,657
+Non-trainable params: 0
+_________________________________________________________________
+Train on 3014 samples, validate on 754 samples
+Epoch 1/100
+ - 47s - loss: 0.6806 - binary_accuracy: 0.5362 - val_loss: 0.6711 - val_binary_accuracy: 0.5080
+Epoch 2/100
+ - 47s - loss: 0.6490 - binary_accuracy: 0.6078 - val_loss: 0.6417 - val_binary_accuracy: 0.6021
+Epoch 3/100
+ - 47s - loss: 0.6193 - binary_accuracy: 0.6453 - val_loss: 0.6238 - val_binary_accuracy: 0.6127
+Epoch 4/100
+ - 46s - loss: 0.5923 - binary_accuracy: 0.6649 - val_loss: 0.5717 - val_binary_accuracy: 0.7069
+Epoch 5/100
+ - 45s - loss: 0.5800 - binary_accuracy: 0.6825 - val_loss: 0.6015 - val_binary_accuracy: 0.6698
+Epoch 6/100
+ - 45s - loss: 0.5767 - binary_accuracy: 0.6888 - val_loss: 0.5833 - val_binary_accuracy: 0.6830
+Epoch 7/100
+ - 45s - loss: 0.5710 - binary_accuracy: 0.6948 - val_loss: 0.5772 - val_binary_accuracy: 0.6936
+
+128/686 [====>.........................] - ETA: 2s
+256/686 [==========>...................] - ETA: 2s
+384/686 [===============>..............] - ETA: 1s
+512/686 [=====================>........] - ETA: 0s
+640/686 [==========================>...] - ETA: 0s
+686/686 [==============================] - 4s 5ms/step
+2019-11-04 17:41:12,384 - lstm.py - INFO - Test loss / test accuracy: 0.757555 / 0.472303
