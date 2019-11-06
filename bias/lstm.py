@@ -21,11 +21,11 @@ def create_model(arch_num, layer_sizes, maxlen):
         model.add(Dropout(.2))
         model.add(Dense(layer_sizes[2], activation='sigmoid'))
     elif arch_num == 3:
-        model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2))
+        model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2, return_sequences=True))
         model.add(LSTM(layer_sizes[1], dropout=.2, recurrent_dropout=.2))
         model.add(Dense(layer_sizes[2], activation='sigmoid'))
     elif arch_num == 4:
-        model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2))
+        model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2, return_sequences=True))
         model.add(LSTM(layer_sizes[1], dropout=.2, recurrent_dropout=.2))
         model.add(Dense(layer_sizes[2], activation='tanh'))
         model.add(Dropout(.2))

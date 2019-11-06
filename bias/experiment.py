@@ -6,7 +6,8 @@ import util
 import json
 import keras
 import sys
-import pd
+import pandas as pd
+import numpy as np
 
 import lstm
 import cnn
@@ -100,6 +101,10 @@ def experiment_model(
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
 
+        if model_type == "cnn":
+            X = np.reshape(X, (X.shape[0], model_maxlen*300, 1))
+            X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*300, 1))
+
     #y = keras.utils.to_categorical(y)
     
     name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
@@ -107,7 +112,7 @@ def experiment_model(
     if model_type == "lstm":
         model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "cnn":
-        model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, name)
+        model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
         model, history = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
         pass
