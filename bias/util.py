@@ -10,6 +10,8 @@ import sys
 
 import pandas as pd
 
+TMP_PATH = None
+
 DATA_RAW_PATH = "../data/raw/"
 
 GT_COLS = {
@@ -200,8 +202,11 @@ def init_logging(log_path=None):
 def dump_log(func):
     """Decorator to print function call details - parameters names and effective values."""
     def wrapper(*args, **kwargs):
-        func_args = inspect.signature(func).bind(*args, **kwargs).arguments
-        func_args_str =  ', '.join('{} = {!r}'.format(*item) for item in func_args.items())
-        logging.info(f'CALL::{func.__module__}.{func.__qualname__}({func_args_str})')
-        return func(*args, **kwargs)
+        try:
+            func_args = inspect.signature(func).bind(*args, **kwargs).arguments
+            func_args_str =  ', '.join('{} = {!r}'.format(*item) for item in func_args.items())
+            logging.info(f'CALL::{func.__module__}.{func.__qualname__}({func_args_str})')
+            return func(*args, **kwargs)
+        except:
+            pass
     return wrapper

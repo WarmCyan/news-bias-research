@@ -89,10 +89,13 @@ def experiment_model(
 
     X = embed_df
     X_test = test_embedding_df
+    target_col = ""
     if selection_problem == "reliability":
+        target_col = "reliable"
         y = sel_df.reliable
         y_test = test_selection_df.reliable
     elif selection_problem == "biased" or selection_problem == "extreme_biased":
+        target_col = "biased"
         y = sel_df.biased
         y_test = test_selection_df.biased
 
@@ -119,14 +122,34 @@ def experiment_model(
     elif model_type == "svm":
         pass
 
+    logging.info("%s", str(test_selection_df[target_col].value_counts()))
+    print(test_selection_df[target_col].value_counts())
 
     # turn predictions into dataframe
     #pred = pd.DataFrame({"predicted": predictions})
     #pred.index = test_selection_df.index
     test_selection_df["predicted"] = predictions
+    test_selection_df["pred_class"] = round(test_selection_df.predicted).astype(int)
+    tp = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 1)].shape[0]
+    tn = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 0)].shape[0]
+    fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
+    fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
+
+    print(tp, fp)
+    print(fn, tn)
+
+    logging.info("tp: %i | fp: %i", tp, fp)
+    logging.info("------------------")
+    logging.info("fn: %i | tn: %i", fn, tn)
+
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+
+    logging.info("Precision: %f", precision)
+    logging.info("Recall: %f", recall)
 
     with open("../data/output/" + name + ".json", "w") as outfile:
-        results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params}
+        results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
         json.dump(results, outfile)
     with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
@@ -136,6 +159,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--log", dest="log_path", default=None)
+    parser.add_argument("--temp", dest="temp", default=True)
     parser.add_argument("--experiment", dest="experiment_path", default=None)
     parser.add_argument("--row", dest="experiment_row", type=int, default=None)
     args = parser.parse_args()
@@ -155,6 +179,8 @@ if __name__ == "__main__":
 
         if args.experiment_row is not None:
             params = params[args.experiment_row-1]
+
+        util.TMP_PATH = args.temp
 
         if params["type"] == "data":
             experiment_dataset(

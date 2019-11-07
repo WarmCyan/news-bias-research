@@ -466,7 +466,7 @@ def get_test_embedding_set(problem, source, source_test, count, reject_minimum, 
     target_col = ""
     if problem == "reliability":
         target_col = "reliable"
-    elif problem == "biased":
+    elif problem == "biased" or problem == "extreme_biased":
         target_col = "biased"
     
     test_sel_df = selection_df[selection_df.source.isin(sources)]
@@ -476,13 +476,15 @@ def get_test_embedding_set(problem, source, source_test, count, reject_minimum, 
 
     selection_count = min(test_sel_df[target_col].value_counts())
     for value in test_sel_df[target_col].value_counts().index.tolist():
-        balanced_test_df = test_sel_df.sample(selection_count, random_state=13)
+        balanced_test_df = test_sel_df[test_sel_df[target_col] == value].sample(selection_count, random_state=13)
         
         indices = balanced_test_df.index.tolist()
         test_embedding_df_temp = [embedding_df[i] for i in indices]
         test_embedding_df.extend(test_embedding_df_temp)
         
         actual_test_sel_df = util.stack_dfs(actual_test_sel_df, balanced_test_df)
+
+    print(actual_test_sel_df[target_col].value_counts())
         
     return actual_test_sel_df, test_embedding_df
 

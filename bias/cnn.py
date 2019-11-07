@@ -43,9 +43,10 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
     model = create_model(arch_num, layer_sizes, maxlen)
 
     #optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
-    optimizer = keras.optimizers.Adam()
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
     
-    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=3)]#, callbacks.ModelCheckpoint(filepath='../models/' + name + '.best.weights', verbose=1, save_best_only=True)]
+    # cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=3)]#, callbacks.ModelCheckpoint(filepath='../models/' + name + '.best.weights', verbose=1, save_best_only=True)]
+    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
     
     model.compile(
         optimizer=optimizer, loss="binary_crossentropy", metrics=["binary_accuracy"]
@@ -67,7 +68,7 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
         callbacks=cbks
     )
     
-    #model.load_weights("../models/" + name + ".best.weights")
+    model.load_weights(util.TMP_PATH + name + ".best.weights")
     
     loss, acc, predictions = test(X_test, y_test, batch_size, model)
 

@@ -54,7 +54,7 @@ def create_model(arch_num, layer_sizes, maxlen):
 
 
 def pad_data(data, maxlen=500):
-    padded = keras.preprocessing.sequence.pad_sequences(data, maxlen=500, padding='post', dtype='float32')
+    padded = keras.preprocessing.sequence.pad_sequences(data, maxlen=maxlen, padding='post', dtype='float32')
     return padded
 
 
@@ -64,13 +64,13 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
     model = create_model(arch_num, layer_sizes, maxlen)
 
     # optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
-    optimizer = keras.optimizers.Adam()
+    optimizer = keras.optimizers.Adam(lr=learning_rate, clipnorm=1.0)
 
     # fname = 'weights/keras-lstm.h5'
     # model.load_weights(fname)
     # cbks = [callbacks.ModelCheckpoint(filepath=fname, monitor='val_loss', save_best_only=True),
     #         callbacks.EarlyStopping(monitor='val_loss', patience=3)]
-    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=3)]#, callbacks.ModelCheckpoint(filepath='../models/' + name + '.best.weights', verbose=1, save_best_only=True)]
+    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
 
     if layer_sizes[-1] == 1:
         model.compile(
@@ -99,7 +99,7 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
         callbacks=cbks
     )
 
-    #model.load_weights("../models/" + name + ".best.weights")
+    model.load_weights(util.TMP_PATH + name + ".best.weights")
 
     loss, acc, predictions = test(X_test, y_test, batch_size, model)
 
