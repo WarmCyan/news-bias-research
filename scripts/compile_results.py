@@ -33,6 +33,12 @@ for path in pathlist:
     row = results["params"]
     row["testing_loss"] = results["testing_loss"]
     row["testing_acc"] = results["testing_acc"]
+    row["tn"] = results["tn"]
+    row["tp"] = results["tp"]
+    row["fn"] = results["fn"]
+    row["fp"] = results["fp"]
+    row["precision"] = results["precision"]
+    row["recall"] = results["recall"]
     row["filename"] = path_in_str
 
     results_collection.append(row)
