@@ -7,6 +7,7 @@ import re
 import sqlite3
 import inspect
 import sys
+import json
 
 import pandas as pd
 
@@ -91,6 +92,12 @@ def nela_load_labels():
     labels_df = pd.read_csv(os.path.join(DATA_RAW_PATH, "nela", "labels.csv"))
     labels_df = labels_df.rename(columns={"Unnamed: 0": "Source"})
     return labels_df
+
+
+def nela_load_media_bias_monitor():
+    with open("../data/raw/nela_sources_alt.json", "r") as infile:
+        data = json.load(infile)
+    return data
 
 
 def nela_labels_gtsource(labels_df, gt_source):
