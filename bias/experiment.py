@@ -14,9 +14,23 @@ import cnn
 import nn
 
 
-def experiment_dataset(
+
+def experiment_dataset_bias(
+    selection_problem,
+    selection_test_fold,
+    selection_count,
+    selection_random_seed,
+    selection_overwrite,
+    embedding_type,
+    embedding_shape,
+    embedding_overwrite,
+):
+    pass
+
+def experiment_dataset_reliability(
     selection_problem,
     selection_source,
+    selection_test_source,
     selection_count,
     selection_random_seed,
     selection_reject_minimum,
@@ -48,11 +62,11 @@ def experiment_dataset(
 
     return embedding_df, selection_df, name
 
-
-@util.dump_log
-def experiment_model(
+def experiment_dataset(
     selection_problem,
+    selection_test_fold,
     selection_source,
+    selection_test_source,
     selection_count,
     selection_random_seed,
     selection_reject_minimum,
@@ -60,7 +74,48 @@ def experiment_model(
     embedding_type,
     embedding_shape,
     embedding_overwrite,
-    test_source,
+):
+    if selection_problem == "reliability":
+        data = experiment_dataset_reliability(
+            selection_problem,
+            selection_source,
+            selection_test_source,
+            selection_count,
+            selection_random_seed,
+            selection_reject_minimum,
+            selection_overwrite,
+            embedding_type,
+            embedding_shape,
+            embedding_overwrite
+        )
+    else:
+        data = experiment_dataset_bias(
+            selection_problem,
+            selection_test_fold,
+            selection_count,
+            selection_random_seed,
+            selection_overwrite,
+            embedding_type,
+            embedding_shape,
+            embedding_overwrite,
+        )
+
+    return data
+
+
+@util.dump_log
+def experiment_model(
+    selection_problem,
+    selection_test_fold,
+    selection_source,
+    selection_test_source,
+    selection_count,
+    selection_random_seed,
+    selection_reject_minimum,
+    selection_overwrite,
+    embedding_type,
+    embedding_shape,
+    embedding_overwrite,
     model_type,
     model_arch_num,
     model_layer_sizes,
