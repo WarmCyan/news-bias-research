@@ -16,6 +16,54 @@ import util
 import word2vec_creator
 
 
+def load_fold(n, count_per, binary=True, overwrite=False):
+    fold_sources = util.load_fold_divisions_dataset()
+    fold = fold_sources[n]
+
+    if binary:
+        positive_sources = fold["left"]
+        positive_sources.extend(fold["right"])
+        
+        negative_sources = fold["center"]
+
+        df, meta = create_binary_selection(
+            "binary_fold_" + str(n), 
+            positive_sources,
+            negative_sources,
+            "Biased",
+            count_per=count_per,
+            reject_minimum=300,
+            random_seed=13,
+            overwrite=overwrite
+        )
+    else:
+        df, meta = create_ternary_selection(
+            "ternary_fold_" + str(n),
+            fold["left"],
+            fold["center"],
+            fold["right"],
+            "Biased",
+            reject_minimum=300,
+            force_balance=True,
+            random_seed=13,
+            overwrite=overwrite
+        )
+
+    return df, meta
+
+def load_folds(n, count_per, binary=True, overwrite=False):
+    fold_sources = util.load_fold_divisions_dataset()
+
+    combined = None
+
+    fold_indices = [x for x in range(0, 10) if x != n]
+    for fold_index in fold_indices:
+        df, _ = load_fold(fold_index, count_per, binary, overwrite)   
+        util.stack_dfs(combined, df)
+
+    test = load_fold(n, count_per, binary, overwrite)
+
+    return combined, test
 
 def list_difference(x, y):
     return [item for item in x if item not in y]

@@ -25,7 +25,29 @@ def experiment_dataset_bias(
     embedding_shape,
     embedding_overwrite,
 ):
-    pass
+    #selection_df, name = 
+
+    name = "{0}_{1}".format(problem, random_seed) 
+
+    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, True, selection_overwrite)
+
+    embedding_df = datasets.get_embedding_set(
+        selection_df,
+        embedding_type=embedding_type,
+        output_name=name,
+        shaping=embedding_shape,
+        overwrite=embedding_overwrite,
+    )
+    
+    embedding_test_df = datasets.get_embedding_set(
+        selection_test_df,
+        embedding_type=embedding_type,
+        output_name=name,
+        shaping=embedding_shape,
+        overwrite=embedding_overwrite,
+    )
+
+    return embedding_df, selection_df, name + "fold_minus_" + str(n), selection_test_df, embedding_test_df
 
 def experiment_dataset_reliability(
     selection_problem,
@@ -59,6 +81,8 @@ def experiment_dataset_reliability(
         shaping=embedding_shape,
         overwrite=embedding_overwrite,
     )
+
+    # TODO: have to return the test stuff too
 
     return embedding_df, selection_df, name
 
@@ -127,9 +151,26 @@ def experiment_model(
     verbose=True,
     params=None
 ):
-    embed_df, sel_df, name = experiment_dataset(
+    # embed_df, sel_df, name = experiment_dataset(
+    #     selection_problem,
+    #     selection_source,
+    #     selection_count,
+    #     selection_random_seed,
+    #     selection_reject_minimum,
+    #     selection_overwrite,
+    #     embedding_type,
+    #     embedding_shape,
+    #     embedding_overwrite,
+    #     verbose=verbose
+    # )
+
+    # test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
+
+    embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset(
         selection_problem,
+        selection_test_fold,
         selection_source,
+        selection_test_source,
         selection_count,
         selection_random_seed,
         selection_reject_minimum,
@@ -137,10 +178,7 @@ def experiment_model(
         embedding_type,
         embedding_shape,
         embedding_overwrite,
-        verbose=verbose
     )
-
-    test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
     X = embed_df
     X_test = test_embedding_df
@@ -286,4 +324,6 @@ if __name__ == "__main__":
         # datasets.get_selection_set(problem="extreme_biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
 
 
+        for i in range(0,10):
+            datasets.load_fold(i, 500)
     

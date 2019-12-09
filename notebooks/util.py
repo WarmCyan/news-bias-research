@@ -116,6 +116,12 @@ def load_selection_dataset(name):
     return pd.read_pickle("../data/cache/" + name)
 
 
+def load_fold_divisions_dataset():
+    with open("../data/cache/folds_selection.json", 'r') as infile:
+        folds = json.load(infile)
+    return folds
+
+
 # pass count of -1 for all articles from source
 def nela_load_articles_from_source(source_name, count=-1):
     conn = sqlite3.connect("../data/raw/nela/articles.db")
