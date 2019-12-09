@@ -27,7 +27,7 @@ def experiment_dataset_bias(
 ):
     #selection_df, name = 
 
-    name = "{0}_{1}".format(problem, random_seed) 
+    name = "{0}_{1}_{2}".format(selection_problem, selection_random_seed, selection_count) 
 
     selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, True, selection_overwrite)
 
