@@ -42,12 +42,12 @@ def experiment_dataset_bias(
     embedding_test_df = datasets.get_embedding_set(
         selection_test_df,
         embedding_type=embedding_type,
-        output_name=name,
+        output_name=name + "_minus" + str(selection_test_fold),
         shaping=embedding_shape,
         overwrite=embedding_overwrite,
     )
 
-    return embedding_df, selection_df, name + "fold_minus_" + str(n), selection_test_df, embedding_test_df
+    return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df
 
 def experiment_dataset_reliability(
     selection_problem,
@@ -98,6 +98,7 @@ def experiment_dataset(
     embedding_type,
     embedding_shape,
     embedding_overwrite,
+    verbose
 ):
     if selection_problem == "reliability":
         data = experiment_dataset_reliability(
@@ -278,7 +279,9 @@ if __name__ == "__main__":
         if params["type"] == "data":
             experiment_dataset(
                 params["selection_problem"],
+                params["selection_test_fold"],
                 params["selection_source"],
+                params["selection_test_source"],
                 params["selection_count"],
                 params["selection_random_seed"],
                 params["selection_reject_minimum"],
@@ -291,7 +294,9 @@ if __name__ == "__main__":
         elif params["type"] == "model":
             experiment_model(
                 params["selection_problem"],
+                params["selection_test_fold"],
                 params["selection_source"],
+                params["selection_test_source"],
                 params["selection_count"],
                 params["selection_random_seed"],
                 params["selection_reject_minimum"],
@@ -325,5 +330,5 @@ if __name__ == "__main__":
 
 
         for i in range(0,10):
-            datasets.load_fold(i, 500)
+            datasets.load_fold(i, 1000, True, True)
     
