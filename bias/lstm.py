@@ -3,6 +3,7 @@ from keras import callbacks
 from keras.layers import LSTM, Dense, Masking, Dropout
 from sklearn.model_selection import train_test_split
 import logging
+import traceback
 
 import util
 
@@ -61,47 +62,54 @@ def pad_data(data, maxlen=500):
 # NOTE: assumes X is already padded and that y is already categorical
 @util.dump_log
 def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name):
-    model = create_model(arch_num, layer_sizes, maxlen)
+    try:
+        model = create_model(arch_num, layer_sizes, maxlen)
+        logging.debug("Model created")
 
-    # optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
-    optimizer = keras.optimizers.Adam(lr=learning_rate, clipnorm=1.0)
+        # optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+        optimizer = keras.optimizers.Adam(lr=learning_rate, clipnorm=1.0)
+        logging.debug("Optimizer ready")
 
-    # fname = 'weights/keras-lstm.h5'
-    # model.load_weights(fname)
-    # cbks = [callbacks.ModelCheckpoint(filepath=fname, monitor='val_loss', save_best_only=True),
-    #         callbacks.EarlyStopping(monitor='val_loss', patience=3)]
-    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
+        # fname = 'weights/keras-lstm.h5'
+        # model.load_weights(fname)
+        # cbks = [callbacks.ModelCheckpoint(filepath=fname, monitor='val_loss', save_best_only=True),
+        #         callbacks.EarlyStopping(monitor='val_loss', patience=3)]
+        cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
 
-    if layer_sizes[-1] == 1:
-        model.compile(
-            optimizer=optimizer, loss="binary_crossentropy", metrics=["binary_accuracy"]
+        logging.debug("About to compile")
+        if layer_sizes[-1] == 1:
+            model.compile(
+                optimizer=optimizer, loss="binary_crossentropy", metrics=["binary_accuracy"]
+            )
+        else:
+            model.compile(
+                optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
+            )
+        model.summary()
+
+        logging.debug("About to split")
+        X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
+
+        
+        history = model.fit(
+            X_train,
+            y_train,
+            batch_size=batch_size,
+            verbose=2,
+            epochs=epochs,
+            validation_data=(X_val, y_val),
+            # validation_split=0.2,
+            # use_multiprocessing=True,
+            # workers=4,
+            callbacks=cbks
         )
-    else:
-        model.compile(
-            optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
-        )
-    model.summary()
 
+        model.load_weights(util.TMP_PATH + name + ".best.weights")
 
-    X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
-
-    
-    history = model.fit(
-        X_train,
-        y_train,
-        batch_size=batch_size,
-        verbose=2,
-        epochs=epochs,
-        validation_data=(X_val, y_val),
-        # validation_split=0.2,
-        # use_multiprocessing=True,
-        # workers=4,
-        callbacks=cbks
-    )
-
-    model.load_weights(util.TMP_PATH + name + ".best.weights")
-
-    loss, acc, predictions = test(X_test, y_test, batch_size, model)
+        loss, acc, predictions = test(X_test, y_test, batch_size, model)
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
 
     return model, history.history, loss, acc, predictions
 

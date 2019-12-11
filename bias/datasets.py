@@ -30,7 +30,7 @@ def load_fold(n, count_per, binary=True, overwrite=False):
             "binary_fold_" + str(n), 
             positive_sources,
             negative_sources,
-            "Biased",
+            "biased",
             count_per=count_per,
             reject_minimum=300,
             random_seed=13,
@@ -42,7 +42,7 @@ def load_fold(n, count_per, binary=True, overwrite=False):
             fold["left"],
             fold["center"],
             fold["right"],
-            "Biased",
+            "biased",
             reject_minimum=300,
             force_balance=True,
             random_seed=13,
@@ -51,6 +51,8 @@ def load_fold(n, count_per, binary=True, overwrite=False):
 
     return df, meta
 
+
+@util.dump_log
 def load_folds(n, count_per, binary=True, overwrite=False):
     fold_sources = util.load_fold_divisions_dataset()
 
@@ -59,9 +61,9 @@ def load_folds(n, count_per, binary=True, overwrite=False):
     fold_indices = [x for x in range(0, 10) if x != n]
     for fold_index in fold_indices:
         df, _ = load_fold(fold_index, count_per, binary, overwrite)   
-        util.stack_dfs(combined, df)
+        combined = util.stack_dfs(combined, df)
 
-    test = load_fold(n, count_per, binary, overwrite)
+    test, _ = load_fold(n, count_per, binary, overwrite)
 
     return combined, test
 
@@ -99,6 +101,7 @@ def remove_conflicts(list_sets, source_names):
                     logging.info("%s conflict removed from %s %s", item, source_names[source_index], name)
                     removed.append((item, source_names[source_index], name))
                 except:
+                    logging.error("Failed to remove conflict")
                     pass
             source_index += 1
 
@@ -464,9 +467,11 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     try:
         os.mkdir(path)
     except:
+        logging.error("Failed to make directory %s (embedding set)", path)
         pass
     
     embedding_df = None
+    logging.debug("Preparing to run vectorization")
     if embedding_type == "w2v":
         embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1)
     elif embedding_type == "glove":
@@ -550,6 +555,7 @@ def create_tfidf(df, path, max_features=5000, overwrite=False):
     try:
         os.mkdir(path)
     except:
+        logging.error("Failed to create tfidf directory")
         pass
     print(df.content[df.content.isnull()])
 

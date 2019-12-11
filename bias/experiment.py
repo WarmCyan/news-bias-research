@@ -6,6 +6,7 @@ import util
 import json
 import keras
 import sys
+import traceback
 import pandas as pd
 import numpy as np
 
@@ -14,7 +15,7 @@ import cnn
 import nn
 
 
-
+@util.dump_log
 def experiment_dataset_bias(
     selection_problem,
     selection_test_fold,
@@ -34,7 +35,7 @@ def experiment_dataset_bias(
     embedding_df = datasets.get_embedding_set(
         selection_df,
         embedding_type=embedding_type,
-        output_name=name,
+        output_name=name + "_minusfold" + str(selection_test_fold),
         shaping=embedding_shape,
         overwrite=embedding_overwrite,
     )
@@ -42,7 +43,7 @@ def experiment_dataset_bias(
     embedding_test_df = datasets.get_embedding_set(
         selection_test_df,
         embedding_type=embedding_type,
-        output_name=name + "_minus" + str(selection_test_fold),
+        output_name=name + "_fold" + str(selection_test_fold),
         shaping=embedding_shape,
         overwrite=embedding_overwrite,
     )
@@ -86,6 +87,7 @@ def experiment_dataset_reliability(
 
     return embedding_df, selection_df, name
 
+@util.dump_log
 def experiment_dataset(
     selection_problem,
     selection_test_fold,
@@ -98,8 +100,9 @@ def experiment_dataset(
     embedding_type,
     embedding_shape,
     embedding_overwrite,
-    verbose
+    verbose=True
 ):
+    print(selection_problem)
     if selection_problem == "reliability":
         data = experiment_dataset_reliability(
             selection_problem,
@@ -114,7 +117,8 @@ def experiment_dataset(
             embedding_overwrite
         )
     else:
-        data = experiment_dataset_bias(
+        print("Ohp, guess it's bias")
+        embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset_bias(
             selection_problem,
             selection_test_fold,
             selection_count,
@@ -125,8 +129,7 @@ def experiment_dataset(
             embedding_overwrite,
         )
 
-    return data
-
+    return embed_df, sel_df, name, test_selection_df, test_embedding_df
 
 @util.dump_log
 def experiment_model(
@@ -167,6 +170,7 @@ def experiment_model(
 
     # test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
+    print("About to get dataset")
     embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset(
         selection_problem,
         selection_test_fold,
@@ -180,6 +184,7 @@ def experiment_model(
         embedding_shape,
         embedding_overwrite,
     )
+    print("Got dataset")
 
     X = embed_df
     X_test = test_embedding_df
@@ -189,11 +194,13 @@ def experiment_model(
         y = sel_df.reliable
         y_test = test_selection_df.reliable
     elif selection_problem == "biased" or selection_problem == "extreme_biased":
+        print("About to assigned biased column")
         target_col = "biased"
         y = sel_df.biased
         y_test = test_selection_df.biased
 
     # pad as needed
+    print("Prepare to pad")
     if embedding_shape == "sequence":
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
@@ -207,7 +214,16 @@ def experiment_model(
     name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
-        model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
+        print("About to train")
+        exc_info = sys.exc_info()
+        try:
+            model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
+        except Exception as e:
+            print("ERROR")
+            print(e)
+            traceback.print_exc()
+        traceback.print_exception(*exc_info)
+        print(sys.exc_info())
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
@@ -215,6 +231,7 @@ def experiment_model(
         pass
     elif model_type == "svm":
         pass
+    print("Training done")
 
     logging.info("%s", str(test_selection_df[target_col].value_counts()))
     print(test_selection_df[target_col].value_counts())
@@ -304,7 +321,6 @@ if __name__ == "__main__":
                 params["embedding_type"],
                 params["embedding_shape"],
                 params["embedding_overwrite"],
-                params["test_source"],
                 params["model_type"],
                 params["model_arch_num"],
                 params["model_layer_sizes"],

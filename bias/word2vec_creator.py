@@ -56,9 +56,12 @@ def clear_model():
     model = None
 
 
+@util.dump_log
 def vectorize_collection(df, output, model, shaping, word_limit):
     vector_collection = []
+    print("HELLO?")
 
+    logging.debug("About to iterate df rows")
     for index, row in tqdm(df.iterrows(), "Creating vectors", total=df.shape[0]):
         vectors = vectorize_document(row.content, model, word_limit)
 
@@ -68,7 +71,9 @@ def vectorize_collection(df, output, model, shaping, word_limit):
             averaged = np.mean(vectors, axis=0)  # TODO: verify axis is correct
             vector_collection.append(averaged)
 
+    logging.debug("About to write file")
     with open(output, "wb") as outfile:
+        logging.debug("Writing to file")
         pickle.dump(vector_collection, outfile)
         logging.info("Saved %s", output)
         # np.save(vector_collection, outfile, allow_pickle=False)
