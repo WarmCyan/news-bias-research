@@ -15,6 +15,29 @@ import cnn
 import nn
 
 
+def confusion_analysis(tp, fp, tn, fn, name, source=False):
+    print(tp, fp)
+    print(fn, tn)
+
+    logging.info("tp: %i | fp: %i", tp, fp)
+    logging.info("------------------")
+    logging.info("fn: %i | tn: %i", fn, tn)
+
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+
+    logging.info("Precision: %f", precision)
+    logging.info("Recall: %f", recall)
+
+    with open("../data/output/" + name + ".json", "w") as outfile:
+        if source:
+            results = {"source": source, "history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
+        else:
+            results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
+        json.dump(results, outfile)
+    
+
+
 @util.dump_log
 def experiment_dataset_bias(
     selection_problem,
@@ -246,22 +269,19 @@ def experiment_model(
     fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
     fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
 
-    print(tp, fp)
-    print(fn, tn)
+    confusion_analysis(tp, fp, tn, fn, name, False)
 
-    logging.info("tp: %i | fp: %i", tp, fp)
-    logging.info("------------------")
-    logging.info("fn: %i | tn: %i", fn, tn)
 
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
+    groups = test_selection_df.groupby(test_selection_df.source)
 
-    logging.info("Precision: %f", precision)
-    logging.info("Recall: %f", recall)
+    for name, group in groups;
+        tp = group[(group[target_col] == 1) & (group.pred_class == 1)].shape[0]
+        tn = group[(group[target_col] == 0) & (group.pred_class == 0)].shape[0]
+        fp = group[(group[target_col] == 0) & (group.pred_class == 1)].shape[0]
+        fn = group[(group[target_col] == 1) & (group.pred_class == 0)].shape[0]
 
-    with open("../data/output/" + name + ".json", "w") as outfile:
-        results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
-        json.dump(results, outfile)
+        confusion_analysis(tp, fp, tn, fn, name + "_persource", source=name)
+
     with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
 

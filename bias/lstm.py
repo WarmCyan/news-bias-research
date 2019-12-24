@@ -1,6 +1,6 @@
 import keras
 from keras import callbacks
-from keras.layers import LSTM, Dense, Masking, Dropout
+from keras.layers import LSTM, Dense, Masking, Dropout, Bidirectional
 from sklearn.model_selection import train_test_split
 import logging
 import traceback
@@ -31,6 +31,12 @@ def create_model(arch_num, layer_sizes, maxlen):
         model.add(Dense(layer_sizes[2], activation='tanh'))
         model.add(Dropout(.2))
         model.add(Dense(layer_sizes[3], activation='sigmoid'))
+    elif arch_num == 5:
+        model.add(Bidirectional(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2)))
+        model.add(Dense(layer_sizes[1], activation='sigmoid'))
+        
+
+        
     # elif arch_num == 2:
     #     model.add(LSTM(layer_sizes[0]))
     #     model.add(Dense(layer_sizes[1], activation='sigmoid'))
