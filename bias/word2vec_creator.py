@@ -6,6 +6,9 @@ from gensim.models import fasttext
 import numpy as np
 from tqdm import tqdm
 
+from nltk import word_tokenize
+
+import senticnetify
 import util
 
 model = None
@@ -81,14 +84,23 @@ def vectorize_collection(df, output, model, shaping, word_limit):
     return vector_collection
 
 
-def vectorize_document(doc, model, word_limit=-1):
+# TODO: pass model of None to not use word emebedding
+# NOTE: you can also use sent_tokenize if needed
+def vectorize_document(doc, model, word_limit=-1, sentics=False):
     # clean it
     doc = util.clean_symbols(util.clean_newlines(doc))
 
-    doc_words = doc.split(" ")
+    # doc_words = doc.split(" ")
+    doc_words = word_tokenize(doc)
     if word_limit == -1:
         word_limit = len(doc_words)
-    doc_words = filter(lambda x: x in model.vocab, doc_words)  # TODO: use wordlimit
-    vectors = [model[word] for word in doc_words]
+
+    if model is not None:
+        doc_words = filter(lambda x: x in model.vocab, doc_words)  # TODO: use wordlimit
+    
+    if sentics:
+        vectors = senticnetify.get_article_embedding(doc_words)   
+    else:    
+        vectors = [model[word] for word in doc_words]
 
     return np.array(vectors)
