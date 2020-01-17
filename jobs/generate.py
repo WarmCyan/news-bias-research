@@ -22,7 +22,8 @@ common_lines = [
     "TMP=$(mktemp -d)",
     "cd /home/tntech.edu/namartinda42/research",
     ". env_setup.sh",
-    ". jobs/common.sh",
+    #". jobs/common.sh",
+    ". jobs/common",
     "cd /home/tntech.edu/namartinda42/research/bias"
 ]
 
