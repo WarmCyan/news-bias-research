@@ -711,6 +711,11 @@ def random_balanced_sample(
         counts[name] = local_count
         building_df = util.stack_dfs(building_df, local_df)
 
+
+    # Preliminary filtering - remove any articles under 50 words
+    building_df = 
+        
+
     max_possible_balanced = minimum_count * len(counts.keys())
     if verbose:
         tqdm.write(

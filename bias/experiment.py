@@ -16,6 +16,8 @@ import nn
 
 
 def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=False):
+    if source:
+        logging.info("Confusion analysis for %s", source)
     logging.info("tp: %i | fp: %i", tp, fp)
     logging.info("------------------")
     logging.info("fn: %i | tn: %i", fn, tn)
@@ -42,7 +44,6 @@ def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=
             results = {"source": source, "history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
         else:
             results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
-        print(results)
         json.dump(results, outfile)
     
 

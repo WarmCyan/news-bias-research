@@ -42,16 +42,16 @@ def find_tagged(tagged_words, pattern):
 
 def get_sentiment_vector_instance(sentiment):
     pv = sentiment["polarity_value"]
-    pi = sentiment["polarity_intense"]
-    spl = sentiment["sentics"]["pleasantness"]
-    satt = sentiment["sentics"]["attention"]
-    ssen = sentiment["sentics"]["sensitivity"]
-    sapt = sentiment["sentics"]["aptitude"]
+    pi = float(sentiment["polarity_intense"])
+    spl = float(sentiment["sentics"]["pleasantness"])
+    satt = float(sentiment["sentics"]["attention"])
+    ssen = float(sentiment["sentics"]["sensitivity"])
+    sapt = float(sentiment["sentics"]["aptitude"])
 
     if pv == "negative": 
-        pv = -1
+        pv = -1.0
     else: 
-        pv = 1
+        pv = 1.0
     
     sentic_vector_instance = [pv, pi, spl, satt, ssen, sapt]
     return sentic_vector_instance
