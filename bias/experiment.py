@@ -15,25 +15,34 @@ import cnn
 import nn
 
 
-def confusion_analysis(tp, fp, tn, fn, name, source=False):
-    print(tp, fp)
-    print(fn, tn)
-
+def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=False):
     logging.info("tp: %i | fp: %i", tp, fp)
     logging.info("------------------")
     logging.info("fn: %i | tn: %i", fn, tn)
 
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
+    if (tp + fp) != 0:
+        precision = tp / (tp + fp)
+    else: 
+        precision = 0
+
+    if (tp + fn) != 0:
+        recall = tp / (tp + fn)
+    else:
+        recall = 0
 
     logging.info("Precision: %f", precision)
     logging.info("Recall: %f", recall)
 
-    with open("../data/output/" + name + ".json", "w") as outfile:
+    filename = name + ".json"
+    if source:
+        filename = name + "_" + source + ".json"
+
+    with open("../data/output/" + filename, "w") as outfile:
         if source:
             results = {"source": source, "history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
         else:
             results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
+        print(results)
         json.dump(results, outfile)
     
 
@@ -140,7 +149,6 @@ def experiment_dataset(
             embedding_overwrite
         )
     else:
-        print("Ohp, guess it's bias")
         embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset_bias(
             selection_problem,
             selection_test_fold,
@@ -193,7 +201,6 @@ def experiment_model(
 
     # test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
-    print("About to get dataset")
     embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset(
         selection_problem,
         selection_test_fold,
@@ -207,7 +214,6 @@ def experiment_model(
         embedding_shape,
         embedding_overwrite,
     )
-    print("Got dataset")
 
     X = embed_df
     X_test = test_embedding_df
@@ -217,36 +223,30 @@ def experiment_model(
         y = sel_df.reliable
         y_test = test_selection_df.reliable
     elif selection_problem == "biased" or selection_problem == "extreme_biased":
-        print("About to assigned biased column")
         target_col = "biased"
         y = sel_df.biased
         y_test = test_selection_df.biased
 
     # pad as needed
-    print("Prepare to pad")
+    data_width=0
+    # TODO: how to determine data width for avg?
     if embedding_shape == "sequence":
+        print(X)
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
 
+        # TODO: 300 actually needs to be width (num cols) of dataset
+        data_width = X.shape[-1]
         if model_type == "cnn":
-            X = np.reshape(X, (X.shape[0], model_maxlen*300, 1))
-            X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*300, 1))
+            X = np.reshape(X, (X.shape[0], model_maxlen*data_width, 1))
+            X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*data_width, 1))
 
     #y = keras.utils.to_categorical(y)
     
     name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
-        print("About to train")
-        exc_info = sys.exc_info()
-        try:
-            model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
-        except Exception as e:
-            print("ERROR")
-            print(e)
-            traceback.print_exc()
-        traceback.print_exception(*exc_info)
-        print(sys.exc_info())
+        model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
@@ -269,102 +269,107 @@ def experiment_model(
     fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
     fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
 
-    confusion_analysis(tp, fp, tn, fn, name, False)
+    logging.info("Overall confusion analysis")
+    confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, False)
+    logging.info("Overall analysis complete")
+
 
 
     groups = test_selection_df.groupby(test_selection_df.source)
+    logging.info("There are %i groups", len(groups))
 
-    for name, group in groups;
+
+    for group_name, group in groups:
+        logging.info("Next group %s", name)
         tp = group[(group[target_col] == 1) & (group.pred_class == 1)].shape[0]
         tn = group[(group[target_col] == 0) & (group.pred_class == 0)].shape[0]
         fp = group[(group[target_col] == 0) & (group.pred_class == 1)].shape[0]
         fn = group[(group[target_col] == 1) & (group.pred_class == 0)].shape[0]
 
-        confusion_analysis(tp, fp, tn, fn, name + "_persource", source=name)
+        confusion_analysis(tp, fp, tn, fn, name + "_persource", history, loss, acc, params, source=group_name)
 
     with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
+parser = argparse.ArgumentParser()
+parser.add_argument("--log", dest="log_path", default=None)
+parser.add_argument("--temp", dest="temp", default=True)
+parser.add_argument("--experiment", dest="experiment_path", default=None)
+parser.add_argument("--row", dest="experiment_row", type=int, default=None)
+args = parser.parse_args()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--log", dest="log_path", default=None)
-    parser.add_argument("--temp", dest="temp", default=True)
-    parser.add_argument("--experiment", dest="experiment_path", default=None)
-    parser.add_argument("--row", dest="experiment_row", type=int, default=None)
-    args = parser.parse_args()
-    
-    util.init_logging(args.log_path)
+util.init_logging(args.log_path)
 
-    if args.experiment_path is not None:
-        logging.info("=====================================================")
-        if args.experiment_row is not None:
-            logging.info("Experiment %s %i started...",args.experiment_path, args.experiment_row)
-        else:
-            logging.info("Experiment %s started...",args.experiment_path)
-        logging.info("=====================================================")
-
-        with open(args.experiment_path, 'r') as infile:
-            params = json.load(infile)
-
-        if args.experiment_row is not None:
-            params = params[args.experiment_row-1]
-
-        util.TMP_PATH = args.temp
-
-        if params["type"] == "data":
-            experiment_dataset(
-                params["selection_problem"],
-                params["selection_test_fold"],
-                params["selection_source"],
-                params["selection_test_source"],
-                params["selection_count"],
-                params["selection_random_seed"],
-                params["selection_reject_minimum"],
-                params["selection_overwrite"],
-                params["embedding_type"],
-                params["embedding_shape"],
-                params["embedding_overwrite"],
-                params["verbose"]
-            )
-        elif params["type"] == "model":
-            experiment_model(
-                params["selection_problem"],
-                params["selection_test_fold"],
-                params["selection_source"],
-                params["selection_test_source"],
-                params["selection_count"],
-                params["selection_random_seed"],
-                params["selection_reject_minimum"],
-                params["selection_overwrite"],
-                params["embedding_type"],
-                params["embedding_shape"],
-                params["embedding_overwrite"],
-                params["model_type"],
-                params["model_arch_num"],
-                params["model_layer_sizes"],
-                params["model_maxlen"],
-                params["model_batch_size"],
-                params["model_learning_rate"],
-                params["model_epochs"],
-                params["model_num"],
-                params["verbose"],
-                params
-                )
+if args.experiment_path is not None:
+    logging.info("=====================================================")
+    if args.experiment_row is not None:
+        logging.info("Experiment %s %i started...",args.experiment_path, args.experiment_row)
     else:
-        #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
-        #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)
-        datasets.create_selection_set_sources(15000, 500)
-        # datasets.get_selection_set(problem="reliability", source="os", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="reliability", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="reliability", source="ng", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="extreme_biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
-        # datasets.get_selection_set(problem="extreme_biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+        logging.info("Experiment %s started...",args.experiment_path)
+    logging.info("=====================================================")
+
+    with open(args.experiment_path, 'r') as infile:
+        params = json.load(infile)
+
+    if args.experiment_row is not None:
+        params = params[args.experiment_row-1]
+
+    util.TMP_PATH = args.temp
+
+    if params["type"] == "data":
+        experiment_dataset(
+            params["selection_problem"],
+            params["selection_test_fold"],
+            params["selection_source"],
+            params["selection_test_source"],
+            params["selection_count"],
+            params["selection_random_seed"],
+            params["selection_reject_minimum"],
+            params["selection_overwrite"],
+            params["embedding_type"],
+            params["embedding_shape"],
+            params["embedding_overwrite"],
+            params["verbose"]
+        )
+    elif params["type"] == "model":
+        experiment_model(
+            params["selection_problem"],
+            params["selection_test_fold"],
+            params["selection_source"],
+            params["selection_test_source"],
+            params["selection_count"],
+            params["selection_random_seed"],
+            params["selection_reject_minimum"],
+            params["selection_overwrite"],
+            params["embedding_type"],
+            params["embedding_shape"],
+            params["embedding_overwrite"],
+            params["model_type"],
+            params["model_arch_num"],
+            params["model_layer_sizes"],
+            params["model_maxlen"],
+            params["model_batch_size"],
+            params["model_learning_rate"],
+            params["model_epochs"],
+            params["model_num"],
+            params["verbose"],
+            params
+            )
+else:
+    #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
+    #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)
+    datasets.create_selection_set_sources(15000, 500)
+    # datasets.get_selection_set(problem="reliability", source="os", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="reliability", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="reliability", source="ng", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="extreme_biased", source="mbfc", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
+    # datasets.get_selection_set(problem="extreme_biased", source="as", count=15000, reject_minimum=500, random_seed=13, overwrite=True, verbose=True)
 
 
-        for i in range(0,10):
-            datasets.load_fold(i, 1000, True, True)
-    
+    for i in range(0,10):
+        datasets.load_fold(i, 1000, True, True)
+

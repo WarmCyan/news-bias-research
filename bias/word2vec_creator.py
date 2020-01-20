@@ -18,7 +18,7 @@ model = None
 #   - sequence (keep separated)
 #   - avg (average the w2v)
 # TODO: add turning into square or flattening
-def run_w2v(df, output, shaping="sequence", word_limit=-1):
+def run_w2v(df, output, shaping="sequence", word_limit=-1, sentics=False):
     global model
 
     if model is None:
@@ -27,10 +27,10 @@ def run_w2v(df, output, shaping="sequence", word_limit=-1):
             "../data/raw/models/GoogleNews-vectors-negative300.bin", binary=True
         )
 
-    return vectorize_collection(df, output, model, shaping, word_limit)
+    return vectorize_collection(df, output, model, shaping, word_limit, sentics)
 
 
-def run_glove(df, output, shaping="sequence", word_limit=-1):
+def run_glove(df, output, shaping="sequence", word_limit=-1, sentics=False):
     global model
 
     if model is None:
@@ -39,10 +39,10 @@ def run_glove(df, output, shaping="sequence", word_limit=-1):
             "../data/cache/models/glove2word2vec_pretrained.model"
         )
 
-    return vectorize_collection(df, output, model, shaping, word_limit)
+    return vectorize_collection(df, output, model, shaping, word_limit, sentics)
 
 
-def run_fasttext(df, output, shaping="sequence", word_limit=-1):
+def run_fasttext(df, output, shaping="sequence", word_limit=-1, sentics=False):
     global model
 
     if model is None:
@@ -50,7 +50,7 @@ def run_fasttext(df, output, shaping="sequence", word_limit=-1):
 
         model = gensim.models.fasttext.load_facebook_vectors('../data/raw/models/wiki.en.bin')
 
-    return vectorize_collection(df, output, model, shaping, word_limit)
+    return vectorize_collection(df, output, model, shaping, word_limit, sentics)
 
 
 def clear_model():
@@ -60,13 +60,11 @@ def clear_model():
 
 
 @util.dump_log
-def vectorize_collection(df, output, model, shaping, word_limit):
+def vectorize_collection(df, output, model, shaping, word_limit, sentics=False):
     vector_collection = []
-    print("HELLO?")
 
-    logging.debug("About to iterate df rows")
     for index, row in tqdm(df.iterrows(), "Creating vectors", total=df.shape[0]):
-        vectors = vectorize_document(row.content, model, word_limit)
+        vectors = vectorize_document(row.content, model, word_limit, sentics)
 
         if shaping == "sequence":
             vector_collection.append(vectors)
@@ -74,9 +72,7 @@ def vectorize_collection(df, output, model, shaping, word_limit):
             averaged = np.mean(vectors, axis=0)  # TODO: verify axis is correct
             vector_collection.append(averaged)
 
-    logging.debug("About to write file")
     with open(output, "wb") as outfile:
-        logging.debug("Writing to file")
         pickle.dump(vector_collection, outfile)
         logging.info("Saved %s", output)
         # np.save(vector_collection, outfile, allow_pickle=False)
@@ -91,15 +87,20 @@ def vectorize_document(doc, model, word_limit=-1, sentics=False):
     doc = util.clean_symbols(util.clean_newlines(doc))
 
     # doc_words = doc.split(" ")
+    doc = doc.lower()
     doc_words = word_tokenize(doc)
+
+    # other cleaning:
+    
+    
     if word_limit == -1:
         word_limit = len(doc_words)
 
     if model is not None:
-        doc_words = filter(lambda x: x in model.vocab, doc_words)  # TODO: use wordlimit
+        doc_words = list(filter(lambda x: x in model.vocab, doc_words))  # TODO: use wordlimit
     
     if sentics:
-        vectors = senticnetify.get_article_embedding(doc_words)   
+        vectors = senticnetify.get_article_embedding(doc_words, model)   
     else:    
         vectors = [model[word] for word in doc_words]
 

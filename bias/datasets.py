@@ -27,7 +27,7 @@ def load_fold(n, count_per, binary=True, overwrite=False):
         negative_sources = fold["center"]
 
         df, meta = create_binary_selection(
-            "binary_fold_" + str(n), 
+            "binary_fold_" + str(count_per) + "_" + str(n), 
             positive_sources,
             negative_sources,
             "biased",
@@ -38,7 +38,7 @@ def load_fold(n, count_per, binary=True, overwrite=False):
         )
     else:
         df, meta = create_ternary_selection(
-            "ternary_fold_" + str(n),
+            "ternary_fold_" + str(count_per) + "_" + str(n),
             fold["left"],
             fold["center"],
             fold["right"],
@@ -418,6 +418,7 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False, 
         json.dump(selection_sources, outfile)
     return selection_sources
 
+# can't run on cluster (if not already created)
 @util.dump_log
 def get_selection_set(
     problem, source, count, random_seed, reject_minimum, overwrite, verbose
@@ -473,13 +474,23 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     embedding_df = None
     logging.debug("Preparing to run vectorization")
     if embedding_type == "w2v":
-        embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1)
+        embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1, sentics=False)
+    elif embedding_type == "w2v_sentic":
+        embedding_df = word2vec_creator.run_w2v(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True)
     elif embedding_type == "glove":
-        embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1)
+        embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1, sentics=False)
+    elif embedding_type == "glove_sentic":
+        embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True)
     elif embedding_type == "fasttext":
-        embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1)
+        embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=False)
+    elif embedding_type == "fasttext_sentic":
+        embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True)
+    elif embedding_type == "sentic":
+        embedding_df = word2vec_creator.vectorize_collection(df, path_and_name, model=None, shaping=shaping, word_limit=-1, sentics=True)
     elif embedding_type == "tfidf":
+        # TODO: add ability to add sentics here too?
         embedding_df = create_tfidf(df, path, overwrite=overwrite)
+        # NOTE: would have to save it (and check for preexisting) separately as well then
         
 
     return embedding_df
@@ -664,7 +675,7 @@ def create_binary_selection(
 
     return df, meta
 
-
+# can't run on cluster
 def random_balanced_sample(
     source_name_array,
     count,

@@ -1,3 +1,5 @@
+import logging
+import traceback
 import nltk
 import json
 from senticnet.senticnet import SenticNet
@@ -7,10 +9,10 @@ sn = SenticNet()
 
 
 patterns = [
-    ["NOUN"]
-    ["NOUN", "NOUN"]
+    #["NOUN"],
+    ["NOUN", "NOUN"],
     ["VERB", "NOUN"],
-    ["ADJ"]
+    #["ADJ"]
 ]
 
 
@@ -41,10 +43,15 @@ def find_tagged(tagged_words, pattern):
 def get_sentiment_vector_instance(sentiment):
     pv = sentiment["polarity_value"]
     pi = sentiment["polarity_intense"]
-    spl = sentiment["sentics"]["pleasentness"]
+    spl = sentiment["sentics"]["pleasantness"]
     satt = sentiment["sentics"]["attention"]
     ssen = sentiment["sentics"]["sensitivity"]
     sapt = sentiment["sentics"]["aptitude"]
+
+    if pv == "negative": 
+        pv = -1
+    else: 
+        pv = 1
     
     sentic_vector_instance = [pv, pi, spl, satt, ssen, sapt]
     return sentic_vector_instance
@@ -52,6 +59,7 @@ def get_sentiment_vector_instance(sentiment):
 
 def get_article_embedding(doc_words, model):
     global sn
+    global patterns
 
     tagged = []
     # sentences = sent_tokenize(doc_words)
@@ -60,30 +68,32 @@ def get_article_embedding(doc_words, model):
     
     tagged = nltk.pos_tag(doc_words, tagset="universal")
 
-    patterns = find_tagged(tagged, patterns[0])
-    patterns.extend(find_tagged(tagged, patterns[1]))
-    patterns.extend(find_tagged(tagged, patterns[2]))
-    patterns.extend(find_tagged(tagged, patterns[3]))
+    found_patterns = find_tagged(tagged, patterns[0])
+    found_patterns.extend(find_tagged(tagged, patterns[1]))
+    #found_patterns.extend(find_tagged(tagged, patterns[2]))
+    #found_patterns.extend(find_tagged(tagged, patterns[3]))
 
     sentic_vectors = []
     
-    for pattern in patterns: # change latter portion
+    for pattern in found_patterns: 
         pattern_text = ""
         pattern_words = []
         for word in pattern:
-            pattern_text += word[0]
+            pattern_text += word[0] + " "
             pattern_words.append(word[0])
+        #pattern_text = pattern_text[:-1] # remove trailing space
+        pattern_text = pattern_text.strip() # remove trailing space
 
         sentic_vector_instances = []
-        
+
         try: 
             sentiment = sn.concept(pattern_text)
-            sentic_vector_instances.append(get_sentiment_vector_instance(sentiment)
-        except KeyError: 
+            sentic_vector_instances.append(get_sentiment_vector_instance(sentiment))
+        except KeyError as e: 
             for word in pattern_words:
                 try:
                     sentiment = sn.concept(word)
-                    sentic_vector_instances.append(get_sentiment_vector_instance(sentiment)
+                    sentic_vector_instances.append(get_sentiment_vector_instance(sentiment))
                 except KeyError: 
                     sentic_vector_instances.append([0,0,0,0,0,0])
                     continue

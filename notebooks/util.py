@@ -123,6 +123,7 @@ def load_fold_divisions_dataset():
 
 
 # pass count of -1 for all articles from source
+# can't run on cluster
 def nela_load_articles_from_source(source_name, count=-1):
     conn = sqlite3.connect("../data/raw/nela/articles.db")
 
@@ -215,11 +216,8 @@ def init_logging(log_path=None):
 def dump_log(func):
     """Decorator to print function call details - parameters names and effective values."""
     def wrapper(*args, **kwargs):
-        try:
-            func_args = inspect.signature(func).bind(*args, **kwargs).arguments
-            func_args_str =  ', '.join('{} = {!r}'.format(*item) for item in func_args.items())
-            logging.info(f'CALL::{func.__module__}.{func.__qualname__}({func_args_str})')
-            return func(*args, **kwargs)
-        except:
-            pass
+        func_args = inspect.signature(func).bind(*args, **kwargs).arguments
+        func_args_str =  ', '.join('{} = {!r}'.format(*item) for item in func_args.items())
+        logging.info(f'CALL::{func.__module__}.{func.__qualname__}({func_args_str})')
+        return func(*args, **kwargs)
     return wrapper
