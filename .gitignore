@@ -4,3 +4,4 @@ data/
 notebooks/.ipynb_checkpoints
 lbin/*
 logs/*
+jobs/*

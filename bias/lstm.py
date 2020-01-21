@@ -96,30 +96,30 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
 
 
     return_history = None
-    if not util.check_output_necessary(weight_file, True):
-        model.load_weights(weight_file)
-    else:
-        logging.debug("About to split")
-        X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
+    # if not util.check_output_necessary(weight_file, True):
+    #     model.load_weights(weight_file)
+    # else:
+    logging.debug("About to split")
+    X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
 
-        
-        history = model.fit(
-            X_train,
-            y_train,
-            batch_size=batch_size,
-            verbose=2,
-            epochs=epochs,
-            validation_data=(X_val, y_val),
-            # validation_split=0.2,
-            # use_multiprocessing=True,
-            # workers=4,
-            callbacks=cbks
-        )
+    
+    history = model.fit(
+        X_train,
+        y_train,
+        batch_size=batch_size,
+        verbose=2,
+        epochs=epochs,
+        validation_data=(X_val, y_val),
+        # validation_split=0.2,
+        # use_multiprocessing=True,
+        # workers=4,
+        callbacks=cbks
+    )
 
-        model.load_weights(util.TMP_PATH + name + ".best.weights")
-        model.save_weights(weight_file)
+    model.load_weights(util.TMP_PATH + name + ".best.weights")
+    #model.save_weights(weight_file)
 
-        return_history = history.history
+    return_history = history.history
 
     logging.debug("Testing")
     loss, acc, predictions = test(X_test, y_test, batch_size, model)
