@@ -1,0 +1,5 @@
+#!/bin/bash
+TMP=$(mktemp -d)
+pushd ../bias
+python experiment.py --experiment ../experiments/small_data_gen.json --temp $TMP --row 24 --log ../logs/small_data_gen_24.log
+popd

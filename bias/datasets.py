@@ -713,7 +713,7 @@ def random_balanced_sample(
 
 
     # Preliminary filtering - remove any articles under 50 words
-    building_df = 
+    building_df = building_df[building_df.content.str.split().apply(len) > 50]
         
 
     max_possible_balanced = minimum_count * len(counts.keys())
