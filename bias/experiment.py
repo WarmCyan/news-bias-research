@@ -14,39 +14,103 @@ import lstm
 import cnn
 import nn
 
-
-def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=False):
+# TODO: pass tuple of counts instead of tp fp etc
+#def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=False):
+def confusion_analysis(counts, name, history, loss, acc, params, source=False):
     if source:
         logging.info("Confusion analysis for %s", source)
-    logging.info("tp: %i | fp: %i", tp, fp)
-    logging.info("------------------")
-    logging.info("fn: %i | tn: %i", fn, tn)
 
-    if (tp + fp) != 0:
-        precision = tp / (tp + fp)
-    else: 
-        precision = 0
+    binary = True
+    if counts > 4:
+        binary = False
 
-    if (tp + fn) != 0:
-        recall = tp / (tp + fn)
+    results = {}
+    if source:
+        results = {"source": source, "history": history, "testing_loss": loss, "testing_acc": acc, "params": params}
     else:
-        recall = 0
+        results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params}
 
-    logging.info("Precision: %f", precision)
-    logging.info("Recall: %f", recall)
+    if binary:
+        tp, fp, fn, tn = counts
+        
+        logging.info("tp: %i | fp: %i", tp, fp)
+        logging.info("------------------")
+        logging.info("fn: %i | tn: %i", fn, tn)
+
+        if (tp + fp) != 0:
+            precision = tp / (tp + fp)
+        else: 
+            precision = 0
+
+        if (tp + fn) != 0:
+            recall = tp / (tp + fn)
+        else:
+            recall = 0
+
+        accuracy = (tp + tn) / (tp + tn + fp + fn)
+
+        logging.info("Precision: %f", precision)
+        logging.info("Recall: %f", recall)
+        logging.info("Accuracy: %f", accuracy)
+        
+        results.update({"tn":tp, "fp":fp, "fn":fn, "tn":tn, "precision": precision, "recall": recall, "accuracy": accuracy})
+    else:
+        ll, lc, lr, cl, cc, cr, rl, rc, rr = counts
+
+        logging.info("ll: %i | lc: %i | lr: %i", ll, lc, lr)
+        logging.info("------------------------------")
+        logging.info("cl: %i | cc: %i | cr: %i", cl, cc, cr)
+        logging.info("------------------------------")
+        logging.info("rl: %i | rc: %i | rr: %i", rl, rc, rr)
+
+        accuracy = (ll + cc + rr) / (ll + lc + lr + cl + cc + cr + rl + rc + rr)
+
+        logging.info("Accuracy: %f", accuracy)
+        
+        results.update({"ll":ll, "lc":lc, "lr":lr, "cl":cl, "cc":cc, "cr":cr, "rl":rl, "rc":rc, "rr":rr, "accuracy": accuracy})
+        
 
     filename = name + ".json"
     if source:
         filename = name + "_" + source + ".json"
 
     with open("../data/output/" + filename, "w") as outfile:
-        if source:
-            results = {"source": source, "history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
-        else:
-            results = {"history": history, "testing_loss": loss, "testing_acc": acc, "params": params, "tn": tn, "fn": fn, "tp": tp, "fp": fp, "precision": precision, "recall": recall}
         json.dump(results, outfile)
     
+# predicted, actual
+def calculate_counts(df, target_col, pred_val, target_val):
+    count = df[(df[target_col == target_val]) & (df.pred_class == pred_val)].shape[0]
+    return 0
 
+# NOTE: row is predicted, col is actual   (in second case, predicted|actual)
+# tp, fp, fn, tn (pp, pn, fp, ff)
+# ll, lc, lr, cl, cc, cr, rl, rc, rr
+def calculate_cm_counts(df, target_col, binary=True):
+    counts = [] 
+    if binary:
+        tp = calculate_counts(df, target_col, 1, 1)
+        fp = calculate_counts(df, target_col, 1, 0)
+        fn = calculate_counts(df, target_col, 0, 1)
+        tn = calculate_counts(df, target_col, 0, 0)
+        
+        counts = [tp, fp, fn, tn]
+    else:
+        ll = calculate_counts(df, target_col, -1, -1)
+        lc = calculate_counts(df, target_col, -1, 0)
+        lr = calculate_counts(df, target_col, -1, 1)
+        
+        cl = calculate_counts(df, target_col, 0, -1)
+        cc = calculate_counts(df, target_col, 0, 0)
+        cr = calculate_counts(df, target_col, 0, 1)
+        
+        rl = calculate_counts(df, target_col, 1, -1)
+        rc = calculate_counts(df, target_col, 1, 0)
+        rr = calculate_counts(df, target_col, 1, 1)
+        
+        counts = [ll, lc, lr, cl, cc, cr, rl, rc, rr]
+
+    return counts
+        
 
 @util.dump_log
 def experiment_dataset_bias(
@@ -268,13 +332,21 @@ def experiment_model(
     #pred.index = test_selection_df.index
     test_selection_df["predicted"] = predictions
     test_selection_df["pred_class"] = round(test_selection_df.predicted).astype(int)
-    tp = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 1)].shape[0]
-    tn = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 0)].shape[0]
-    fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
-    fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
+
+    overall_counts = [] 
+    if selection_problem != "bias_direction":
+        overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=True)
+    else:
+        overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=False)
+        
+    
+    # tp = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 1)].shape[0]
+    # tn = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 0)].shape[0]
+    # fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
+    # fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
 
     logging.info("Overall confusion analysis")
-    confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, False)
+    confusion_analysis(overall_counts, name, history, loss, acc, params, False)
     logging.info("Overall analysis complete")
 
 
@@ -285,12 +357,15 @@ def experiment_model(
 
     for group_name, group in groups:
         logging.info("Next group %s", name)
-        tp = group[(group[target_col] == 1) & (group.pred_class == 1)].shape[0]
-        tn = group[(group[target_col] == 0) & (group.pred_class == 0)].shape[0]
-        fp = group[(group[target_col] == 0) & (group.pred_class == 1)].shape[0]
-        fn = group[(group[target_col] == 1) & (group.pred_class == 0)].shape[0]
 
-        confusion_analysis(tp, fp, tn, fn, name + "_persource", history, loss, acc, params, source=group_name)
+        group_counts = []
+        if selection_problem != "bias_direction":
+            group_counts = calculate_cm_counts(group, target_col, binary=True)
+        else:
+            group_counts = calculate_cm_counts(group, target_col, binary=False)
+            
+
+        confusion_analysis(group_counts, name + "_persource", history, loss, acc, params, source=group_name)
 
     with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
