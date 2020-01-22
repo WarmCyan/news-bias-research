@@ -23,8 +23,9 @@ def create_model(arch_num, layer_sizes, maxlen):
 
     return model
 
+# TODO: unclear if data width needed here or not, data should always have same meta shape
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs=1):
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_with):
     model = create_model(arch_num, layer_sizes, maxlen)
 
     optimizer = keras.optimizers.Adam(learning_rate=learning_rate)

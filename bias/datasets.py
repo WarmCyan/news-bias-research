@@ -43,6 +43,7 @@ def load_fold(n, count_per, binary=True, overwrite=False):
             fold["center"],
             fold["right"],
             "biased",
+            count_per=count_per,
             reject_minimum=300,
             force_balance=True,
             random_seed=13,
@@ -693,6 +694,7 @@ def random_balanced_sample(
     for name in tqdm(source_name_array, "Querying sources", disable=(not verbose)):
         local_df = util.nela_load_articles_from_source(name)
         local_df = local_df[(local_df.content.notnull()) & (local_df.content != "")]
+        local_df = local_df[local_df.content.str.split().apply(len) > 50] # filter out anything under 50 words
         local_count = local_df.shape[0]
         if verbose:
             tqdm.write("{0} {1} articles".format(name, local_count))
@@ -713,7 +715,8 @@ def random_balanced_sample(
 
 
     # Preliminary filtering - remove any articles under 50 words
-    building_df = building_df[building_df.content.str.split().apply(len) > 50]
+    #building_df = building_df[building_df.content.str.split().apply(len) > 50]
+    #logging.debug("Remaining article count after filter: %s", str(building_df.shape[0]))
         
 
     max_possible_balanced = minimum_count * len(counts.keys())
@@ -758,6 +761,7 @@ def random_balanced_sample(
             if remainder > 0:
                 sample_size += 1
                 remainder -= 1
+            #logging.debug("Size of %s df: %s", name, building_df[building_df.source == name].shape[0])
             source_sample_df = building_df[building_df.source == name].sample(
                 sample_size, random_state=random_seed
             )

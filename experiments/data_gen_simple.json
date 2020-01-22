@@ -1,0 +1,1 @@
+[{ "type": "data", "selection_problem": "biased",  "selection_test_fold": 0,"selection_source": "", "selection_test_source":"", "selection_count": 1000, "selection_random_seed": 13, "selection_reject_minimum": 300, "selection_overwrite": false, "embedding_type": "w2v", "embedding_shape": "sequence", "embedding_overwrite": false, "verbose": false }]

@@ -63,7 +63,11 @@ def experiment_dataset_bias(
 
     name = "{0}_{1}_{2}".format(selection_problem, selection_random_seed, selection_count) 
 
-    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, True, selection_overwrite)
+    binary = True
+    if selection_problem == "bias_direction":
+        binary = False
+
+    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, binary, selection_overwrite)
 
     embedding_df = datasets.get_embedding_set(
         selection_df,
@@ -223,7 +227,7 @@ def experiment_model(
         target_col = "reliable"
         y = sel_df.reliable
         y_test = test_selection_df.reliable
-    elif selection_problem == "biased" or selection_problem == "extreme_biased":
+    elif selection_problem == "biased" or selection_problem == "extreme_biased" or selection_problem == "bias_direction": # NOTE: unsure if this is where bias_direction should go?
         target_col = "biased"
         y = sel_df.biased
         y_test = test_selection_df.biased
@@ -232,7 +236,6 @@ def experiment_model(
     data_width=0
     # TODO: how to determine data width for avg?
     if embedding_shape == "sequence":
-        print(X)
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
 
