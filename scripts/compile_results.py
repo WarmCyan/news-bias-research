@@ -23,9 +23,11 @@ try:
     os.mkdir(args.output_path + "/training_graphs")
 except: pass
 
-pathlist = Path(args.experiment_results_path).glob('**/*.json')
+# pathlist = Path(args.experiment_results_path).glob('**/*.json')
+pathlist = Path(args.experiment_results_path).glob('*.json')
 for path in pathlist:
     path_in_str = str(path)
+    print(f"Processing {path_in_str}...")
 
     with open(path_in_str, 'r') as infile:
         results = json.load(infile)
@@ -48,3 +50,22 @@ for path in pathlist:
 
 df = pd.DataFrame(results_collection)
 df.to_csv(args.output_path + "/compiled.csv")
+
+pathlist_breakdown = Path(args.experiment_results_path + "/breakdown").glob('*.json')
+
+breakdown_results = []
+for path in pathlist_breakdown:
+    path_in_str = str(path)
+    print(f"Processing {path_in_str}...")
+
+    with open(path_in_str, 'r') as infile:
+        results = json.load(infile)
+
+    row = {}
+    row.update({"source": results["source"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
+    row["filename"] = path_in_str
+
+    breakdown_results.append(row)
+    
+df_breakdown = pd.DataFrame(breakdown_results)
+df_breakdown.to_csv(args.output_path + "/compiled_breakdown.csv")

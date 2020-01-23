@@ -21,7 +21,7 @@ def confusion_analysis(counts, name, history, loss, acc, params, source=False):
         logging.info("Confusion analysis for %s", source)
 
     binary = True
-    if counts > 4:
+    if len(counts) > 4:
         binary = False
 
     results = {}
@@ -79,8 +79,8 @@ def confusion_analysis(counts, name, history, loss, acc, params, source=False):
     
 # predicted, actual
 def calculate_counts(df, target_col, pred_val, target_val):
-    count = df[(df[target_col == target_val]) & (df.pred_class == pred_val)].shape[0]
-    return 0
+    count = df[(df[target_col] == target_val) & (df.pred_class == pred_val)].shape[0]
+    return count
 
 # NOTE: row is predicted, col is actual   (in second case, predicted|actual)
 # tp, fp, fn, tn (pp, pn, fp, ff)
