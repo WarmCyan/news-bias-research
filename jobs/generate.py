@@ -19,7 +19,7 @@ common_lines = [
     "#!/bin/bash",
     "#SBATCH --mem=" + args.memory,
     "#SBATCH --time=" + args.time,
-    #"#SBATCH --partition=bigmem",
+    "#SBATCH --partition=bigmem",
     "TMP=$(mktemp -d)",
     "cd /home/tntech.edu/namartinda42/research",
     ". env_setup.sh",
