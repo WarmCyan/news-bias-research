@@ -1,0 +1,71 @@
+Source,Classification,AllSides,Media Bias/Fact Check,Media Bias Monitor,Fold
+CNN,Left,Left-center,Left,-0.342,0
+Washington Monthly,Left,Left-center,Left,--,0
+The New York Times,Left,Left-center,Left-center,-0.569,0
+Alternet,Left,Left,Left,-1.175,1
+Pink News UK,Left,--,Left,-0.973,1
+The Intercept,Left,Left,Left-center,--,1
+MotherJones,Left,Left,Left,-1.326,2
+Newsweek,Left,Left-center,Left,-0.468,2
+Yahoo News,Left,Left,Left-center,0.052,2
+Addicting Info,Left,--,Left,-0.822,3
+Salon,Left,Left,Left,-0.172,3
+New York Daily News,Left,Left,Left-center,-0.359,3
+France24,Left,--,Left-center,-0.869,4
+Slate,Left,Left,Left,-0.878,4
+Talking Points Memo,Left,--,Left,-1.178,4
+MSNBC,Left,Left,Left,-1.35,5
+ThinkProgress,Left,Left,Left,-1.218,5
+The Verge,Left,Left-center,Left-center,-0.467,5
+Daily Kos,Left,Left,Left,-1.217,6
+Vox,Left,Left,Left,-1.063,6
+The Guardian,Left,Left-center,Left-center,-0.444,6
+Daily Beast,Left,Left,Left,-0.827,7
+The Atlantic,Left,Left-center,Left-center,-0.881,7
+The Huffington Post,Left,Left,Left,-0.476,7
+Mercury News,Left,--,Left-center,-0.748,8
+Spiegel,Left,--,Left-center,-0.952,8
+Washington Post,Left,Left-center,Left-center,-0.555,8
+Media Matters for America,Left,Left,Left,--,9
+Raw Story,Left,Left,Left,--,9
+Business Insider,Center,Center,Left-center,-0.215,0
+USA Today,Center,Center,Left-center,0.014,0
+NPR,Center,Center,Left-center,-0.732,0
+The Hill,Center,Center,Left-center,-0.504,1
+Buzzfeed,Center,Left-center,Left-center,-0.268,1
+New York Post,Center,Right-center,Right-center,-0.138,1
+BBC,Center,Center,Left-center,-0.521,2
+Chicago Sun-Times,Center,Left-center,Left-center,-0.204,2
+The Denver Post,Center,--,Left-center,-0.121,2
+PBS,Center,Center,Left-center,-0.444,3
+ABC News,Center,Left-center,Left-center,-0.117,3
+Politico,Center,--,Center,-0.744,3
+Real Clear Politics,Center,Center,Right-center,-0.3,4
+The Telegraph,Center,Right,Right-center,-0.308,4
+Al Jazeera,Center,Center,Left-center,-1.111,4
+Daily Mail,Center,Right-center,--,-0.021,5
+The Moscow Times,Center,--,Left-center,-0.347,5
+Foreign Policy,Center,--,Center,-0.174,6
+CBS News,Center,Left-center,Left-center,0.244,6
+CNBC,Center,Center,Left-center,-0.075,7
+Reuters,Center,Center,Center,-0.446,7
+BBC UK,Center,--,--,-0.241,8
+FiveThirtyEight,Center,Center,Left-center,-0.979,8
+The Daily Express,Center,--,Right,0.151,9
+The Irish Times,Center,--,Left-center,-0.321,9
+The American Conservative,Right,Right,Right-center,1.733,0
+The Washington Examiner,Right,Right,Right,1.22,0
+Daily Signal,Right,Right-center,Right,1.699,1
+TheBlaze,Right,--,Right,1.364,1
+Infowars,Right,Right-center,--,0.764,2
+RedState,Right,Right-center,Right,1.776,2
+The Daily Caller,Right,Right-center,Right,1.484,3
+Investors Business Daily,Right,Right,Right,--,3
+Fox News,Right,Right,Right,1.458,4
+Hot Air,Right,Right,Right,1.673,4
+National Review,Right,Right-center,Right,1.455,5
+The Fiscal Times,Right,Right,Right-center,--,5
+Western Journal,Right,Right-center,Right,--,6
+The Political Insider,Right,--,Right,1.606,7
+Breitbart,Right,Right-center,--,1.516,8
+Drudge Report,Right,Right,Right,1.407,9

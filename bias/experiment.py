@@ -53,7 +53,7 @@ def confusion_analysis(counts, name, history, loss, acc, params, source=False):
         logging.info("Recall: %f", recall)
         logging.info("Accuracy: %f", accuracy)
         
-        results.update({"tn":tp, "fp":fp, "fn":fn, "tn":tn, "precision": precision, "recall": recall, "accuracy": accuracy})
+        results.update({"tp":tp, "fp":fp, "fn":fn, "tn":tn, "precision": precision, "recall": recall, "accuracy": accuracy})
     else:
         ll, lc, lr, cl, cc, cr, rl, rc, rr = counts
 
@@ -308,6 +308,12 @@ def experiment_model(
         if model_type == "cnn":
             X = np.reshape(X, (X.shape[0], model_maxlen*data_width, 1))
             X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*data_width, 1))
+    else:
+        X = np.array(X)
+        y = np.array(y)
+        X_test = np.array(X_test)
+        y_test = np.array(y_test)
+        data_width = X.shape[-1]
 
     #y = keras.utils.to_categorical(y)
     
@@ -318,7 +324,7 @@ def experiment_model(
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
-        model, history = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs)
+        model, history, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
         pass
     elif model_type == "svm":
         pass

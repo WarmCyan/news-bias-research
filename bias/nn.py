@@ -1,15 +1,17 @@
 import keras
+from keras import callbacks
 from keras.layers import Dense
 from sklearn.model_selection import train_test_split
+import logging
 
 import util
 
 
-def create_model(arch_num, layer_sizes, maxlen):
+def create_model(arch_num, layer_sizes, maxlen, data_width):
     model = keras.Sequential()
     
     if arch_num == 1:
-        model.add(Dense(layer_sizes[0], activation='relu'))
+        model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
         model.add(Dense(layer_sizes[1], activation='softmax'))
     if arch_num == 2:
         model.add(Dense(layer_sizes[0], activation='relu'))
@@ -25,23 +27,50 @@ def create_model(arch_num, layer_sizes, maxlen):
 
 # TODO: unclear if data width needed here or not, data should always have same meta shape
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_with):
-    model = create_model(arch_num, layer_sizes, maxlen)
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width):
+    model = create_model(arch_num, layer_sizes, maxlen, data_width)
 
-    optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
-    model.compile(
-        optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
-    )
+    weight_file = "../models/" + name + ".weights"
+    
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
+
+    cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
+    
+    if layer_sizes[-1] == 1:
+        model.compile(
+            optimizer=optimizer, loss="binary_crossentropy", metrics=["binary_accuracy"]
+        )
+    else:
+        model.compile(
+            optimizer=optimizer, loss="categorical_crossentropy", metrics=["categorical_accuracy"]
+        )
     model.summary()
+    
+    X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
+    print(X_train)
+    
     history = model.fit(
-        X,
-        y,
+        X_train,
+        y_train,
         batch_size=batch_size,
         verbose=2,
         epochs=epochs,
-        validation_split=0.2,
-        use_multiprocessing=True,
-        workers=4,
+        validation_data=(X_val, y_val),
+        callbacks=cbks
     )
+    
+    model.load_weights(util.TMP_PATH + name + ".best.weights")
+    return_history = history.history
 
-    return model, history
+    logging.debug("Testing")
+    loss, acc, predictions = test(X_test, y_test, batch_size, model)
+
+    logging.debug("Returning...")
+    return model, return_history, loss, acc, predictions
+
+
+def test(X, y, batch_size, model):
+    predictions = model.predict(X, batch_size)
+    loss, acc = model.evaluate(X, y, batch_size)
+    logging.info('Test loss / test accuracy: %f / %f', loss, acc)
+    return loss, acc, predictions

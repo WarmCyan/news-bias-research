@@ -70,10 +70,12 @@ def vectorize_collection(df, output, model, shaping, word_limit, sentics=False):
             vector_collection.append(vectors)
         elif shaping == "avg":
             #vectors.astype(np.float)
-            print("VECTORS")
-            print(vectors)
-            print(row.content)
-            averaged = np.mean(vectors, axis=1)  # TODO: verify axis is correct
+            #print("VECTORS")
+            #print(vectors)
+            #print(len(vectors))
+            averaged = np.mean(vectors, axis=0)  # TODO: verify axis is correct
+            #print(averaged)
+            #print(len(averaged))
             vector_collection.append(averaged)
 
     with open(output, "wb") as outfile:

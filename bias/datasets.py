@@ -16,6 +16,7 @@ import util
 import word2vec_creator
 
 
+# NOTE: for reliability, assumes selection.json already exists? (and that folds exist)
 def load_fold(n, count_per, binary=True, overwrite=False):
     fold_sources = util.load_fold_divisions_dataset()
     fold = fold_sources[n]
@@ -379,36 +380,36 @@ def create_selection_set_sources(target_count, reject_minimum, overwrite=False, 
                 "ng": {},
                 "info": {}
                 },
-            "biased": {
-                "mbfc": {},
-                "as": {},
-                "info": {}
-                },
-            "extreme_biased": {
-                "mbfc": {},
-                "as": {},
-                "info": {}
-                },
-            "bias_direction": {
-                "mbfc": {},
-                "as": {},
-                "info": {}
-                },
-            "extreme_bias_direction": {
-                "mbfc": {},
-                "as": {},
-                "info": {}
-                },
-            "large_center_bias_direction": {
-                "mbfc": {},
-                "as": {},
-                "info": {}
-                }
+            # "biased": {
+            #     "mbfc": {},
+            #     "as": {},
+            #     "info": {}
+            #     },
+            # "extreme_biased": {
+            #     "mbfc": {},
+            #     "as": {},
+            #     "info": {}
+            #     },
+            # "bias_direction": {
+            #     "mbfc": {},
+            #     "as": {},
+            #     "info": {}
+            #     },
+            # "extreme_bias_direction": {
+            #     "mbfc": {},
+            #     "as": {},
+            #     "info": {}
+            #     },
+            # "large_center_bias_direction": {
+            #     "mbfc": {},
+            #     "as": {},
+            #     "info": {}
+            #     }
             }
 
     selection_sources = fill_source(selection_sources, "reliability", ["reliable", "unreliable"], "reliable", target_count, reject_minimum, verbose)
-    selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
-    selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    #selection_sources = fill_source(selection_sources, "biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
+    #selection_sources = fill_source(selection_sources, "extreme_biased", ["biased", "unbiased"], "biased", target_count, reject_minimum, verbose)
     
     # selection_sources = fill_source(selection_sources, "bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
     # selection_sources = fill_source(selection_sources, "extreme_bias_direction", ["left", "center", "right"], "bias_direction", target_count, reject_minimum)
