@@ -128,8 +128,12 @@ def experiment_dataset_bias(
     name = "{0}_{1}_{2}".format(selection_problem, selection_random_seed, selection_count) 
 
     binary = True
+    bias = True
     if selection_problem == "bias_direction":
         binary = False
+    
+    if selection_problem == "reliability":
+        bias = False
 
     selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, binary, selection_overwrite)
 
@@ -204,30 +208,30 @@ def experiment_dataset(
     verbose=True
 ):
     print(selection_problem)
-    if selection_problem == "reliability":
-        data = experiment_dataset_reliability(
-            selection_problem,
-            selection_source,
-            selection_test_source,
-            selection_count,
-            selection_random_seed,
-            selection_reject_minimum,
-            selection_overwrite,
-            embedding_type,
-            embedding_shape,
-            embedding_overwrite
-        )
-    else:
-        embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset_bias(
-            selection_problem,
-            selection_test_fold,
-            selection_count,
-            selection_random_seed,
-            selection_overwrite,
-            embedding_type,
-            embedding_shape,
-            embedding_overwrite,
-        )
+    #if selection_problem == "reliability":
+    #    data = experiment_dataset_reliability(
+    #        selection_problem,
+    #        selection_source,
+    #        selection_test_source,
+    #        selection_count,
+    #        selection_random_seed,
+    #        selection_reject_minimum,
+    #        selection_overwrite,
+    #        embedding_type,
+    #        embedding_shape,
+    #        embedding_overwrite
+    #    )
+    #else:
+    embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset_bias(
+        selection_problem,
+        selection_test_fold,
+        selection_count,
+        selection_random_seed,
+        selection_overwrite,
+        embedding_type,
+        embedding_shape,
+        embedding_overwrite,
+    )
 
     return embed_df, sel_df, name, test_selection_df, test_embedding_df
 

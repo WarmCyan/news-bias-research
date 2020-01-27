@@ -116,9 +116,13 @@ def load_selection_dataset(name):
     return pd.read_pickle("../data/cache/" + name)
 
 
-def load_fold_divisions_dataset():
-    with open("../data/cache/folds_selection.json", 'r') as infile:
-        folds = json.load(infile)
+def load_fold_divisions_dataset(bias=True):
+    if bias:
+        with open("../data/cache/folds_selection.json", 'r') as infile:
+            folds = json.load(infile)
+    else:
+        with open("../data/cache/reliability_folds_selection.json", 'r') as infile:
+            folds = json.load(infile)
     return folds
 
 

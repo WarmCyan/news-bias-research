@@ -17,26 +17,42 @@ import word2vec_creator
 
 
 # NOTE: for reliability, assumes selection.json already exists? (and that folds exist)
-def load_fold(n, count_per, binary=True, overwrite=False):
-    fold_sources = util.load_fold_divisions_dataset()
+def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
+    fold_sources = util.load_fold_divisions_dataset(bias)
     fold = fold_sources[n]
 
     if binary:
-        positive_sources = fold["left"]
-        positive_sources.extend(fold["right"])
-        
-        negative_sources = fold["center"]
 
-        df, meta = create_binary_selection(
-            "binary_fold_" + str(count_per) + "_" + str(n), 
-            positive_sources,
-            negative_sources,
-            "biased",
-            count_per=count_per,
-            reject_minimum=300,
-            random_seed=13,
-            overwrite=overwrite
-        )
+        if bias:
+            positive_sources = fold["left"]
+            positive_sources.extend(fold["right"])
+            
+            negative_sources = fold["center"]
+
+            df, meta = create_binary_selection(
+                "binary_fold_" + str(count_per) + "_" + str(n), 
+                positive_sources,
+                negative_sources,
+                "biased",
+                count_per=count_per,
+                reject_minimum=300,
+                random_seed=13,
+                overwrite=overwrite
+            )
+        else:
+            reliable_sources = fold["reliable"]
+            unreliable_sources = fold["unreliable"]
+
+            df, meta = create_binary_selection(
+                "reliable_binary_fold_" + str(count_per) + "_" + str(n), 
+                reliable_sources,
+                unreliable_sources,
+                "reliable",
+                count_per=count_per,
+                reject_minimum=300,
+                random_seed=13,
+                overwrite=overwrite
+            )
     else:
         df, meta = create_ternary_selection(
             "ternary_fold_" + str(count_per) + "_" + str(n),
@@ -55,17 +71,17 @@ def load_fold(n, count_per, binary=True, overwrite=False):
 
 
 @util.dump_log
-def load_folds(n, count_per, binary=True, overwrite=False):
+def load_folds(n, count_per, binary=True, bias=True, overwrite=False):
     fold_sources = util.load_fold_divisions_dataset()
 
     combined = None
 
     fold_indices = [x for x in range(0, 10) if x != n]
     for fold_index in fold_indices:
-        df, _ = load_fold(fold_index, count_per, binary, overwrite)   
+        df, _ = load_fold(fold_index, count_per, binary, bias, overwrite)   
         combined = util.stack_dfs(combined, df)
 
-    test, _ = load_fold(n, count_per, binary, overwrite)
+    test, _ = load_fold(n, count_per, binary, bias, overwrite)
 
     return combined, test
 
