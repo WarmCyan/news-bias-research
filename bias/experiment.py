@@ -95,17 +95,17 @@ def calculate_cm_counts(df, target_col, binary=True):
         
         counts = [tp, fp, fn, tn]
     else:
-        ll = calculate_counts(df, target_col, -1, -1)
-        lc = calculate_counts(df, target_col, -1, 0)
-        lr = calculate_counts(df, target_col, -1, 1)
+        ll = calculate_counts(df, target_col, 0, 0)
+        lc = calculate_counts(df, target_col, 0, 1)
+        lr = calculate_counts(df, target_col, 0, 2)
         
-        cl = calculate_counts(df, target_col, 0, -1)
-        cc = calculate_counts(df, target_col, 0, 0)
-        cr = calculate_counts(df, target_col, 0, 1)
+        cl = calculate_counts(df, target_col, 1, 0)
+        cc = calculate_counts(df, target_col, 1, 1)
+        cr = calculate_counts(df, target_col, 1, 2)
         
-        rl = calculate_counts(df, target_col, 1, -1)
-        rc = calculate_counts(df, target_col, 1, 0)
-        rr = calculate_counts(df, target_col, 1, 1)
+        rl = calculate_counts(df, target_col, 2, 0)
+        rc = calculate_counts(df, target_col, 2, 1)
+        rr = calculate_counts(df, target_col, 2, 2)
         
         counts = [ll, lc, lr, cl, cc, cr, rl, rc, rr]
 
@@ -152,6 +152,16 @@ def experiment_dataset_bias(
         shaping=embedding_shape,
         overwrite=embedding_overwrite,
     )
+
+    #article_test_name = f"{selection_problem}_al_selection"
+    #articlelevel_selection_df = datasets.load_articlelevel_set(binary, bias)
+    #embedding_article_df = datasets.get_embedding_set(
+    #    articlelevel_selection_df,
+    #    embedding_type=embedding_type,
+    #    output_name=article_test_name,
+    #    shaping=embedding_shape,
+    #    overwrite=False
+    #)
 
     return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df
 
@@ -322,7 +332,10 @@ def experiment_model(
         y_test = np.array(y_test)
         data_width = X.shape[-1]
 
-    #y = keras.utils.to_categorical(y)
+    
+    if selection_problem == "bias_direction":
+        y = keras.utils.to_categorical(y, num_classes=3)
+        y_test = keras.utils.to_categorical(y_test, num_classes=3)
     
     name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
@@ -331,7 +344,7 @@ def experiment_model(
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
-        model, history, loss, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
+        model, history, loss, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width, selection_problem)
         pass
     elif model_type == "svm":
         pass
@@ -343,8 +356,13 @@ def experiment_model(
     # turn predictions into dataframe
     #pred = pd.DataFrame({"predicted": predictions})
     #pred.index = test_selection_df.index
-    test_selection_df["predicted"] = predictions
-    test_selection_df["pred_class"] = round(test_selection_df.predicted).astype(int)
+    
+    if selection_problem == "bias_direction":
+        test_selection_df["predicted"] = np.argmax(predictions, axis=1)
+        test_selection_df["pred_class"] = np.argmax(predictions, axis=1)
+    else:
+        test_selection_df["predicted"] = predictions
+        test_selection_df["pred_class"] = round(test_selection_df.predicted).astype(int)
 
     overall_counts = [] 
     if selection_problem != "bias_direction":

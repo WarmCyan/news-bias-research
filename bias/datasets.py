@@ -15,15 +15,37 @@ from tqdm import tqdm
 import util
 import word2vec_creator
 
-
+# returns the equivalent of a selection set
 def load_articlelevel_set(binary=True, bias=True):
     df = util.load_scraped_mpc()
+    df = df[df.content.notnull()]
+    df = df[df.content.str.split().apply(len) > 50]
     
     if bias:
-        pass
-    else:
-        pass
+        df_left = df[df.Bias < -8.4]
+        df_right = df[df.Bias > -8.4]
+        df_center = df[(df.Bias >= -8.4) & (df.Bias <= 8.4)]
 
+        if binary:
+            df_left["biased"] = 1
+            df_right["biased"] = 1
+            df_center["biased"] = 0
+        else:
+            df_left["biased"] = 0
+            df_right["biased"] = 2
+            df_center["biased"] = 1
+
+        df_final = util.stack_dfs(df_left, df_right)
+        df_final = util.stack_dfs(df_final, df_center)
+    else:
+        df_reliable = df[df.Quality > 32]
+        df_unreliable = df[df.Quality <= 32]
+
+        df_reliable["reliable"] = 1
+        df_unreliable["reliable"] = 0
+        df_final = util.stack_dfs(df_reliable, df_unreliable)
+
+    return df_final
 
 # NOTE: for reliability, assumes selection.json already exists? (and that folds exist)
 def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
@@ -820,7 +842,7 @@ def create_ternary_selection(
         logging.info("Loading %s...", path)
         df = pd.read_pickle(path)
         print(df[df.content.isnull()])
-        return df
+        return df, None
 
     df_left, left_counts, left_rejected = random_balanced_sample(
         left_sources,
@@ -889,9 +911,9 @@ def create_ternary_selection(
             verbose=verbose,
         )
 
-    df_center[col_title] = 0
-    df_left[col_title] = -1
-    df_right[col_title] = 1
+    df_center[col_title] = 1
+    df_left[col_title] = 0
+    df_right[col_title] = 2
 
     df = util.stack_dfs(df_left, df_center)
     df = util.stack_dfs(df, df_right)

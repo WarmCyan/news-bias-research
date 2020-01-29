@@ -7,28 +7,33 @@ import logging
 import util
 
 
-def create_model(arch_num, layer_sizes, maxlen, data_width):
+def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
     model = keras.Sequential()
     
     if arch_num == 1:
         model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
-        model.add(Dense(layer_sizes[1], activation='sigmoid'))
+        #model.add(Dense(layer_sizes[1], activation='sigmoid'))
     if arch_num == 2:
         model.add(Dense(layer_sizes[0], activation='relu'))
         model.add(Dense(layer_sizes[1], activation='relu'))
-        model.add(Dense(layer_sizes[2], activation='sigmoid'))
+        #model.add(Dense(layer_sizes[2], activation='sigmoid'))
     if arch_num == 3:
         model.add(Dense(layer_sizes[0], activation='relu'))
         model.add(Dense(layer_sizes[1], activation='relu'))
         model.add(Dense(layer_sizes[2], activation='relu'))
-        model.add(Dense(layer_sizes[3], activation='sigmoid'))
+        #model.add(Dense(layer_sizes[3], activation='sigmoid'))
+
+    if selection_problem == "bias_direction":
+        model.add(Dense(layer_sizes[-1], activation='softmax'))
+    else:
+        model.add(Dense(layer_sizes[-1], activation='sigmoid'))
 
     return model
 
 # TODO: unclear if data width needed here or not, data should always have same meta shape
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width):
-    model = create_model(arch_num, layer_sizes, maxlen, data_width)
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width, selection_problem):
+    model = create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem)
     print("DATA WIDTH:", data_width)
 
     weight_file = "../models/" + name + ".weights"
