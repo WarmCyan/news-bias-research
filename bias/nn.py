@@ -12,16 +12,16 @@ def create_model(arch_num, layer_sizes, maxlen, data_width):
     
     if arch_num == 1:
         model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
-        model.add(Dense(layer_sizes[1], activation='softmax'))
+        model.add(Dense(layer_sizes[1], activation='sigmoid'))
     if arch_num == 2:
         model.add(Dense(layer_sizes[0], activation='relu'))
         model.add(Dense(layer_sizes[1], activation='relu'))
-        model.add(Dense(layer_sizes[2], activation='softmax'))
+        model.add(Dense(layer_sizes[2], activation='sigmoid'))
     if arch_num == 3:
         model.add(Dense(layer_sizes[0], activation='relu'))
         model.add(Dense(layer_sizes[1], activation='relu'))
         model.add(Dense(layer_sizes[2], activation='relu'))
-        model.add(Dense(layer_sizes[3], activation='softmax'))
+        model.add(Dense(layer_sizes[3], activation='sigmoid'))
 
     return model
 
@@ -29,10 +29,21 @@ def create_model(arch_num, layer_sizes, maxlen, data_width):
 @util.dump_log
 def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width):
     model = create_model(arch_num, layer_sizes, maxlen, data_width)
+    print("DATA WIDTH:", data_width)
 
     weight_file = "../models/" + name + ".weights"
     
     optimizer = keras.optimizers.Adam(lr=learning_rate)
+
+    #tensorboard = callbacks.TensorBoard(log_dir="../logs",
+    #                      histogram_freq=1, 
+    #                      batch_size=batch_size, 
+    #                      write_graph=True, 
+    #                      write_grads=True, 
+    #                      write_images=False, 
+    #                      embeddings_freq=0, 
+    #                      embeddings_layer_names=None, 
+    #                      embeddings_metadata=None) 
 
     cbks = [callbacks.EarlyStopping(monitor='val_loss', patience=10), callbacks.ModelCheckpoint(filepath=util.TMP_PATH + name + '.best.weights', verbose=0, save_best_only=True)]
     
@@ -47,8 +58,8 @@ def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, e
     model.summary()
     
     X_train, X_val, y_train, y_val = train_test_split(X, y, shuffle=True, stratify=y, test_size=.2, random_state=13)
-    print(X_train)
-    
+
+            
     history = model.fit(
         X_train,
         y_train,

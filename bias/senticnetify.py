@@ -9,10 +9,11 @@ sn = SenticNet()
 
 
 patterns = [
-    #["NOUN"],
+    ["NOUN"],
     ["NOUN", "NOUN"],
     ["VERB", "NOUN"],
-    #["ADJ"]
+    ["ADJ"],
+    ["ADV"]
 ]
 
 
@@ -111,5 +112,11 @@ def get_article_embedding(doc_words, model):
                 sentic_vectors.append(vector)
         else:
             sentic_vectors.extend(sentic_vector_instances)
+
+    if len(sentic_vectors) == 0:
+        if model is not None:
+            sentic_vectors = [[0*306]]
+        else:
+            sentic_vectors = [[0*6]]
 
     return sentic_vectors

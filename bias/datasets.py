@@ -16,6 +16,15 @@ import util
 import word2vec_creator
 
 
+def load_articlelevel_set(binary=True, bias=True):
+    df = util.load_scraped_mpc()
+    
+    if bias:
+        pass
+    else:
+        pass
+
+
 # NOTE: for reliability, assumes selection.json already exists? (and that folds exist)
 def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
     fold_sources = util.load_fold_divisions_dataset(bias)

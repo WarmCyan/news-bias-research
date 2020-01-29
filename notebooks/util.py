@@ -126,6 +126,10 @@ def load_fold_divisions_dataset(bias=True):
     return folds
 
 
+def load_scraped_mpc():
+    return pd.read_pickle("../data/raw/mbc_scraped.pkl")
+
+
 # pass count of -1 for all articles from source
 # can't run on cluster
 def nela_load_articles_from_source(source_name, count=-1):

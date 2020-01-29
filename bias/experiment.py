@@ -135,8 +135,8 @@ def experiment_dataset_bias(
     if selection_problem == "reliability":
         bias = False
 
-    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, binary, selection_overwrite)
-
+    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, binary, bias, selection_overwrite)
+    
     embedding_df = datasets.get_embedding_set(
         selection_df,
         embedding_type=embedding_type,
@@ -155,6 +155,7 @@ def experiment_dataset_bias(
 
     return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df
 
+# NOTE: basically not using this funciton at all (no folds)
 def experiment_dataset_reliability(
     selection_problem,
     selection_source,
@@ -314,7 +315,9 @@ def experiment_model(
             X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*data_width, 1))
     else:
         X = np.array(X)
+        #X = np.stack(X)
         y = np.array(y)
+        y = y.reshape((y.shape[0],1))
         X_test = np.array(X_test)
         y_test = np.array(y_test)
         data_width = X.shape[-1]
@@ -328,7 +331,7 @@ def experiment_model(
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
-        model, history, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
+        model, history, loss, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
         pass
     elif model_type == "svm":
         pass
