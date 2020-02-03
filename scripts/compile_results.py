@@ -62,7 +62,7 @@ for path in pathlist_breakdown:
         results = json.load(infile)
 
     row = {}
-    row.update({"source": results["source"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
+    row.update({"source": results["source"], "accuracy": results["accuracy"], "precision": results["precision"], "recall": results["recall"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
     row["filename"] = path_in_str
 
     breakdown_results.append(row)
