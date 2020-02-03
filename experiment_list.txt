@@ -1,0 +1,32 @@
+Base sequence reliability round: (9 experiments) [cluster]
+------------------------
+Establish from this whether sentic_full improves over sentic (if so, don't bother running limited sentic/embedding afterwards)
+
+Experiments:
+reliability_w2v_seq
+reliability_glove_seq
+reliability_ft_seq
+reliability_w2v_sentic_seq
+reliability_glove_sentic_seq
+reliability_ft_sentic_seq
+reliability_w2v_limit_seq
+reliability_w2v_sentic_full_seq
+reliability_sentic_seq
+
+
+Base averages reliability round: (9 experiments) [local]
+------------------------
+Establish comparison of avg to seq (from last round), determine improvement of stddev (run remaining embedding types based on results of first two
+
+Experiments:
+reliability_tfidf
+reliability_w2v_avg
+reliability_w2v_avg_stddev
+-if stddev better:
+	reliability_sentic_avg_stddev
+	reliability_glove_avg_stddev
+	reliability_ft_avg_stddev
+	-if sentic_full better:
+		reliability_w2v_sentic_full_avg_stddev
+		reliability_glove_sentic_full_avg_stddev
+		reliability_ft_sentic_full_avg_stddev

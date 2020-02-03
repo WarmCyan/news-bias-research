@@ -71,8 +71,8 @@ def get_article_embedding(doc_words, model):
 
     found_patterns = find_tagged(tagged, patterns[0])
     found_patterns.extend(find_tagged(tagged, patterns[1]))
-    #found_patterns.extend(find_tagged(tagged, patterns[2]))
-    #found_patterns.extend(find_tagged(tagged, patterns[3]))
+    found_patterns.extend(find_tagged(tagged, patterns[2]))
+    found_patterns.extend(find_tagged(tagged, patterns[3]))
 
     sentic_vectors = []
     

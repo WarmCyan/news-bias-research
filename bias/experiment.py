@@ -153,17 +153,17 @@ def experiment_dataset_bias(
         overwrite=embedding_overwrite,
     )
 
-    #article_test_name = f"{selection_problem}_al_selection"
-    #articlelevel_selection_df = datasets.load_articlelevel_set(binary, bias)
-    #embedding_article_df = datasets.get_embedding_set(
-    #    articlelevel_selection_df,
-    #    embedding_type=embedding_type,
-    #    output_name=article_test_name,
-    #    shaping=embedding_shape,
-    #    overwrite=False
-    #)
+    article_test_name = f"{selection_problem}_al_selection"
+    articlelevel_selection_df = datasets.load_articlelevel_set(binary, bias)
+    embedding_article_df = datasets.get_embedding_set(
+        articlelevel_selection_df,
+        embedding_type=embedding_type,
+        output_name=article_test_name,
+        shaping=embedding_shape,
+        overwrite=False
+    )
 
-    return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df
+    return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df, articlelevel_selection_df, embedding_article_df
 
 # NOTE: basically not using this funciton at all (no folds)
 def experiment_dataset_reliability(
@@ -233,7 +233,7 @@ def experiment_dataset(
     #        embedding_overwrite
     #    )
     #else:
-    embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset_bias(
+    embed_df, sel_df, name, test_selection_df, test_embedding_df, al_selection_df, al_embedding_df = experiment_dataset_bias(
         selection_problem,
         selection_test_fold,
         selection_count,
@@ -244,7 +244,7 @@ def experiment_dataset(
         embedding_overwrite,
     )
 
-    return embed_df, sel_df, name, test_selection_df, test_embedding_df
+    return embed_df, sel_df, name, test_selection_df, test_embedding_df, al_selection_df, al_embedding_df
 
 @util.dump_log
 def experiment_model(
@@ -285,7 +285,7 @@ def experiment_model(
 
     # test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
-    embed_df, sel_df, name, test_selection_df, test_embedding_df = experiment_dataset(
+    embed_df, sel_df, name, test_selection_df, test_embedding_df, al_selection_df, al_embedding_df = experiment_dataset(
         selection_problem,
         selection_test_fold,
         selection_source,
@@ -301,15 +301,18 @@ def experiment_model(
 
     X = embed_df
     X_test = test_embedding_df
+    X_al_test = al_embedding_df
     target_col = ""
     if selection_problem == "reliability":
         target_col = "reliable"
         y = sel_df.reliable
         y_test = test_selection_df.reliable
+        y_al_test = al_selection_df.reliable
     elif selection_problem == "biased" or selection_problem == "extreme_biased" or selection_problem == "bias_direction": # NOTE: unsure if this is where bias_direction should go?
         target_col = "biased"
         y = sel_df.biased
         y_test = test_selection_df.biased
+        y_al_test = al_selection_df.biased
 
     # pad as needed
     data_width=0
@@ -317,19 +320,22 @@ def experiment_model(
     if embedding_shape == "sequence":
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
+        X_al_test = lstm.pad_data(X_al_test, maxlen=model_maxlen)
 
         # TODO: 300 actually needs to be width (num cols) of dataset
         data_width = X.shape[-1]
         if model_type == "cnn":
             X = np.reshape(X, (X.shape[0], model_maxlen*data_width, 1))
             X_test = np.reshape(X_test, (X_test.shape[0], model_maxlen*data_width, 1))
+            X_al_test = np.reshape(X_al_test, (X_al_test.shape[0], model_maxlen*data_width, 1))
     else:
         X = np.array(X)
-        #X = np.stack(X)
         y = np.array(y)
-        y = y.reshape((y.shape[0],1))
+        #y = y.reshape((y.shape[0],1))
         X_test = np.array(X_test)
         y_test = np.array(y_test)
+        X_al_test = np.array(X_al_test)
+        y_al_test = np.array(y_al_test)
         data_width = X.shape[-1]
 
     
@@ -345,8 +351,10 @@ def experiment_model(
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":
         model, history, loss, acc, predictions = nn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width, selection_problem)
-        pass
+
+        loss_al, acc_al, predictions_al = nn.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "svm":
+        # TODO: TODO: TODO: TODO: TODO: 
         pass
     print("Training done")
 
@@ -360,27 +368,27 @@ def experiment_model(
     if selection_problem == "bias_direction":
         test_selection_df["predicted"] = np.argmax(predictions, axis=1)
         test_selection_df["pred_class"] = np.argmax(predictions, axis=1)
+        
+        al_selection_df["predicted"] = np.argmax(predictions_al, axis=1)
+        al_selection_df["pred_class"] = np.argmax(predictions_al, axis=1)
     else:
         test_selection_df["predicted"] = predictions
         test_selection_df["pred_class"] = round(test_selection_df.predicted).astype(int)
+        
+        al_selection_df["predicted"] = predictions_al
+        al_selection_df["pred_class"] = round(al_selection_df.predicted).astype(int)
 
     overall_counts = [] 
     if selection_problem != "bias_direction":
         overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=True)
+        overall_counts_al = calculate_cm_counts(al_selection_df, target_col, binary=True)
     else:
         overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=False)
-        
-    
-    # tp = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 1)].shape[0]
-    # tn = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 0)].shape[0]
-    # fp = test_selection_df[(test_selection_df[target_col] == 0) & (test_selection_df.pred_class == 1)].shape[0]
-    # fn = test_selection_df[(test_selection_df[target_col] == 1) & (test_selection_df.pred_class == 0)].shape[0]
+        overall_counts_al = calculate_cm_counts(al_selection_df, target_col, binary=False)
 
     logging.info("Overall confusion analysis")
     confusion_analysis(overall_counts, name, history, loss, acc, params, False)
     logging.info("Overall analysis complete")
-
-
 
     groups = test_selection_df.groupby(test_selection_df.source)
     logging.info("There are %i groups", len(groups))
@@ -400,6 +408,25 @@ def experiment_model(
 
     with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
+
+    logging.info("*****-----------------------------------------*****")
+    logging.info("Article-level analysis")
+    confusion_analysis(overall_counts_al, name + "_al", None, loss_al, acc_al, params, False)
+    
+    groups = al_selection_df.groupby(al_selection_df.Source)
+    logging.info("There are %i al groups", len(groups))
+    
+    for group_name, group in groups:
+        logging.info("Next group %s", name)
+
+        group_counts = []
+        if selection_problem != "bias_direction":
+            group_counts = calculate_cm_counts(group, target_col, binary=True)
+        else:
+            group_counts = calculate_cm_counts(group, target_col, binary=False)
+        confusion_analysis(group_counts, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
+    with open("../data/output/" + name + "_predictionsal.pkl", 'wb') as outfile:
+        pickle.dump(al_selection_df, outfile)
 
 
 #if __name__ == "__main__":

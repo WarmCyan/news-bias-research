@@ -69,14 +69,13 @@ def vectorize_collection(df, output, model, shaping, word_limit, sentics=False):
         if shaping == "sequence":
             vector_collection.append(vectors)
         elif shaping == "avg":
-            #vectors.astype(np.float)
-            #print("VECTORS")
-            #print(vectors)
-            #print(len(vectors))
-            averaged = np.mean(vectors, axis=0)  # TODO: verify axis is correct
-            #print(averaged)
-            #print(len(averaged))
+            averaged = np.mean(vectors, axis=0)
             vector_collection.append(averaged)
+        elif shaping == "avg_std":
+            averaged = np.mean(vectors, axis=0)
+            stddev = np.std(vectors, axis=0)
+            combined = np.concatenate((averaged, stddev), axis=0)
+            vector_collection.append(combined)
 
     with open(output, "wb") as outfile:
         pickle.dump(vector_collection, outfile)

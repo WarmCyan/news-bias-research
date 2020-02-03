@@ -14,7 +14,7 @@ def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
         model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
         #model.add(Dense(layer_sizes[1], activation='sigmoid'))
     if arch_num == 2:
-        model.add(Dense(layer_sizes[0], activation='relu'))
+        model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
         model.add(Dense(layer_sizes[1], activation='relu'))
         #model.add(Dense(layer_sizes[2], activation='sigmoid'))
     if arch_num == 3:
@@ -27,7 +27,6 @@ def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
         model.add(Dense(layer_sizes[-1], activation='softmax'))
     else:
         model.add(Dense(layer_sizes[-1], activation='sigmoid'))
-
     return model
 
 # TODO: unclear if data width needed here or not, data should always have same meta shape
