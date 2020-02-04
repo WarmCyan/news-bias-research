@@ -221,6 +221,13 @@ def init_logging(log_path=None):
     root_logger.addHandler(console_handler)
 
 
+def create_dir(path):
+    try:
+        os.mkdir(path)
+    except:
+        logging.warning("Did not create directory %s", path)
+
+
 def dump_log(func):
     """Decorator to print function call details - parameters names and effective values."""
     def wrapper(*args, **kwargs):

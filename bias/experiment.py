@@ -16,7 +16,7 @@ import nn
 
 # TODO: pass tuple of counts instead of tp fp etc
 #def confusion_analysis(tp, fp, tn, fn, name, history, loss, acc, params, source=False):
-def confusion_analysis(counts, name, history, loss, acc, params, source=False):
+def confusion_analysis(counts, output_path, experiment_tag, name, history, loss, acc, params, source=False):
     if source:
         logging.info("Confusion analysis for %s", source)
 
@@ -69,12 +69,14 @@ def confusion_analysis(counts, name, history, loss, acc, params, source=False):
         
         results.update({"ll":ll, "lc":lc, "lr":lr, "cl":cl, "cc":cc, "cr":cr, "rl":rl, "rc":rc, "rr":rr, "accuracy": accuracy})
         
+    results.update({"experiment_tag": experiment_tag})
 
     filename = name + ".json"
     if source:
         filename = name + "_" + source + ".json"
 
-    with open("../data/output/" + filename, "w") as outfile:
+    #with open("../data/output/" + experiment_tag + "/" + filename, "w") as outfile:
+    with open(output_path + "/" + filename, "w") as outfile:
         json.dump(results, outfile)
     
 # predicted, actual
@@ -267,6 +269,7 @@ def experiment_model(
     model_learning_rate,
     model_epochs,
     model_num,
+    experiment_tag,
     verbose=True,
     params=None
 ):
@@ -343,7 +346,7 @@ def experiment_model(
         y = keras.utils.to_categorical(y, num_classes=3)
         y_test = keras.utils.to_categorical(y_test, num_classes=3)
     
-    name = f'{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
+    name = f'{experiment_tag}_{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
         model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
@@ -386,8 +389,16 @@ def experiment_model(
         overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=False)
         overall_counts_al = calculate_cm_counts(al_selection_df, target_col, binary=False)
 
+    # make output directory (based on experiment tag)
+    output_path = f"../data/output/{experiment_tag}"
+    breakdown_output_path = output_path + "/persource"
+    albreakdown_output_path = output_path + "/alpersource"
+    util.create_dir(output_path)
+    util.create_dir(breakdown_output_path)
+    util.create_dir(albreakdown_output_path)
+
     logging.info("Overall confusion analysis")
-    confusion_analysis(overall_counts, name, history, loss, acc, params, False)
+    confusion_analysis(overall_counts, output_path, experiment_tag, name, history, loss, acc, params, False)
     logging.info("Overall analysis complete")
 
     groups = test_selection_df.groupby(test_selection_df.source)
@@ -404,14 +415,15 @@ def experiment_model(
             group_counts = calculate_cm_counts(group, target_col, binary=False)
             
 
-        confusion_analysis(group_counts, name + "_persource", history, loss, acc, params, source=group_name)
+        confusion_analysis(group_counts, breakdown_output_path, experiment_tag, name + "_persource", history, loss, acc, params, source=group_name)
 
-    with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
+    #with open("../data/output/" + name + "_predictions.pkl", 'wb') as outfile:
+    with open(output_path + "/" + name + "_predictions.pkl", 'wb') as outfile:
         pickle.dump(test_selection_df, outfile)
 
     logging.info("*****-----------------------------------------*****")
     logging.info("Article-level analysis")
-    confusion_analysis(overall_counts_al, name + "_al", None, loss_al, acc_al, params, False)
+    confusion_analysis(overall_counts_al, output_path, experiment_tag, name + "_al", None, loss_al, acc_al, params, False)
     
     groups = al_selection_df.groupby(al_selection_df.Source)
     logging.info("There are %i al groups", len(groups))
@@ -424,8 +436,8 @@ def experiment_model(
             group_counts = calculate_cm_counts(group, target_col, binary=True)
         else:
             group_counts = calculate_cm_counts(group, target_col, binary=False)
-        confusion_analysis(group_counts, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
-    with open("../data/output/" + name + "_predictionsal.pkl", 'wb') as outfile:
+        confusion_analysis(group_counts, albreakdown_output_path, experiment_tag, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
+    with open(output_path + "/" + name + "_predictionsal.pkl", 'wb') as outfile:
         pickle.dump(al_selection_df, outfile)
 
 
@@ -491,6 +503,7 @@ if args.experiment_path is not None:
             params["model_learning_rate"],
             params["model_epochs"],
             params["model_num"],
+            params["experiment_tag"],
             params["verbose"],
             params
             )

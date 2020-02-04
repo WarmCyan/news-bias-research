@@ -514,11 +514,7 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
             df = pickle.load(infile)
         return df
     
-    try:
-        os.mkdir(path)
-    except:
-        logging.error("Failed to make directory %s (embedding set)", path)
-        pass
+    util.create_dir(path)
     
     embedding_df = None
     logging.debug("Preparing to run vectorization")
