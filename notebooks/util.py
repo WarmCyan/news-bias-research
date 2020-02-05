@@ -87,6 +87,27 @@ GT_COLS = {
     ],
 }
 
+# The dictionary of source names that are actually the same, but differ textually between MBC and NELA
+MBC_to_NELA = {
+    "New York Times": "The New York Times",
+    "Wall Street Journal": "WSJ Washington Wire",
+    "ABC": "ABC News",
+    "Washington Examiner": "The Washington Examiner",
+    "The Blaze": "TheBlaze",
+    "BuzzFeed": "Buzzfeed",
+    "Mother Jones": "MotherJones",
+    "National Public Radio": "NPR",
+    "The New Yorker": "New Yorker",
+    "Huffington Post": "The Huffington Post",
+    "Intercept": "The Intercept",
+    "Daily Caller": "The Daily Caller",
+    "Fiscal Times": "The Fiscal Times",
+    "ShareBlue": "Shareblue",
+    "InfoWars": "Infowars",
+    "Think Progress": "ThinkProgress",
+    "CBS": "CBS News"
+}
+
 
 def nela_load_labels():
     labels_df = pd.read_csv(os.path.join(DATA_RAW_PATH, "nela", "labels.csv"))

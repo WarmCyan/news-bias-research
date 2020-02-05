@@ -10,6 +10,8 @@ import traceback
 import pandas as pd
 import numpy as np
 
+from sklearn import svm
+
 import lstm
 import cnn
 import nn
@@ -319,7 +321,6 @@ def experiment_model(
 
     # pad as needed
     data_width=0
-    # TODO: how to determine data width for avg?
     if embedding_shape == "sequence":
         X = lstm.pad_data(X, maxlen=model_maxlen)
         X_test = lstm.pad_data(X_test, maxlen=model_maxlen)
@@ -334,7 +335,6 @@ def experiment_model(
     else:
         X = np.array(X)
         y = np.array(y)
-        #y = y.reshape((y.shape[0],1))
         X_test = np.array(X_test)
         y_test = np.array(y_test)
         X_al_test = np.array(X_al_test)
@@ -358,7 +358,15 @@ def experiment_model(
         loss_al, acc_al, predictions_al = nn.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "svm":
         # TODO: TODO: TODO: TODO: TODO: 
-        pass
+        model = svm.LinearSVC()
+        model.fit(X, y)
+        history = None
+        loss = 0
+        acc = model.score(X_test, y_test)
+        predictions = model.predict(X_test)
+        loss_al = 0
+        acc_al = model.score(X_al_test, y_al_test)
+        predictions_al = model.predict(X_al_test)
     print("Training done")
 
     logging.info("%s", str(test_selection_df[target_col].value_counts()))
@@ -381,13 +389,36 @@ def experiment_model(
         al_selection_df["predicted"] = predictions_al
         al_selection_df["pred_class"] = round(al_selection_df.predicted).astype(int)
 
+    #al_unique_selection_df = []
+    
+    # get list of sources for MBC that aren't in training set
+    training_sources = list(set(sel_df.source))
+    mbc_sources = list(set(al_selection_df.Source))
+    unseen_mbc_sources = [x for x in mbc_sources if x not in training_sources and not (x in util.MBC_to_NELA and util.MBC_to_NELA[x] in training_sources)]
+    al_unseen_selection_df = al_selection_df[al_selection_df.Source.isin(unseen_mbc_sources)]
+
+    print("="*20, "TRAINING", "="*20)
+    print(training_sources)
+    print("="*20, "MBC", "="*20)
+    print(mbc_sources)
+    print("="*20, "UNSEEN", "="*20)
+    print(unseen_mbc_sources)
+
+
     overall_counts = [] 
+    overall_counts_al = [] 
+    overall_counts_al_unseen = [] # only unique sources
     if selection_problem != "bias_direction":
         overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=True)
         overall_counts_al = calculate_cm_counts(al_selection_df, target_col, binary=True)
+        overall_counts_al_unseen = calculate_cm_counts(al_unseen_selection_df, target_col, binary=True)
     else:
         overall_counts = calculate_cm_counts(test_selection_df, target_col, binary=False)
         overall_counts_al = calculate_cm_counts(al_selection_df, target_col, binary=False)
+        overall_counts_al_unseen = calculate_cm_counts(al_unseen_selection_df, target_col, binary=False)
+
+
+        
 
     # make output directory (based on experiment tag)
     output_path = f"../data/output/{experiment_tag}"
@@ -424,6 +455,11 @@ def experiment_model(
     logging.info("*****-----------------------------------------*****")
     logging.info("Article-level analysis")
     confusion_analysis(overall_counts_al, output_path, experiment_tag, name + "_al", None, loss_al, acc_al, params, False)
+    logging.info("--- (With only unseen sources)")
+    confusion_analysis(overall_counts_al_unseen, output_path, experiment_tag, name + "_al_unseen", None, loss_al, acc_al, params, False)
+    with open(output_path + "/" + name + "_al_unseensourcelist.json", 'w') as outfile:
+        json.dump(unseen_mbc_sources, outfile)
+    # TODO: move unseen source calc to bottom and redo groups?
     
     groups = al_selection_df.groupby(al_selection_df.Source)
     logging.info("There are %i al groups", len(groups))
@@ -436,7 +472,7 @@ def experiment_model(
             group_counts = calculate_cm_counts(group, target_col, binary=True)
         else:
             group_counts = calculate_cm_counts(group, target_col, binary=False)
-        confusion_analysis(group_counts, albreakdown_output_path, experiment_tag, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
+        #confusion_analysis(group_counts, albreakdown_output_path, experiment_tag, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
     with open(output_path + "/" + name + "_predictionsal.pkl", 'wb') as outfile:
         pickle.dump(al_selection_df, outfile)
 
@@ -463,7 +499,7 @@ if args.experiment_path is not None:
         params = json.load(infile)
 
     if args.experiment_row is not None:
-        params = params[args.experiment_row-1]
+        params = params[args.experiment_row]
 
     util.TMP_PATH = args.temp
 

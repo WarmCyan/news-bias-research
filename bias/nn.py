@@ -18,7 +18,7 @@ def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
         model.add(Dense(layer_sizes[1], activation='relu'))
         #model.add(Dense(layer_sizes[2], activation='sigmoid'))
     if arch_num == 3:
-        model.add(Dense(layer_sizes[0], activation='relu'))
+        model.add(Dense(layer_sizes[0], activation='relu', input_shape=(data_width,)))
         model.add(Dense(layer_sizes[1], activation='relu'))
         model.add(Dense(layer_sizes[2], activation='relu'))
         #model.add(Dense(layer_sizes[3], activation='sigmoid'))
