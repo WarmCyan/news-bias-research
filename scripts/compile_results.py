@@ -15,41 +15,81 @@ args = parser.parse_args()
 
 
 results_collection = []
+results_collection_al = []
+results_collection_al_unseen = []
+
+output_path = "../data/output/compiled/" + args.output_path
 
 try:
-    os.mkdir(args.output_path)
+    os.mkdirs(output_path)
 except: pass
 try:
-    os.mkdir(args.output_path + "/training_graphs")
+    os.mkdirs(output_path + "/training_graphs")
 except: pass
 
-# pathlist = Path(args.experiment_results_path).glob('**/*.json')
-pathlist = Path(args.experiment_results_path).glob('*.json')
-for path in pathlist:
-    path_in_str = str(path)
-    print(f"Processing {path_in_str}...")
+results_paths = args.experiment_results_path.split(",")
 
-    with open(path_in_str, 'r') as infile:
-        results = json.load(infile)
+for result_path in results_paths:
+    actual_path = "../data/output/" + result_path
+    # pathlist = Path(args.experiment_results_path).glob('**/*.json')
+    pathlist = Path(actual_path).glob('*.json')
+    for path in pathlist:
+        path_in_str = str(path)
+        print(f"Processing {path_in_str}...")
 
-    row = results["params"]
-    row["testing_loss"] = results["testing_loss"]
-    row["testing_acc"] = results["testing_acc"]
-    row["tn"] = results["tn"]
-    row["tp"] = results["tp"]
-    row["fn"] = results["fn"]
-    row["fp"] = results["fp"]
-    row["precision"] = results["precision"]
-    row["recall"] = results["recall"]
-    row["filename"] = path_in_str
+        al = False
+        al_unseen = False
 
-    results_collection.append(row)
+        if path_in_str[-7:] == "al.json":
+            print("Recognized AL data")
+            al = True
+        elif path_in_str[-14:] == "al_unseen.json":
+            print("Recognized AL unseen source data")
+            al_unseen = True
+        elif path_in_str[-24:] == "al_unseensourcelist.json":
+            print("Recognized an unseen source list")
+            continue
 
-    figure = vis.make_test_train_plot(results["history"], str(path.name))
-    figure.savefig(args.output_path + "/training_graphs/" + str(path.name) + ".png")
+        with open(path_in_str, 'r') as infile:
+            results = json.load(infile)
+
+        row = results["params"]
+        if "testing_loss" in results:
+            row["testing_loss"] = results["testing_loss"]
+        if "testing_acc" in results:
+            row["testing_acc"] = results["testing_acc"]
+        # TODO: tn etc only for two way classification, will need to fix for threeway
+        row["tn"] = results["tn"]
+        row["tp"] = results["tp"]
+        row["fn"] = results["fn"]
+        row["fp"] = results["fp"]
+        row["precision"] = results["precision"]
+        row["recall"] = results["recall"]
+        row["accuracy"] = results["accuracy"]
+        row["experiment_tag"] = results["experiment_tag"]
+        #row["filename"] = path_in_str
+
+        if al:
+            results_collection_al.append(row)
+        elif al_unseen:
+            results_collection_al_unseen.append(row)
+        else:
+            results_collection.append(row)
+            figure = vis.make_test_train_plot(results["history"], str(path.name))
+            figure.savefig(args.output_path + "/training_graphs/" + str(path.name) + ".png")
 
 df = pd.DataFrame(results_collection)
-df.to_csv(args.output_path + "/compiled.csv")
+df.to_csv(output_path + "/compiled.csv")
+
+al_df = pd.DataFrame(results_collection_al)
+al_df.to_csv(output_path + "/compiled_al.csv")
+
+al_unseen_df = pd.DataFrame(results_collection_al_unseen)
+al_unseen_df.to_csv(output_path + "/compiled_al_unseen.csv")
+
+
+
+
 
 pathlist_breakdown = Path(args.experiment_results_path + "/breakdown").glob('*.json')
 

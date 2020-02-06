@@ -472,7 +472,7 @@ def experiment_model(
             group_counts = calculate_cm_counts(group, target_col, binary=True)
         else:
             group_counts = calculate_cm_counts(group, target_col, binary=False)
-        #confusion_analysis(group_counts, albreakdown_output_path, experiment_tag, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
+        confusion_analysis(group_counts, albreakdown_output_path, experiment_tag, name + "_peralsource", None, loss_al, acc_al, params, source=group_name)
     with open(output_path + "/" + name + "_predictionsal.pkl", 'wb') as outfile:
         pickle.dump(al_selection_df, outfile)
 
