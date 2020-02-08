@@ -350,6 +350,8 @@ def experiment_model(
         
     if model_type == "lstm":
         model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
+
+        loss_al, acc_al, predictions_al = lstm.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "cnn":
         model, history, loss, acc, predictions = cnn.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name)
     elif model_type == "nn":

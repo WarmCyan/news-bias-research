@@ -1,3 +1,4 @@
+#!/bin/python3
 import argparse
 import os
 import json
@@ -21,10 +22,10 @@ results_collection_al_unseen = []
 output_path = "../data/output/compiled/" + args.output_path
 
 try:
-    os.mkdirs(output_path)
+    os.makedirs(output_path)
 except: pass
 try:
-    os.mkdirs(output_path + "/training_graphs")
+    os.makedirs(output_path + "/training_graphs")
 except: pass
 
 results_paths = args.experiment_results_path.split(",")
@@ -75,8 +76,8 @@ for result_path in results_paths:
             results_collection_al_unseen.append(row)
         else:
             results_collection.append(row)
-            figure = vis.make_test_train_plot(results["history"], str(path.name))
-            figure.savefig(args.output_path + "/training_graphs/" + str(path.name) + ".png")
+            #figure = vis.make_test_train_plot(results["history"], str(path.name))
+            #figure.savefig(args.output_path + "/training_graphs/" + str(path.name) + ".png")
 
 df = pd.DataFrame(results_collection)
 df.to_csv(output_path + "/compiled.csv")
@@ -88,24 +89,106 @@ al_unseen_df = pd.DataFrame(results_collection_al_unseen)
 al_unseen_df.to_csv(output_path + "/compiled_al_unseen.csv")
 
 
+# TODO: aggregate stats next 
+experiment_names = list(set(df.experiment_tag))
+
+aggregate = []
+
+# group the compiled by problem (TODO) and then fold
+groups = df.groupby(df["selection_test_fold"])
+for group_name, group in groups:
+    print(group_name)
+    row = {}
+    row["fold"] = group_name
+    
+    # get each experiment tag
+    for name in experiment_names:
+        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    aggregate.append(row)
+
+aggregate_df = pd.DataFrame(aggregate)
+#aggregate_df.columns = ["fold", *experiment_names]
+aggregate_df.to_csv(output_path + "/aggregate.csv")
 
 
 
-pathlist_breakdown = Path(args.experiment_results_path + "/breakdown").glob('*.json')
+aggregate_al = []
+
+groups = al_df.groupby(al_df["selection_test_fold"])
+for group_name, group in groups:
+    print(group_name)
+    row = {}
+    row["fold"] = group_name
+    
+    # get each experiment tag
+    for name in experiment_names:
+        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    aggregate_al.append(row)
+
+aggregate_al_df = pd.DataFrame(aggregate_al)
+aggregate_al_df.to_csv(output_path + "/aggregate_al.csv")
+
+
+aggregate_al_unseen = []
+
+groups = al_unseen_df.groupby(al_unseen_df["selection_test_fold"])
+for group_name, group in groups:
+    print(group_name)
+    row = {}
+    row["fold"] = group_name
+    
+    # get each experiment tag
+    for name in experiment_names:
+        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    aggregate_al_unseen.append(row)
+
+aggregate_al_unseen_df = pd.DataFrame(aggregate_al_unseen)
+aggregate_al_unseen_df.to_csv(output_path + "/aggregate_al_unseen.csv")
+
+
+
+
 
 breakdown_results = []
-for path in pathlist_breakdown:
-    path_in_str = str(path)
-    print(f"Processing {path_in_str}...")
+for result_path in results_paths:
+    actual_path = "../data/output/" + result_path
+        
+    pathlist_breakdown = Path(actual_path + "/persource").glob('*.json')
 
-    with open(path_in_str, 'r') as infile:
-        results = json.load(infile)
+    for path in pathlist_breakdown:
+        path_in_str = str(path)
+        print(f"Processing {path_in_str}...")
 
-    row = {}
-    row.update({"source": results["source"], "accuracy": results["accuracy"], "precision": results["precision"], "recall": results["recall"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
-    row["filename"] = path_in_str
+        with open(path_in_str, 'r') as infile:
+            results = json.load(infile)
 
-    breakdown_results.append(row)
+        row = {}
+        row["experiment_tag"] = results["experiment_tag"]
+        row.update({"source": results["source"], "accuracy": results["accuracy"], "precision": results["precision"], "recall": results["recall"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
+        row["filename"] = path_in_str
+
+        breakdown_results.append(row)
     
 df_breakdown = pd.DataFrame(breakdown_results)
-df_breakdown.to_csv(args.output_path + "/compiled_breakdown.csv")
+df_breakdown.to_csv(output_path + "/compiled_breakdown.csv")
+
+
+aggregate_breakdown = []
+groups = df_breakdown.groupby(df_breakdown["source"])
+for group_name, group in groups:
+    print(group_name)
+    row = {}
+    row["source"] = group_name
+    
+    # get each experiment tag
+    for name in experiment_names:
+        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    aggregate_breakdown.append(row)
+
+aggregate_breakdown_df = pd.DataFrame(aggregate_breakdown)
+#aggregate_df.columns = ["fold", *experiment_names]
+aggregate_breakdown_df.to_csv(output_path + "/aggregate_breakdown.csv")

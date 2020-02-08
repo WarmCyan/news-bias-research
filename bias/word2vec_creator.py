@@ -39,7 +39,7 @@ def run_glove(df, output, shaping="sequence", word_limit=-1, sentics=False, mode
             "../data/cache/models/glove2word2vec_pretrained.model"
         )
 
-    return vectorize_collection(df, output, model, shaping, word_limit, sentic, model_only, zero_pad)
+    return vectorize_collection(df, output, model, shaping, word_limit, sentics, model_only, zero_pad)
 
 
 def run_fasttext(df, output, shaping="sequence", word_limit=-1, sentics=False, model_only=False, zero_pad=False):
@@ -50,7 +50,7 @@ def run_fasttext(df, output, shaping="sequence", word_limit=-1, sentics=False, m
 
         model = gensim.models.fasttext.load_facebook_vectors('../data/raw/models/wiki.en.bin')
 
-    return vectorize_collection(df, output, model, shaping, word_limit, sentic, model_only, zero_pad)
+    return vectorize_collection(df, output, model, shaping, word_limit, sentics, model_only, zero_pad)
 
 
 def clear_model():
