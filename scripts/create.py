@@ -10,6 +10,7 @@ arch_num = 1
 layers = [128, 1] # will have to read json string
 model_num = 0
 tag = ""
+selection_tag = ""
 
 problem_input = input("Problem: (b)iased, bias_(d)irection, (r)eliability [biased]> ")
 if problem_input == "b":
@@ -61,6 +62,10 @@ tag_input = input("Experiment tag:> ")
 tag = tag_input
 print(tag)
 
+selection_tag_input = input("Experiment selection tag: ('')> ")
+selection_tag = selection_tag_input
+print(selection_tag)
+
 experiments = []
 for i in range(0, 10):
     experiment_model_num = model_num + i 
@@ -72,6 +77,7 @@ for i in range(0, 10):
             "selection_test_source": "",
             "selection_count": 1000,
             "selection_random_seed": 13,
+            "selection_tag": selection_tag,
             "selection_reject_minimum": 300,
             "selection_overwrite": False,
             "embedding_type": embedding,

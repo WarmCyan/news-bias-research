@@ -33,7 +33,7 @@ USA Today,Center,Center,Left-center,0.014,0
 NPR,Center,Center,Left-center,-0.732,0
 The Hill,Center,Center,Left-center,-0.504,1
 Buzzfeed,Center,Left-center,Left-center,-0.268,1
-New York Post,Center,Right-center,Right-center,-0.138,1
+New York Post,Center,Right,Right-center,-0.138,1
 BBC,Center,Center,Left-center,-0.521,2
 Chicago Sun-Times,Center,Left-center,Left-center,-0.204,2
 The Denver Post,Center,--,Left-center,-0.121,2
@@ -41,9 +41,9 @@ PBS,Center,Center,Left-center,-0.444,3
 ABC News,Center,Left-center,Left-center,-0.117,3
 Politico,Center,--,Center,-0.744,3
 Real Clear Politics,Center,Center,Right-center,-0.3,4
-The Telegraph,Center,Right,Right-center,-0.308,4
+The Telegraph,Center,Right-center,Right-center,-0.308,4
 Al Jazeera,Center,Center,Left-center,-1.111,4
-Daily Mail,Center,Right-center,--,-0.021,5
+Daily Mail,Center,Right,--,-0.021,5
 The Moscow Times,Center,--,Left-center,-0.347,5
 Foreign Policy,Center,--,Center,-0.174,6
 CBS News,Center,Left-center,Left-center,0.244,6
@@ -53,19 +53,19 @@ BBC UK,Center,--,--,-0.241,8
 FiveThirtyEight,Center,Center,Left-center,-0.979,8
 The Daily Express,Center,--,Right,0.151,9
 The Irish Times,Center,--,Left-center,-0.321,9
-The American Conservative,Right,Right,Right-center,1.733,0
-The Washington Examiner,Right,Right,Right,1.22,0
-Daily Signal,Right,Right-center,Right,1.699,1
+The American Conservative,Right,Right-center,Right-center,1.733,0
+The Washington Examiner,Right,Right-center,Right,1.22,0
+Daily Signal,Right,Right,Right,1.699,1
 TheBlaze,Right,--,Right,1.364,1
-Infowars,Right,Right-center,--,0.764,2
-RedState,Right,Right-center,Right,1.776,2
-The Daily Caller,Right,Right-center,Right,1.484,3
-Investors Business Daily,Right,Right,Right,--,3
-Fox News,Right,Right,Right,1.458,4
-Hot Air,Right,Right,Right,1.673,4
-National Review,Right,Right-center,Right,1.455,5
-The Fiscal Times,Right,Right,Right-center,--,5
-Western Journal,Right,Right-center,Right,--,6
+Infowars,Right,Right,--,0.764,2
+RedState,Right,Right,Right,1.776,2
+The Daily Caller,Right,Right,Right,1.484,3
+Investors Business Daily,Right,Right-center,Right,--,3
+Fox News,Right,Right-center,Right,1.458,4
+Hot Air,Right,Right-center,Right,1.673,4
+National Review,Right,Right,Right,1.455,5
+The Fiscal Times,Right,Right-center,Right-center,--,5
+Western Journal,Right,Right,Right,--,6
 The Political Insider,Right,--,Right,1.606,7
-Breitbart,Right,Right-center,--,1.516,8
-Drudge Report,Right,Right,Right,1.407,9
+Breitbart,Right,Right,--,1.516,8
+Drudge Report,Right,Right-center,Right,1.407,9

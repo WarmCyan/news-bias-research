@@ -48,8 +48,8 @@ def load_articlelevel_set(binary=True, bias=True):
     return df_final
 
 # NOTE: for reliability, assumes selection.json already exists? (and that folds exist)
-def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
-    fold_sources = util.load_fold_divisions_dataset(bias)
+def load_fold(n, count_per, selection_tag="", binary=True, bias=True, overwrite=False):
+    fold_sources = util.load_fold_divisions_dataset(selection_tag, bias)
     fold = fold_sources[n]
 
     if binary:
@@ -61,7 +61,7 @@ def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
             negative_sources = fold["center"]
 
             df, meta = create_binary_selection(
-                "binary_fold_" + str(count_per) + "_" + str(n), 
+                f"{selection_tag}binary_fold_" + str(count_per) + "_" + str(n), 
                 positive_sources,
                 negative_sources,
                 "biased",
@@ -75,7 +75,7 @@ def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
             unreliable_sources = fold["unreliable"]
 
             df, meta = create_binary_selection(
-                "reliable_binary_fold_" + str(count_per) + "_" + str(n), 
+                f"reliable_{selection_tag}binary_fold_" + str(count_per) + "_" + str(n), 
                 reliable_sources,
                 unreliable_sources,
                 "reliable",
@@ -86,7 +86,7 @@ def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
             )
     else:
         df, meta = create_ternary_selection(
-            "ternary_fold_" + str(count_per) + "_" + str(n),
+            f"{selection_tag}ternary_fold_" + str(count_per) + "_" + str(n),
             fold["left"],
             fold["center"],
             fold["right"],
@@ -102,17 +102,17 @@ def load_fold(n, count_per, binary=True, bias=True, overwrite=False):
 
 
 @util.dump_log
-def load_folds(n, count_per, binary=True, bias=True, overwrite=False):
-    fold_sources = util.load_fold_divisions_dataset()
+def load_folds(n, count_per, selection_tag="", binary=True, bias=True, overwrite=False):
+    fold_sources = util.load_fold_divisions_dataset(selection_tag)
 
     combined = None
 
     fold_indices = [x for x in range(0, 10) if x != n]
     for fold_index in fold_indices:
-        df, _ = load_fold(fold_index, count_per, binary, bias, overwrite)   
+        df, _ = load_fold(fold_index, count_per, selection_tag, binary, bias, overwrite)   
         combined = util.stack_dfs(combined, df)
 
-    test, _ = load_fold(n, count_per, binary, bias, overwrite)
+    test, _ = load_fold(n, count_per, selection_tag, binary, bias, overwrite)
 
     return combined, test
 
@@ -502,10 +502,10 @@ def get_selection_set(
 
 
 @util.dump_log
-def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False):
+def get_embedding_set(df, embedding_type, output_name, shaping, selection_tag="", overwrite=False):
     logging.info("Creating %s embedding %s...", embedding_type, output_name)
     
-    path = "../data/cache/" + output_name + "_" + embedding_type
+    path = "../data/cache/" + selection_tag + output_name + "_" + embedding_type
     path_and_name = path + "/" + shaping + ".pkl.pkl"
     
     if not util.check_output_necessary(path_and_name, overwrite):
@@ -556,61 +556,6 @@ def get_embedding_set(df, embedding_type, output_name, shaping, overwrite=False)
     return embedding_df
 
 
-@util.dump_log
-def get_test_embedding_set(problem, source, source_test, count, reject_minimum, random_seed, embedding_type, shaping):
-
-    selection_sources = create_selection_set_sources(count, reject_minimum, False, False)
-    
-    selection_df, name = get_selection_set(
-        problem=problem,
-        source=source_test,
-        count=count,
-        random_seed=random_seed,
-        reject_minimum=reject_minimum,
-        overwrite=False,
-        verbose=False
-    )
-
-    # create necessary embedding/vector form
-    embedding_df = get_embedding_set(
-        selection_df,
-        embedding_type=embedding_type,
-        output_name=name,
-        shaping=shaping,
-        overwrite=False,
-    )
-
-    # get the sources to test against
-    cols = selection_sources[problem]["info"]["col_names"]
-    sources = []
-    for col in cols:
-        test_sources = selection_sources[problem][source][col + "_test"][source_test]
-        sources.extend(test_sources)
-
-    target_col = ""
-    if problem == "reliability":
-        target_col = "reliable"
-    elif problem == "biased" or problem == "extreme_biased":
-        target_col = "biased"
-    
-    test_sel_df = selection_df[selection_df.source.isin(sources)]
-
-    actual_test_sel_df = None
-    test_embedding_df = []
-
-    selection_count = min(test_sel_df[target_col].value_counts())
-    for value in test_sel_df[target_col].value_counts().index.tolist():
-        balanced_test_df = test_sel_df[test_sel_df[target_col] == value].sample(selection_count, random_state=13)
-        
-        indices = balanced_test_df.index.tolist()
-        test_embedding_df_temp = [embedding_df[i] for i in indices]
-        test_embedding_df.extend(test_embedding_df_temp)
-        
-        actual_test_sel_df = util.stack_dfs(actual_test_sel_df, balanced_test_df)
-
-    print(actual_test_sel_df[target_col].value_counts())
-        
-    return actual_test_sel_df, test_embedding_df
 
 
 def clear_vector_model():
@@ -620,7 +565,7 @@ def clear_vector_model():
 def create_tfidf(df, path, max_features=5000, overwrite=False):
     logging.info("Creating tfidf %s...", path)
 
-    if not util.check_output_necessary(path + "/tfidf.pkl", overwrite):
+    if not util.check_output_necessary(path + "/tfidf.pkl.pkl", overwrite):
         return
 
     try:
@@ -636,7 +581,7 @@ def create_tfidf(df, path, max_features=5000, overwrite=False):
     tfidf_matrix = vectorizer.transform(corpus)
     tfidf_final_vectors = tfidf_matrix.todense().tolist()
 
-    with open(path + "/tfidf.pkl", "wb") as outfile:
+    with open(path + "/tfidf.pkl.pkl", "wb") as outfile:
         pickle.dump(tfidf_final_vectors, outfile)
 
     return tfidf_final_vectors

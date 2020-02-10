@@ -122,6 +122,7 @@ def experiment_dataset_bias(
     selection_test_fold,
     selection_count,
     selection_random_seed,
+    selection_tag,
     selection_overwrite,
     embedding_type,
     embedding_shape,
@@ -139,13 +140,14 @@ def experiment_dataset_bias(
     if selection_problem == "reliability":
         bias = False
 
-    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, binary, bias, selection_overwrite)
+    selection_df, selection_test_df = datasets.load_folds(selection_test_fold, selection_count, selection_tag, binary, bias, selection_overwrite)
     
     embedding_df = datasets.get_embedding_set(
         selection_df,
         embedding_type=embedding_type,
         output_name=name + "_minusfold" + str(selection_test_fold),
         shaping=embedding_shape,
+        selection_tag=selection_tag,
         overwrite=embedding_overwrite,
     )
     
@@ -154,6 +156,7 @@ def experiment_dataset_bias(
         embedding_type=embedding_type,
         output_name=name + "_fold" + str(selection_test_fold),
         shaping=embedding_shape,
+        selection_tag=selection_tag,
         overwrite=embedding_overwrite,
     )
 
@@ -164,6 +167,7 @@ def experiment_dataset_bias(
         embedding_type=embedding_type,
         output_name=article_test_name,
         shaping=embedding_shape,
+        selection_tag="",
         overwrite=False
     )
 
@@ -215,6 +219,7 @@ def experiment_dataset(
     selection_test_source,
     selection_count,
     selection_random_seed,
+    selection_tag,
     selection_reject_minimum,
     selection_overwrite,
     embedding_type,
@@ -242,6 +247,7 @@ def experiment_dataset(
         selection_test_fold,
         selection_count,
         selection_random_seed,
+        selection_tag,
         selection_overwrite,
         embedding_type,
         embedding_shape,
@@ -258,6 +264,7 @@ def experiment_model(
     selection_test_source,
     selection_count,
     selection_random_seed,
+    selection_tag,
     selection_reject_minimum,
     selection_overwrite,
     embedding_type,
@@ -288,7 +295,6 @@ def experiment_model(
     #     verbose=verbose
     # )
 
-    # test_selection_df, test_embedding_df = datasets.get_test_embedding_set(selection_problem, selection_source, test_source, selection_count, selection_reject_minimum, selection_random_seed, embedding_type, embedding_shape)
 
     embed_df, sel_df, name, test_selection_df, test_embedding_df, al_selection_df, al_embedding_df = experiment_dataset(
         selection_problem,
@@ -297,6 +303,7 @@ def experiment_model(
         selection_test_source,
         selection_count,
         selection_random_seed,
+        selection_tag,
         selection_reject_minimum,
         selection_overwrite,
         embedding_type,
@@ -339,6 +346,7 @@ def experiment_model(
         y_test = np.array(y_test)
         X_al_test = np.array(X_al_test)
         y_al_test = np.array(y_al_test)
+        print(X)
         data_width = X.shape[-1]
 
     
@@ -505,6 +513,9 @@ if args.experiment_path is not None:
 
     util.TMP_PATH = args.temp
 
+    if "selection_tag" not in params:
+        params["selection_tag"] = ""
+
     if params["type"] == "data":
         experiment_dataset(
             params["selection_problem"],
@@ -513,6 +524,7 @@ if args.experiment_path is not None:
             params["selection_test_source"],
             params["selection_count"],
             params["selection_random_seed"],
+            params["selection_tag"],
             params["selection_reject_minimum"],
             params["selection_overwrite"],
             params["embedding_type"],
@@ -528,6 +540,7 @@ if args.experiment_path is not None:
             params["selection_test_source"],
             params["selection_count"],
             params["selection_random_seed"],
+            params["selection_tag"],
             params["selection_reject_minimum"],
             params["selection_overwrite"],
             params["embedding_type"],

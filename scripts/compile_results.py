@@ -103,7 +103,8 @@ for group_name, group in groups:
     
     # get each experiment tag
     for name in experiment_names:
-        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+        if group[group.experiment_tag == name].shape[0] > 0:
+            row[name] = group[group.experiment_tag == name].iloc[0].accuracy
 
     aggregate.append(row)
 
@@ -123,7 +124,8 @@ for group_name, group in groups:
     
     # get each experiment tag
     for name in experiment_names:
-        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+        if group[group.experiment_tag == name].shape[0] > 0:
+            row[name] = group[group.experiment_tag == name].iloc[0].accuracy
 
     aggregate_al.append(row)
 
@@ -141,7 +143,8 @@ for group_name, group in groups:
     
     # get each experiment tag
     for name in experiment_names:
-        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+        if group[group.experiment_tag == name].shape[0] > 0:
+            row[name] = group[group.experiment_tag == name].iloc[0].accuracy
 
     aggregate_al_unseen.append(row)
 
@@ -149,7 +152,12 @@ aggregate_al_unseen_df = pd.DataFrame(aggregate_al_unseen)
 aggregate_al_unseen_df.to_csv(output_path + "/aggregate_al_unseen.csv")
 
 
+# ===========================================
+# Persource analysis
+# ===========================================
 
+
+bias_detail_df = pd.read_csv("../data/cache/bias_folds_detail.csv")
 
 
 breakdown_results = []
@@ -185,7 +193,10 @@ for group_name, group in groups:
     
     # get each experiment tag
     for name in experiment_names:
-        row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+        if group[group.experiment_tag == name].shape[0] > 0:
+            row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    row.update(dict(bias_detail_df[bias_detail_df.Source == group_name].iloc[0]))
 
     aggregate_breakdown.append(row)
 
