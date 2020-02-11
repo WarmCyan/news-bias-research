@@ -15,6 +15,10 @@ from tqdm import tqdm
 import util
 import word2vec_creator
 
+
+tfidf_vocab = None
+
+
 # returns the equivalent of a selection set
 def load_articlelevel_set(binary=True, bias=True):
     df = util.load_scraped_mpc()
@@ -549,7 +553,7 @@ def get_embedding_set(df, embedding_type, output_name, shaping, selection_tag=""
         embedding_df = word2vec_creator.vectorize_collection(df, path_and_name, model=None, shaping=shaping, word_limit=-1, sentics=True)
     elif embedding_type == "tfidf":
         # TODO: add ability to add sentics here too?
-        embedding_df = create_tfidf(df, path, overwrite=overwrite)
+        embedding_df = create_tfidf(df, path, overwrite=True)
         # NOTE: would have to save it (and check for preexisting) separately as well then
         
 
@@ -563,10 +567,12 @@ def clear_vector_model():
 
 
 def create_tfidf(df, path, max_features=5000, overwrite=False):
-    logging.info("Creating tfidf %s...", path)
+    global tfidf_vocab
 
-    if not util.check_output_necessary(path + "/tfidf.pkl.pkl", overwrite):
-        return
+    #logging.info("Creating tfidf %s...", path)
+
+    #if not util.check_output_necessary(path + "/tfidf.pkl.pkl", overwrite):
+    #    return
 
     try:
         os.mkdir(path)
@@ -576,7 +582,11 @@ def create_tfidf(df, path, max_features=5000, overwrite=False):
     print(df.content[df.content.isnull()])
 
     corpus = list(df.content)
-    vectorizer = TfidfVectorizer(max_features=max_features)
+    vectorizer = TfidfVectorizer(max_features=max_features, vocabulary=tfidf_vocab)
+
+    if tfidf_vocab = None:
+        tfidf_vocab = vectorizer.vocabulary_
+    
     vectorizer.fit(corpus)
     tfidf_matrix = vectorizer.transform(corpus)
     tfidf_final_vectors = tfidf_matrix.todense().tolist()
