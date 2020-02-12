@@ -11,6 +11,7 @@ layers = [128, 1] # will have to read json string
 model_num = 0
 tag = ""
 selection_tag = ""
+threshold = 8.4
 
 problem_input = input("Problem: (b)iased, bias_(d)irection, (r)eliability [biased]> ")
 if problem_input == "b":
@@ -66,6 +67,11 @@ selection_tag_input = input("Experiment selection tag: ('')> ")
 selection_tag = selection_tag_input
 print(selection_tag)
 
+#threshold_input = input("AL threshold: (8.4)> ")
+#if threshold_input != "":
+#    threshold = float(threshold_input)
+#print(threshold_input)
+
 experiments = []
 for i in range(0, 10):
     experiment_model_num = model_num + i 
@@ -80,6 +86,7 @@ for i in range(0, 10):
             "selection_tag": selection_tag,
             "selection_reject_minimum": 300,
             "selection_overwrite": False,
+            "al_threshold": threshold,
             "embedding_type": embedding,
             "embedding_shape": embedding_shape,
             "embedding_overwrite": False,

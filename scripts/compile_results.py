@@ -158,6 +158,7 @@ aggregate_al_unseen_df.to_csv(output_path + "/aggregate_al_unseen.csv")
 
 
 bias_detail_df = pd.read_csv("../data/cache/bias_folds_detail.csv")
+sentics_detail_df = pd.read_csv("../data/cache/biased_aggregate_sentics.csv")
 
 
 breakdown_results = []
@@ -197,9 +198,59 @@ for group_name, group in groups:
             row[name] = group[group.experiment_tag == name].iloc[0].accuracy
 
     row.update(dict(bias_detail_df[bias_detail_df.Source == group_name].iloc[0]))
+    row.update(dict(sentics_detail_df[sentics_detail_df.source == group_name].iloc[0]))
 
     aggregate_breakdown.append(row)
 
 aggregate_breakdown_df = pd.DataFrame(aggregate_breakdown)
 #aggregate_df.columns = ["fold", *experiment_names]
 aggregate_breakdown_df.to_csv(output_path + "/aggregate_breakdown.csv")
+
+
+# ===========================================
+# Persource analysis (article level)
+# ===========================================
+
+
+
+al_breakdown_results = []
+for result_path in results_paths:
+    actual_path = "../data/output/" + result_path
+        
+    pathlist_breakdown = Path(actual_path + "/alpersource").glob('*.json')
+
+    for path in pathlist_breakdown:
+        path_in_str = str(path)
+        print(f"Processing {path_in_str}...")
+
+        with open(path_in_str, 'r') as infile:
+            results = json.load(infile)
+
+        row = {}
+        row["experiment_tag"] = results["experiment_tag"]
+        row.update({"source": results["source"], "accuracy": results["accuracy"], "precision": results["precision"], "recall": results["recall"], "tp": results["tp"], "fp": results["fp"], "fn": results["fn"], "tn": results["tn"], "model_num": results["params"]["model_num"], "fold": results["params"]["selection_test_fold"]})
+        row["filename"] = path_in_str
+
+        al_breakdown_results.append(row)
+    
+df_breakdown_al = pd.DataFrame(al_breakdown_results)
+df_breakdown_al.to_csv(output_path + "/compiled_breakdown.csv")
+
+
+aggregate_breakdown = []
+groups = df_breakdown_al.groupby(df_breakdown_al["source"])
+for group_name, group in groups:
+    print(group_name)
+    row = {}
+    row["source"] = group_name
+    
+    # get each experiment tag
+    for name in experiment_names:
+        if group[group.experiment_tag == name].shape[0] > 0:
+            row[name] = group[group.experiment_tag == name].iloc[0].accuracy
+
+    aggregate_breakdown.append(row)
+
+aggregate_breakdown_df = pd.DataFrame(aggregate_breakdown)
+#aggregate_df.columns = ["fold", *experiment_names]
+aggregate_breakdown_df.to_csv(output_path + "/aggregate_breakdown_al.csv")

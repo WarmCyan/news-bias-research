@@ -18,17 +18,17 @@ import word2vec_creator
 
 tfidf_vocab = None
 
-
 # returns the equivalent of a selection set
-def load_articlelevel_set(binary=True, bias=True):
+def load_articlelevel_set(binary=True, bias=True, threshold=8.4):
     df = util.load_scraped_mpc()
     df = df[df.content.notnull()]
     df = df[df.content.str.split().apply(len) > 50]
     
     if bias:
-        df_left = df[df.Bias < -8.4]
-        df_right = df[df.Bias > -8.4]
-        df_center = df[(df.Bias >= -8.4) & (df.Bias <= 8.4)]
+        threshold=8.4
+        df_left = df[df.Bias < -threshold]
+        df_right = df[df.Bias > threshold]
+        df_center = df[(df.Bias >= -threshold) & (df.Bias <= threshold)]
 
         if binary:
             df_left["biased"] = 1
@@ -584,10 +584,11 @@ def create_tfidf(df, path, max_features=5000, overwrite=False):
     corpus = list(df.content)
     vectorizer = TfidfVectorizer(max_features=max_features, vocabulary=tfidf_vocab)
 
-    if tfidf_vocab = None:
+    vectorizer.fit(corpus)
+    
+    if tfidf_vocab is None:
         tfidf_vocab = vectorizer.vocabulary_
     
-    vectorizer.fit(corpus)
     tfidf_matrix = vectorizer.transform(corpus)
     tfidf_final_vectors = tfidf_matrix.todense().tolist()
 

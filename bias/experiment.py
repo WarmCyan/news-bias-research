@@ -124,6 +124,7 @@ def experiment_dataset_bias(
     selection_random_seed,
     selection_tag,
     selection_overwrite,
+    al_threshold,
     embedding_type,
     embedding_shape,
     embedding_overwrite,
@@ -161,14 +162,14 @@ def experiment_dataset_bias(
     )
 
     article_test_name = f"{selection_problem}_al_selection"
-    articlelevel_selection_df = datasets.load_articlelevel_set(binary, bias)
+    articlelevel_selection_df = datasets.load_articlelevel_set(binary, bias, al_threshold)
     embedding_article_df = datasets.get_embedding_set(
         articlelevel_selection_df,
         embedding_type=embedding_type,
         output_name=article_test_name,
         shaping=embedding_shape,
         selection_tag="",
-        overwrite=False
+        overwrite=True
     )
 
     return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df, articlelevel_selection_df, embedding_article_df
@@ -222,6 +223,7 @@ def experiment_dataset(
     selection_tag,
     selection_reject_minimum,
     selection_overwrite,
+    al_threshold,
     embedding_type,
     embedding_shape,
     embedding_overwrite,
@@ -249,6 +251,7 @@ def experiment_dataset(
         selection_random_seed,
         selection_tag,
         selection_overwrite,
+        al_threshold,
         embedding_type,
         embedding_shape,
         embedding_overwrite,
@@ -267,6 +270,7 @@ def experiment_model(
     selection_tag,
     selection_reject_minimum,
     selection_overwrite,
+    al_threshold,
     embedding_type,
     embedding_shape,
     embedding_overwrite,
@@ -306,6 +310,7 @@ def experiment_model(
         selection_tag,
         selection_reject_minimum,
         selection_overwrite,
+        al_threshold,
         embedding_type,
         embedding_shape,
         embedding_overwrite,
@@ -515,6 +520,10 @@ if args.experiment_path is not None:
 
     if "selection_tag" not in params:
         params["selection_tag"] = ""
+        
+    if "al_threshold" not in params:
+        params["al_threshold"] = 8.4
+        
 
     if params["type"] == "data":
         experiment_dataset(
@@ -543,6 +552,7 @@ if args.experiment_path is not None:
             params["selection_tag"],
             params["selection_reject_minimum"],
             params["selection_overwrite"],
+            params["al_threshold"],
             params["embedding_type"],
             params["embedding_shape"],
             params["embedding_overwrite"],
