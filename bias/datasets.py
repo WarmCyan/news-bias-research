@@ -540,13 +540,13 @@ def get_embedding_set(df, embedding_type, output_name, shaping, selection_tag=""
     elif embedding_type == "glove_limit":
         # NOTE: yes, it looks like sentics should be false, but this is how we limit glove embeddings to just the patterns the sentics would have been calculated on
         embedding_df = word2vec_creator.run_glove(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True, model_only=True)
-    elif embedding_type == "fasttext":
+    elif embedding_type == "ft":
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=False)
-    elif embedding_type == "fasttext_sentic":
+    elif embedding_type == "ft_sentic":
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True)
-    elif embedding_type == "fasttext_sentic_full":
+    elif embedding_type == "ft_sentic_full":
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True, zero_pad=True)
-    elif embedding_type == "fasttext_limit":
+    elif embedding_type == "ft_limit":
         # NOTE: yes, it looks like sentics should be false, but this is how we limit fasttext embeddings to just the patterns the sentics would have been calculated on
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True, model_only=True)
     elif embedding_type == "sentic":

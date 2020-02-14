@@ -1,0 +1,53 @@
+FROM THIS POINT NO BIAS EXPERIMENT IS USING SPIEGEL
+NOTE: for all of below (if on cluster) run first one first
++ means no dependency on former?
+
+
+To establish avg_std better than avg
+
+bias_svm_w2v_avg
+bias_svm_w2v_avg_std
+bias_w2v_avg
+bias_w2v_avg_std
+
+
+To establish better selection set:
+
+bias_svm_w2v_avg_std
+bias_svm_w2v_avg_std_allsides_all
+bias_svm_w2v_avg_std_mbm
+bias_svm_w2v_avg_std_below20flip
+bias_svm_w2v_avg_std_below25flip
+
+
+To establish superior embedding:
+
+bias_svm_tfidf
+bias_svm_w2v_avg_std
+bias_svm_glove_avg_std
+bias_svm_ft_avg_std
+bias_tfidf
+bias_w2v_avg_std
+bias_glove_avg_std
+bias_ft_avg_std
+
+
+
+To establish avg_std better than avg
+"rel_avg"
+
+rel_svm_w2v_avg (350)
+rel_svm_w2v_avg_std (360)
+rel_w2v_avg (300)
+rel_w2v_avg_std (310)
+
+
+To establish sentics with nn with reliability:
+
+rel_w2v_avg
+rel_w2v_avg_std
+rel_w2v_limit_avg_std
+rel_w2v_sentic_avg_std
+rel_w2v_sentic_full_avg_std
+
+

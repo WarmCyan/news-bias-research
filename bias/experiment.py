@@ -169,7 +169,7 @@ def experiment_dataset_bias(
         output_name=article_test_name,
         shaping=embedding_shape,
         selection_tag="",
-        overwrite=True
+        overwrite=False
     )
 
     return embedding_df, selection_df, name + "fold_minus_" + str(selection_test_fold), selection_test_df, embedding_test_df, articlelevel_selection_df, embedding_article_df

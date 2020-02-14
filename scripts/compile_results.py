@@ -197,8 +197,11 @@ for group_name, group in groups:
         if group[group.experiment_tag == name].shape[0] > 0:
             row[name] = group[group.experiment_tag == name].iloc[0].accuracy
 
-    row.update(dict(bias_detail_df[bias_detail_df.Source == group_name].iloc[0]))
-    row.update(dict(sentics_detail_df[sentics_detail_df.source == group_name].iloc[0]))
+    try:
+        row.update(dict(bias_detail_df[bias_detail_df.Source == group_name].iloc[0]))
+        row.update(dict(sentics_detail_df[sentics_detail_df.source == group_name].iloc[0]))
+    except:
+        print("WARNING, could not add bias and sentics detail")
 
     aggregate_breakdown.append(row)
 
