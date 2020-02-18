@@ -2,37 +2,105 @@ FROM THIS POINT NO BIAS EXPERIMENT IS USING SPIEGEL
 NOTE: for all of below (if on cluster) run first one first
 + means no dependency on former?
 
+order that I've done these:
+1. rel_avg
+2. bias_avg
+3. bias_sel
+4. seq_bias_embed
+5. bias_embed
+6. seq_bias_sel
 
+======================================
 To establish avg_std better than avg
+"bias_avg"
 
-bias_svm_w2v_avg
-bias_svm_w2v_avg_std
-bias_w2v_avg
-bias_w2v_avg_std
+bias_svm_w2v_avg (160)
+bias_svm_w2v_avg_std (370)
+bias_w2v_avg (0)
+bias_w2v_avg_std (10)
 
+compile_results.py -e run_0/bias_svm_w2v_avg,run_0/bias_svm_w2v_avg_std,run_0/bias_w2v_avg,run_0/bias_w2v_avg_std -o bias_avg_0
 
+compile_results.py -e run_1/bias_svm_w2v_avg,run_1/bias_svm_w2v_avg_std,run_1/bias_w2v_avg,run_1/bias_w2v_avg_std -o bias_avg_1
+
+Times run: 2
+
+Conclusions:
+* SVM seems to do better than NN
+* std_dev did slightly better for NN, not for SVM
+
+======================================
 To establish better selection set:
+"bias_sel"
 
-bias_svm_w2v_avg_std
-bias_svm_w2v_avg_std_allsides_all
-bias_svm_w2v_avg_std_mbm
-bias_svm_w2v_avg_std_below20flip
-bias_svm_w2v_avg_std_below25flip
+bias_svm_w2v_avg (160)
+bias_svm_w2v_avg_allsides_all (380)
+bias_svm_w2v_avg_mbm (390)
+bias_svm_w2v_avg_below20flip (400)
+bias_svm_w2v_avg_below25flip (410)
 
+compile_results.py -e run_0/bias_svm_w2v_avg,run_0/bias_svm_w2v_avg_allsides_all,run_0/bias_svm_w2v_avg_mbm,run_0/bias_svm_w2v_avg_below20flip,run_0/bias_svm_w2v_avg_below25flip -o bias_sel_0
 
+Times run: 1
+
+Conclusions:
+* Collective labelling did better than allsides, slightly worse than MBM (on AL, collective actually did better than both
+* Flipped labels on collective did do better than mbm
+
+======================================
+To establish better selection set with sequence data:
+"seq_bias_sel"
+
+bias_w2v_seq (60)
+bias_w2v_seq_allsides_all (440)
+bias_w2v_seq_mbm (450)
+bias_w2v_seq_below20flip (460)
+bias_w2v_seq_below25flip (470)
+
+Times run: 1
+
+compile_results.py -e seq/bias_w2v_seq,seq/bias_w2v_seq_allsides_all,seq/bias_w2v_seq_mbm,seq/bias_w2v_seq_below20flip,seq/bias_w2v_seq_below25flip -o selection_seqs
+
+Conclusions:
+* similar to bias_sel, collective better on source than all others, MBM better on AL, but the flip25 did best everywhere
+
+======================================
 To establish superior embedding:
+"bias_embed"
 
-bias_svm_tfidf
-bias_svm_w2v_avg_std
-bias_svm_glove_avg_std
-bias_svm_ft_avg_std
-bias_tfidf
-bias_w2v_avg_std
-bias_glove_avg_std
-bias_ft_avg_std
+bias_svm_tfidf (140)
+bias_svm_w2v_avg (350)
+bias_svm_glove_avg (420)
+bias_svm_ft_avg (430)
+# bias_tfidf
+# bias_w2v_avg
+# bias_glove_avg
+# bias_ft_avg
 
+compile_results.py -e run_0/bias_svm_tfidf,run_0/bias_svm_w2v_avg,run_0/bias_svm_glove_avg,run_0/bias_svm_ft_avg -o bias_embed_0
 
+Times run: 1
 
+Conclusions:
+* W2V worse on source-level tests, but much better generalization to AL
+* TFIDF worst on source-level
+
+======================================
+To establish superior embedding for sequences:
+"seq_bias_embed"
+
+bias_w2v_seq (60)
+bias_glove_seq (70)
+bias_ft_seq (80)
+
+compile_results.py -e seq/bias_w2v_seq,seq/bias_glove_seq,seq/bias_ft_seq -o seq_bias_embed
+
+Times run: 1
+
+Conclusions:
+* W2V better in all instances
+
+======================================
 To establish avg_std better than avg
 "rel_avg"
 
@@ -41,13 +109,29 @@ rel_svm_w2v_avg_std (360)
 rel_w2v_avg (300)
 rel_w2v_avg_std (310)
 
+compile_results.py -e run_0/rel_svm_w2v_avg,run_0/rel_svm_w2v_avg_std,run_0/rel_w2v_avg,run_0/rel_w2v_avg_std -o rel_avg_0
 
-To establish sentics with nn with reliability:
+compile_results.py -e run_1/rel_svm_w2v_avg,run_1/rel_svm_w2v_avg_std,run_1/rel_w2v_avg,run_1/rel_w2v_avg_std -o rel_avg_1
 
-rel_w2v_avg
-rel_w2v_avg_std
-rel_w2v_limit_avg_std
-rel_w2v_sentic_avg_std
-rel_w2v_sentic_full_avg_std
+Times run: 2
+
+Conclusions:
+* avg appears to outperform avg_std by a small amount in all AL cases
+* SVM outperforms NN
+
+======================================
+To establish sentics with:
+"rel_sentic"
+
+rel_svm_w2v_avg (350) [run]
+rel_svm_w2v_limit_avg (480)
+rel_svm_w2v_sentic_avg (490)
+rel_svm_w2v_sentic_full_avg (500)
+rel_svm_w2v_sentic_avg_std (510)
+rel_svm_w2v_sentic_full_avg_std (520)
 
 
+======================================
+To establish seq versus avg
+
+TODO (which embedding?)
