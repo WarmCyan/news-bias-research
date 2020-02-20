@@ -9,6 +9,10 @@ order that I've done these:
 4. seq_bias_embed
 5. bias_embed
 6. seq_bias_sel
+7. rel_sentic
+8. bias_sentic
+9. bias_avg_arch
+10. seq_rel_embed
 
 ======================================
 To establish avg_std better than avg
@@ -101,6 +105,21 @@ Conclusions:
 * W2V better in all instances
 
 ======================================
+To establish superior embedding for sequences with reliability:
+"seq_rel_embed"
+
+rel_w2v_seq (670)
+rel_glove_seq (680)
+rel_ft_seq (690)
+
+compile_results.py -e seq/rel_w2v_seq,seq/rel_glove_seq,seq/rel_ft_seq -o seq_rel_embed
+
+Times run: 1
+
+Conclusions:
+* Glove did better on source-level, and did marginally better on AL, but only by a small amount (they were all very close)
+
+======================================
 To establish avg_std better than avg
 "rel_avg"
 
@@ -120,7 +139,7 @@ Conclusions:
 * SVM outperforms NN
 
 ======================================
-To establish sentics with:
+To establish sentics with reliability:
 "rel_sentic"
 
 rel_svm_w2v_avg (350) [run]
@@ -130,8 +149,82 @@ rel_svm_w2v_sentic_full_avg (500)
 rel_svm_w2v_sentic_avg_std (510)
 rel_svm_w2v_sentic_full_avg_std (520)
 
+compile_results.py -e run_0/rel_svm_w2v_avg,run_0/rel_svm_w2v_limit_avg,run_0/rel_svm_w2v_sentic_avg,run_0/rel_svm_w2v_sentic_full_avg,run_0/rel_svm_w2v_sentic_avg_std,run_0/rel_svm_w2v_sentic_full_avg_std, -o rel_sentic_0
+
+Times run: 1
+
+Conclusions:
+* sentic_full_avg did a _tiny bit_ better than avg on AL, all others (including with avg_std) did worse than regular
+
+
+======================================
+To establish sentics with bias:
+"bias_sentic"
+
+bias_svm_w2v_avg (370) [run]
+bias_svm_w2v_limit_avg (530)
+bias_svm_w2v_sentic_avg (540)
+bias_svm_w2v_sentic_full_avg (550)
+bias_svm_w2v_sentic_avg_std (560)
+bias_svm_w2v_sentic_full_avg_std (570)
+
+compile_results.py -e run_0/bias_svm_w2v_avg,run_0/bias_svm_w2v_limit_avg,run_0/bias_svm_w2v_sentic_avg,run_0/bias_svm_w2v_sentic_full_avg,run_0/bias_svm_w2v_sentic_avg_std,run_0/bias_svm_w2v_sentic_full_avg_std -o bias_sentic_0
+
+Times run: 1
+
+Conclusions:
+* Plain does better than all sentic runs for AL
+
+
+
+
 
 ======================================
 To establish seq versus avg
 
-TODO (which embedding?)
+TODO (which embedding? [w2v])
+
+
+
+======================================
+Architecture search for avg bias
+"bias_avg_arch"
+NOTE: these are all run on below25flip selection set
+
+bias_w2v_avg_arch1 (64, 1) [1] (580)
+bias_w2v_avg_arch2 (128, 1) [1] (590)
+bias_w2v_avg_arch3 (256, 1) [1] (600)
+bias_w2v_avg_arch4 (128, 64, 1) [2] (610)
+bias_w2v_avg_arch5 (256, 128, 1) [2] (620)
+bias_w2v_avg_arch6 (256, 256, 1) [2] (630)
+bias_w2v_avg_arch7 (256, 128, 64, 1) [3] (640)
+bias_w2v_avg_arch8 (256, 256, 256, 1) [3] (650)
+
+compile_results.py -e run_0/bias_w2v_avg_arch1,run_0/bias_w2v_avg_arch2,run_0/bias_w2v_avg_arch3,run_0/bias_w2v_avg_arch4,run_0/bias_w2v_avg_arch5,run_0/bias_w2v_avg_arch6,run_0/bias_w2v_avg_arch7,run_0/bias_w2v_avg_arch8 -o bias_avg_arch_0
+
+Times run: 1
+
+Conclusions:
+* Surprisingly little variance, everything within 2%
+* Arch 4 generally did very slightly better than arch 2 [the latter of which is what I've been using for most]
+* Top 3 in order: 4, 2, 5, 
+
+
+-------------------------------
+Standalone experiments:
+
+does sentic work better on below25flip and with larger arch?
+bias_w2v_sentic_full_avg_std_arch4 (660)
+
+
+compile_results.py -e run_0/bias_w2v_avg_arch4,run_0/bias_w2v_sentic_full_avg_std_arch4,run_0/bias_svm_w2v_avg,run_0/bias_svm_w2v_sentic_full_avg_std -o senticandflipandarch
+
+Times run: 1
+
+Conclusions:
+* Nope, sentics still worse
+
+
+
+
+TODO: rel_embed

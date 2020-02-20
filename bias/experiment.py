@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn import svm
+from sklearn.model_selection import cross_validate
 
 import lstm
 import cnn
@@ -358,6 +359,20 @@ def experiment_model(
     if selection_problem == "bias_direction":
         y = keras.utils.to_categorical(y, num_classes=3)
         y_test = keras.utils.to_categorical(y_test, num_classes=3)
+
+
+    if "AL_TRAINING" in experiment_tag:
+        model = svm.LinearSVC()
+        cv_results = cross_validate(model, X_al_test, y_al_test, cv=10)
+        print("_"*80)
+        print(cv_results["test_score"])
+        total = 0
+        for num in cv_results["test_score"]:
+            total += num
+        total /= len(cv_results["test_score"])
+        print(total)
+        exit()
+
     
     name = f'{experiment_tag}_{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
@@ -372,7 +387,6 @@ def experiment_model(
 
         loss_al, acc_al, predictions_al = nn.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "svm":
-        # TODO: TODO: TODO: TODO: TODO: 
         model = svm.LinearSVC()
         model.fit(X, y)
         history = None
