@@ -52,6 +52,23 @@ Conclusions:
 * Flipped labels on collective did do better than mbm
 
 ======================================
+To establish better selection set:
+"rel_sel"
+
+rel_svm_w2v_avg (350)
+rel_svm_w2v_avg_ng (700)
+rel_svm_w2v_avg_mbfc (710)
+
+
+compile_results.py -e run_0/rel_svm_w2v_avg,run_0/rel_svm_w2v_avg_ng,run_0/rel_svm_w2v_avg_mbfc -o rel_sel_0
+
+Times run: 1
+
+Conclusions:
+* Compiled is better on source, _barely_ better than MBFC on AL, and slightly worse on AL unseen, definitely **run this again**
+
+
+======================================
 To establish better selection set with sequence data:
 "seq_bias_sel"
 
@@ -209,6 +226,16 @@ Conclusions:
 * Arch 4 generally did very slightly better than arch 2 [the latter of which is what I've been using for most]
 * Top 3 in order: 4, 2, 5, 
 
+======================================
+Architecture search for seq bias
+"bias_seq_arch"
+NOTE: these are all run on below25flip selection set
+
+bias_w2v_seq_arch1 (128, 1) [1] (720)
+bias_w2v_seq_arch2 (256, 1) [1] (730)
+bias_w2v_seq_arch3 (128, 128, 1) [2] (740)
+bias_w2v_seq_arch4 (128, 128, 128, 1) [4] (750)
+bias_w2v_seq_arch5 (256, 128, 64, 1) [4] (760)
 
 -------------------------------
 Standalone experiments:

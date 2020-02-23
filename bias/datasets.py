@@ -75,6 +75,7 @@ def load_fold(n, count_per, selection_tag="", binary=True, bias=True, overwrite=
                 overwrite=overwrite
             )
         else:
+            print(fold)
             reliable_sources = fold["reliable"]
             unreliable_sources = fold["unreliable"]
 
@@ -107,7 +108,7 @@ def load_fold(n, count_per, selection_tag="", binary=True, bias=True, overwrite=
 
 @util.dump_log
 def load_folds(n, count_per, selection_tag="", binary=True, bias=True, overwrite=False):
-    fold_sources = util.load_fold_divisions_dataset(selection_tag)
+    fold_sources = util.load_fold_divisions_dataset(selection_tag, bias)
 
     combined = None
 
@@ -546,7 +547,7 @@ def get_embedding_set(df, embedding_type, output_name, shaping, selection_tag=""
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True)
     elif embedding_type == "ft_sentic_full":
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True, zero_pad=True)
-    elif embedding_type == "ft_limit":
+    elif embedding_type == "fasttext_limit":
         # NOTE: yes, it looks like sentics should be false, but this is how we limit fasttext embeddings to just the patterns the sentics would have been calculated on
         embedding_df = word2vec_creator.run_fasttext(df, path_and_name, shaping=shaping, word_limit=-1, sentics=True, model_only=True)
     elif embedding_type == "sentic":

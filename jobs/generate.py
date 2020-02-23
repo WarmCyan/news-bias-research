@@ -14,6 +14,8 @@ if name is None:
     name = args.experiment_path
     if args.experiment_row is not None:
         name += "_" + args.experiment_row
+    else:
+        name += "_runall"
 
 common_lines = [
     "#!/bin/bash",

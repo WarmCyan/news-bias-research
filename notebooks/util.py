@@ -142,7 +142,8 @@ def load_fold_divisions_dataset(selection_tag="", bias=True):
         with open(f"../data/cache/{selection_tag}folds_selection.json", 'r') as infile:
             folds = json.load(infile)
     else:
-        with open(f"../data/cache/reliability_{selection_tag}folds_selection.json", 'r') as infile:
+        print(f"../data/cache/{selection_tag}reliability_folds_selection.json")
+        with open(f"../data/cache/{selection_tag}reliability_folds_selection.json", 'r') as infile:
             folds = json.load(infile)
     return folds
 
