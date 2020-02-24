@@ -66,8 +66,10 @@ for result_path in results_paths:
         row["fp"] = results["fp"]
         row["precision"] = results["precision"]
         row["recall"] = results["recall"]
+        row["f1"] = 2*(results["precision"]*results["recall"])/(results["precision"]+results["recall"])
         row["accuracy"] = results["accuracy"]
         row["experiment_tag"] = results["experiment_tag"]
+        row["path"] = path_in_str
         #row["filename"] = path_in_str
 
         if al:
@@ -257,3 +259,37 @@ for group_name, group in groups:
 aggregate_breakdown_df = pd.DataFrame(aggregate_breakdown)
 #aggregate_df.columns = ["fold", *experiment_names]
 aggregate_breakdown_df.to_csv(output_path + "/aggregate_breakdown_al.csv")
+
+
+# ===========================================
+# Multi-run analyses and better tables
+# ===========================================
+
+def make_combined_table(df):
+    table_rows = []
+    
+    groups = df.groupby(df.experiment_tag)
+    for group_name, group in groups:
+        print(group_name,group.accuracy.mean(),group.precision.mean(),group.recall.mean(), group.f1.mean())
+        
+        row = {
+            "Name": group_name,
+            "Accuracy": group.accuracy.mean(),
+            "Precision": group.precision.mean(),
+            "Recall": group.recall.mean(),
+            "F1": group.f1.mean()
+        }
+        table_rows.append(row)
+    combined_df = pd.DataFrame(table_rows)
+    combined_df.index = combined_df.Name
+    combined_df = combined_df.drop(columns=["Name"])
+
+    return combined_df.transpose()
+    
+
+combined_table = []
+combined_table_al = []
+combined_table_unseen = []
+
+combined_df = make_combined_table(df)
+print(combined_df)
