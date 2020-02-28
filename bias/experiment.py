@@ -356,9 +356,10 @@ def experiment_model(
         data_width = X.shape[-1]
 
     
-    if selection_problem == "bias_direction":
+    if selection_problem == "bias_direction" and model_type != "svm":
         y = keras.utils.to_categorical(y, num_classes=3)
         y_test = keras.utils.to_categorical(y_test, num_classes=3)
+        y_al_test = keras.utils.to_categorical(y_al_test, num_classes=3)
 
 
     if "AL_TRAINING" in experiment_tag:
@@ -377,7 +378,7 @@ def experiment_model(
     name = f'{experiment_tag}_{name}_{model_type}_{model_arch_num}_{model_num}_{model_maxlen}_{model_batch_size}_{model_learning_rate}'
         
     if model_type == "lstm":
-        model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width)
+        model, history, loss, acc, predictions = lstm.train_test(X, y, model_arch_num, model_layer_sizes, model_maxlen, model_batch_size, model_learning_rate, model_epochs, X_test, y_test, name, data_width, selection_problem)
 
         loss_al, acc_al, predictions_al = lstm.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "cnn":
@@ -405,7 +406,7 @@ def experiment_model(
     #pred = pd.DataFrame({"predicted": predictions})
     #pred.index = test_selection_df.index
     
-    if selection_problem == "bias_direction":
+    if selection_problem == "bias_direction" and model_type != "svm":
         test_selection_df["predicted"] = np.argmax(predictions, axis=1)
         test_selection_df["pred_class"] = np.argmax(predictions, axis=1)
         

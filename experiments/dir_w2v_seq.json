@@ -1,7 +1,7 @@
 [
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 0,
         "selection_source": "",
         "selection_test_source": "",
@@ -12,10 +12,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -25,12 +25,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 770,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 940,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 1,
         "selection_source": "",
         "selection_test_source": "",
@@ -41,10 +41,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -54,12 +54,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 771,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 941,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 2,
         "selection_source": "",
         "selection_test_source": "",
@@ -70,10 +70,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -83,12 +83,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 772,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 942,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 3,
         "selection_source": "",
         "selection_test_source": "",
@@ -99,10 +99,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -112,12 +112,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 773,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 943,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 4,
         "selection_source": "",
         "selection_test_source": "",
@@ -128,10 +128,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -141,12 +141,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 774,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 944,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 5,
         "selection_source": "",
         "selection_test_source": "",
@@ -157,10 +157,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -170,12 +170,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 775,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 945,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 6,
         "selection_source": "",
         "selection_test_source": "",
@@ -186,10 +186,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -199,12 +199,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 776,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 946,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 7,
         "selection_source": "",
         "selection_test_source": "",
@@ -215,10 +215,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -228,12 +228,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 777,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 947,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 8,
         "selection_source": "",
         "selection_test_source": "",
@@ -244,10 +244,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -257,12 +257,12 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 778,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 948,
+        "experiment_tag": "dir_w2v_seq"
     },
     {
         "type": "model",
-        "selection_problem": "reliability",
+        "selection_problem": "bias_direction",
         "selection_test_fold": 9,
         "selection_source": "",
         "selection_test_source": "",
@@ -273,10 +273,10 @@
         "selection_overwrite": false,
         "al_threshold": 8.4,
         "embedding_type": "w2v",
-        "embedding_shape": "avg",
+        "embedding_shape": "sequence",
         "embedding_overwrite": false,
         "verbose": false,
-        "model_type": "svm",
+        "model_type": "lstm",
         "model_arch_num": 1,
         "model_layer_sizes": [
             128,
@@ -286,7 +286,7 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 779,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 949,
+        "experiment_tag": "dir_w2v_seq"
     }
 ]

@@ -11,7 +11,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -25,8 +25,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 770,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 780,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -40,7 +40,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -54,8 +54,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 771,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 781,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -69,7 +69,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -83,8 +83,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 772,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 782,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -98,7 +98,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -112,8 +112,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 773,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 783,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -127,7 +127,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -141,8 +141,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 774,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 784,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -156,7 +156,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -170,8 +170,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 775,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 785,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -185,7 +185,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -199,8 +199,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 776,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 786,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -214,7 +214,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -228,8 +228,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 777,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 787,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -243,7 +243,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -257,8 +257,8 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 778,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 788,
+        "experiment_tag": "rel_svm_glove_avg"
     },
     {
         "type": "model",
@@ -272,7 +272,7 @@
         "selection_reject_minimum": 300,
         "selection_overwrite": false,
         "al_threshold": 8.4,
-        "embedding_type": "w2v",
+        "embedding_type": "glove",
         "embedding_shape": "avg",
         "embedding_overwrite": false,
         "verbose": false,
@@ -286,7 +286,7 @@
         "model_batch_size": 128,
         "model_learning_rate": 0.001,
         "model_epochs": 200,
-        "model_num": 779,
-        "experiment_tag": "rel_svm_w2v_avg"
+        "model_num": 789,
+        "experiment_tag": "rel_svm_glove_avg"
     }
 ]

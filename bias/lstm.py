@@ -8,33 +8,34 @@ import traceback
 import util
 
 
-def create_model(arch_num, layer_sizes, maxlen, data_width):
+def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
     model = keras.Sequential()
 
     model.add(Masking(mask_value=0.0, input_shape=(maxlen, data_width)))
 
     if arch_num == 1:
         model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2))
-        model.add(Dense(layer_sizes[1], activation='sigmoid'))
     elif arch_num == 2:
         model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2))
         model.add(Dense(layer_sizes[1], activation='tanh'))
         model.add(Dropout(.2))
-        model.add(Dense(layer_sizes[2], activation='sigmoid'))
     elif arch_num == 3:
         model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2, return_sequences=True))
         model.add(LSTM(layer_sizes[1], dropout=.2, recurrent_dropout=.2))
-        model.add(Dense(layer_sizes[2], activation='sigmoid'))
     elif arch_num == 4:
         model.add(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2, return_sequences=True))
         model.add(LSTM(layer_sizes[1], dropout=.2, recurrent_dropout=.2))
         model.add(Dense(layer_sizes[2], activation='tanh'))
         model.add(Dropout(.2))
-        model.add(Dense(layer_sizes[3], activation='sigmoid'))
     elif arch_num == 5:
         model.add(Bidirectional(LSTM(layer_sizes[0], dropout=.2, recurrent_dropout=.2)))
-        model.add(Dense(layer_sizes[1], activation='sigmoid'))
-        
+
+    if selection_problem == "bias_direction":
+        #model.add(Dense(layer_sizes[-1], activation='softmax'))
+        model.add(Dense(3, activation='softmax'))
+    else:
+        model.add(Dense(layer_sizes[-1], activation='sigmoid'))
+    return model
 
         
     # elif arch_num == 2:
@@ -67,8 +68,8 @@ def pad_data(data, maxlen=500):
 
 # NOTE: assumes X is already padded and that y is already categorical
 @util.dump_log
-def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width):
-    model = create_model(arch_num, layer_sizes, maxlen, data_width)
+def train_test(X, y, arch_num, layer_sizes, maxlen, batch_size, learning_rate, epochs, X_test, y_test, name, data_width, selection_problem):
+    model = create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem)
     logging.debug("Model created")
 
     weight_file = "../models/" + name + ".weights"

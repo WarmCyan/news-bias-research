@@ -24,7 +24,8 @@ def create_model(arch_num, layer_sizes, maxlen, data_width, selection_problem):
         #model.add(Dense(layer_sizes[3], activation='sigmoid'))
 
     if selection_problem == "bias_direction":
-        model.add(Dense(layer_sizes[-1], activation='softmax'))
+        #model.add(Dense(layer_sizes[-1], activation='softmax'))
+        model.add(Dense(3, activation='softmax'))
     else:
         model.add(Dense(layer_sizes[-1], activation='sigmoid'))
     return model
