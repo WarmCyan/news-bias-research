@@ -6,6 +6,7 @@ import util
 import json
 import keras
 import sys
+import os
 import traceback
 import pandas as pd
 import numpy as np
@@ -364,14 +365,23 @@ def experiment_model(
 
     if "AL_TRAINING" in experiment_tag:
         model = svm.LinearSVC()
+        print(X_al_test.shape, y_al_test.shape)
         cv_results = cross_validate(model, X_al_test, y_al_test, cv=10)
         print("_"*80)
         print(cv_results["test_score"])
+        results_scores = []
         total = 0
         for num in cv_results["test_score"]:
+            results_scores.append(num)
             total += num
         total /= len(cv_results["test_score"])
         print(total)
+
+        save_data = {"average": float(total), "scores": results_scores}
+        output_path = f"../data/output/{experiment_tag}"
+        util.create_dir(output_path)
+        with open(output_path + "/" + experiment_tag + ".json", 'w') as outfile:
+            json.dump(save_data, outfile)
         exit()
 
     
@@ -526,63 +536,64 @@ if args.experiment_path is not None:
     logging.info("=====================================================")
 
     with open(args.experiment_path, 'r') as infile:
-        params = json.load(infile)
-
-    if args.experiment_row is not None:
-        params = params[args.experiment_row]
+        paramset = json.load(infile)
 
     util.TMP_PATH = args.temp
+    
+    if args.experiment_row is not None:
+        paramset = [paramset[args.experiment_row]]
 
-    if "selection_tag" not in params:
-        params["selection_tag"] = ""
-        
-    if "al_threshold" not in params:
-        params["al_threshold"] = 8.4
-        
+    for params in paramset:
+        if "selection_tag" not in params:
+            params["selection_tag"] = ""
+            
+        if "al_threshold" not in params:
+            params["al_threshold"] = 8.4
+            
 
-    if params["type"] == "data":
-        experiment_dataset(
-            params["selection_problem"],
-            params["selection_test_fold"],
-            params["selection_source"],
-            params["selection_test_source"],
-            params["selection_count"],
-            params["selection_random_seed"],
-            params["selection_tag"],
-            params["selection_reject_minimum"],
-            params["selection_overwrite"],
-            params["embedding_type"],
-            params["embedding_shape"],
-            params["embedding_overwrite"],
-            params["verbose"]
-        )
-    elif params["type"] == "model":
-        experiment_model(
-            params["selection_problem"],
-            params["selection_test_fold"],
-            params["selection_source"],
-            params["selection_test_source"],
-            params["selection_count"],
-            params["selection_random_seed"],
-            params["selection_tag"],
-            params["selection_reject_minimum"],
-            params["selection_overwrite"],
-            params["al_threshold"],
-            params["embedding_type"],
-            params["embedding_shape"],
-            params["embedding_overwrite"],
-            params["model_type"],
-            params["model_arch_num"],
-            params["model_layer_sizes"],
-            params["model_maxlen"],
-            params["model_batch_size"],
-            params["model_learning_rate"],
-            params["model_epochs"],
-            params["model_num"],
-            params["experiment_tag"],
-            params["verbose"],
-            params
+        if params["type"] == "data":
+            experiment_dataset(
+                params["selection_problem"],
+                params["selection_test_fold"],
+                params["selection_source"],
+                params["selection_test_source"],
+                params["selection_count"],
+                params["selection_random_seed"],
+                params["selection_tag"],
+                params["selection_reject_minimum"],
+                params["selection_overwrite"],
+                params["embedding_type"],
+                params["embedding_shape"],
+                params["embedding_overwrite"],
+                params["verbose"]
             )
+        elif params["type"] == "model":
+            experiment_model(
+                params["selection_problem"],
+                params["selection_test_fold"],
+                params["selection_source"],
+                params["selection_test_source"],
+                params["selection_count"],
+                params["selection_random_seed"],
+                params["selection_tag"],
+                params["selection_reject_minimum"],
+                params["selection_overwrite"],
+                params["al_threshold"],
+                params["embedding_type"],
+                params["embedding_shape"],
+                params["embedding_overwrite"],
+                params["model_type"],
+                params["model_arch_num"],
+                params["model_layer_sizes"],
+                params["model_maxlen"],
+                params["model_batch_size"],
+                params["model_learning_rate"],
+                params["model_epochs"],
+                params["model_num"],
+                params["experiment_tag"],
+                params["verbose"],
+                params
+                )
 else:
     #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "w2v", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1)
     #experiment_model("reliability", "mbfc", 15000, 13, 500, False, "tfidf", "sequence", False, "lstm", 2, (64, 32, 2), 500, 32, .001, 100, 1, verbose=True)

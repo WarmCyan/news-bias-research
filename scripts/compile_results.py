@@ -114,7 +114,7 @@ al_unseen_df = pd.DataFrame(results_collection_al_unseen)
 al_unseen_df.to_csv(output_path + "/compiled_al_unseen.csv")
 
 
-# TODO: aggregate stats next 
+# TODO: aggregate stats next
 experiment_names = list(set(df.experiment_tag))
 
 aggregate = []
@@ -293,6 +293,68 @@ aggregate_breakdown_df.to_csv(output_path + "/aggregate_breakdown_al.csv")
 # Multi-run analyses and better tables
 # ===========================================
 
+
+# tp, fp, fn, tn (pp, pn, fp, ff)
+# ll, lc, lr, cl, cc, cr, rl, rc, rr
+def make_latex_cm_table(data, output='table', caption="Caption", label="tab:my_label", three_way=False, name_true="Biased", name_false="Unbiased"):
+    runstring = " ".join(sys.argv[:])
+    beginning = '''
+\\begin{table}[h!] 
+    \\centering'''
+
+    col_count = 2
+
+    if three_way:
+        col_count = 3
+
+        
+    beginning += '''
+    \\begin{tabular}{cr|''' + "c"*col_count + '''}
+'''
+
+    tabletext = '''\\toprule\n
+    & & \\multicolumn{''' + str(col_count) + '''}{c}{Actual} \\\\ 
+    '''
+
+    if three_way:
+        tabletext += '''
+        & & Left & Center & Right \\\\
+    \\midrule
+        \\multirow{3}{*}{Predicted}
+'''
+#"{0:.2f}".format(data)
+        tabletext += "& Left & " + "{0:.2f}".format(data["ll"]) + "\\% & " + "{0:.2f}".format(data["lc"]) + "\\% & " + "{0:.2f}".format(data["lr"]) + "\\% \\\\ \n"
+        tabletext += "& Center & " + "{0:.2f}".format(data["cl"]) + "\\% & " + "{0:.2f}".format(data["cc"]) + "\\% & " + "{0:.2f}".format(data["cr"]) + "\\% \\\\ \n"
+        tabletext += "& Right & " + "{0:.2f}".format(data["rl"]) + "\\% & " + "{0:.2f}".format(data["rc"]) + "\\% & " + "{0:.2f}".format(data["rr"]) + "\\% \\\\ \n"
+
+    else:
+        tabletext += '''
+        & & ''' + name_true + ''' & ''' + name_false + ''' \\\\
+    \\midrule
+        \\multirow{2}{*}{Predicted}
+'''
+        tabletext += "& " + name_true + " & " + data["tp"] + "\\% & " + data["fp"] + "\\% \\\\ \n"
+        tabletext += "& " + name_false + " & " + data["fn"] + "\\% & " + data["tn"] + "\\% \\\\ \n"
+
+    ending = '''
+    \\bottomrule
+    \\end{tabular}
+    \\caption{''' + caption + '''}
+    \\label{''' + label + '''}
+\\end{table}'''
+
+    latex_text = "%" + runstring + beginning + tabletext + ending
+    
+    print(latex_text)
+    
+    with open(output_path + "/" + output + ".tex", 'w') as outfile:
+        outfile.write(latex_text)
+
+    if args.final:
+        with open(final_table_output_path + output + ".tex", 'w') as outfile:
+            outfile.write(latex_text)
+    
+
 def make_latex_table(df, output='table', caption="Caption", label="tab:my_label", alignment=None, bold=True):
     global output_path
     global args
@@ -358,19 +420,59 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
 
 
 def make_combined_table(df):
+    global THREEWAY
     table_rows = []
     
     groups = df.groupby(df.experiment_tag)
     for group_name, group in groups:
-        print(group_name,group.accuracy.mean(),group.precision.mean(),group.recall.mean(), group.f1.mean())
-        
         row = {
             "Name": group_name,
             "Accuracy": group.accuracy.mean()*100,
-            "Precision": group.precision.mean()*100,
-            "Recall": group.recall.mean()*100,
-            "F1": group.f1.mean()*100
         }
+        
+        if THREEWAY:
+            for index, localrow in group.iterrows():
+                total = localrow["ll"] + localrow["lc"] + localrow["lr"] + localrow["cl"] + localrow["cc"] + localrow["cr"] + localrow["rl"] + localrow["rc"] + localrow["rr"]
+                group.loc[index, "ll"] = localrow["ll"] / total
+                group.loc[index, "lc"] = localrow["lc"] / total
+                group.loc[index, "lr"] = localrow["lr"] / total
+                group.loc[index, "cl"] = localrow["cl"] / total
+                group.loc[index, "cc"] = localrow["cc"] / total
+                group.loc[index, "cr"] = localrow["cr"] / total
+                group.loc[index, "rl"] = localrow["rl"] / total
+                group.loc[index, "rc"] = localrow["rc"] / total
+                group.loc[index, "rr"] = localrow["rr"] / total
+
+            row.update({
+                "ll": group.ll.mean()*100,
+                "lc": group.lc.mean()*100,
+                "lr": group.lr.mean()*100,
+                "cl": group.cl.mean()*100,
+                "cc": group.cc.mean()*100,
+                "cr": group.cr.mean()*100,
+                "rl": group.rl.mean()*100,
+                "rc": group.rc.mean()*100,
+                "rr": group.rr.mean()*100,
+            })
+                
+        else:
+            for index, localrow in group.iterrows():
+                total = localrow["tp"] + localrow["fp"] + localrow["fn"] + localrow["tn"]
+                group[index, "tp"] = localrow["tp"] / total
+                group[index, "fp"] = localrow["fp"] / total
+                group[index, "fn"] = localrow["fn"] / total
+                group[index, "tn"] = localrow["tn"] / total
+
+            row.update({
+                "Precision": group.precision.mean()*100,
+                "Recall": group.recall.mean()*100,
+                "F1": group.f1.mean()*100,
+                "tp": group.tp.mean()*100,
+                "fp": group.fp.mean()*100,
+                "fn": group.fn.mean()*100,
+                "tn": group.tn.mean()*100,
+            })
+            
         table_rows.append(row)
     combined_df = pd.DataFrame(table_rows)
     combined_df.index = combined_df.Name
@@ -407,16 +509,25 @@ combined_df = make_combined_table(df)
 combined_df_al = make_combined_table(al_df)
 combined_df_al_unseen = make_combined_table(al_unseen_df)
 
+# print(combined_df_al)
+
 if args.columns is not None:
     combined_df = fix_column_names(combined_df, args.columns)
     combined_df_al = fix_column_names(combined_df_al, args.columns)
     combined_df_al_unseen = fix_column_names(combined_df_al_unseen, args.columns)
 
-sl_name = name_prefix + "_sl"
-make_latex_table(combined_df, sl_name, caption=args.caption + " (Source-level.)", label="tab:" + sl_name) 
+if not THREEWAY:
+    sl_name = name_prefix + "_sl"
+    make_latex_table(combined_df, sl_name, caption=args.caption + " (Source-level.)", label="tab:" + sl_name)
 
-al_name = name_prefix + "_al"
-make_latex_table(combined_df_al, al_name, caption=args.caption + " (Article-level.)", label="tab:" + al_name)
+    al_name = name_prefix + "_al"
+    make_latex_table(combined_df_al, al_name, caption=args.caption + " (Article-level.)", label="tab:" + al_name)
 
-al_unseen_name = name_prefix + "_al_unseen"
-make_latex_table(combined_df_al_unseen, al_unseen_name, caption=args.caption + " (Article-level, from only unseen sources.)", label="tab:" + al_unseen_name)
+    al_unseen_name = name_prefix + "_al_unseen"
+    make_latex_table(combined_df_al_unseen, al_unseen_name, caption=args.caption + " (Article-level, from only unseen sources.)", label="tab:" + al_unseen_name)
+
+
+print(combined_df_al)
+
+for index, row in combined_df_al.transpose().iterrows():
+    make_latex_cm_table(row, name_prefix + "_" + str(index), caption=args.caption + " (" + str(index) + ")", three_way=THREEWAY)

@@ -50,7 +50,7 @@ echo "----------- Reliability Sentics ----------- "
 compile_results.py \
 -e run_0/rel_svm_w2v_avg,run_0/rel_svm_w2v_limit_avg,run_0/rel_svm_w2v_sentic_avg,run_0/rel_svm_w2v_sentic_full_avg,run_0/rel_svm_w2v_sentic_avg_std,run_0/rel_svm_w2v_sentic_full_avg_std \
 -o rel_sentic \
---caption "Sentics incorporation." \
+--caption "Sentics incorporation for reliability." \
 --column-replacements "rel_svm_w2v_avg=No sentics,rel_svm_w2v_limit_avg=Limited,rel_svm_w2v_sentic_avg=Sentics,rel_svm_w2v_sentic_full_avg=Padded sentics" \
 --final
 
@@ -59,7 +59,7 @@ echo "----------- Reliability Algorithm ----------- "
 compile_results.py \
 -e seq/rel_w2v_seq,run_0/rel_svm_w2v_avg,run_0/rel_w2v_avg \
 -o rel_alg \
---caption "ML algorithm comparison." \
+--caption "ML algorithm comparison on reliability." \
 --column-replacements "rel_svm_w2v_avg=SVM,rel_w2v_avg=NN,rel_w2v_seq=LSTM" \
 --final
 
@@ -86,7 +86,7 @@ echo "----------- Bias Sentics ----------- "
 compile_results.py \
 -e run_0/bias_svm_w2v_avg,run_0/bias_svm_w2v_limit_avg,run_0/bias_svm_w2v_sentic_avg,run_0/bias_svm_w2v_sentic_full_avg,run_0/bias_svm_w2v_sentic_avg_std,run_0/bias_svm_w2v_sentic_full_avg_std \
 -o bias_sentic \
---caption "Sentics incorporation." \
+--caption "Sentics incorporation for bias." \
 --column-replacements "bias_svm_w2v_avg=No sentics,bias_svm_w2v_limit_avg=Limited,bias_svm_w2v_sentic_avg=Sentics,bias_svm_w2v_sentic_full_avg=Padded sentics" \
 --final
 
@@ -96,6 +96,16 @@ echo "----------- Bias Algorithm ----------- "
 compile_results.py \
 -e run_0/bias_svm_w2v_avg,seq/bias_w2v_seq,run_0/bias_w2v_avg \
 -o bias_alg \
---caption "ML algorithm comparison." \
+--caption "ML algorithm comparison for bias." \
 --column-replacements "bias_svm_w2v_avg=SVM,bias_w2v_avg=NN,bias_w2v_seq=LSTM" \
+--final
+
+
+echo "----------- Dir Embedding ----------- "
+
+compile_results.py \
+-e run_0/dir_svm_w2v_avg,run_0/dir_svm_glove_avg,run_0/dir_svm_ft_avg,run_0/dir_svm_tfidf \
+-o dir_embed \
+--caption "Bias direction embedding comparisons." \
+--column-replacements "dir_svm_w2v_avg=Word2Vec,dir_svm_glove_avg=GloVe,dir_svm_ft_avg=FastText,dir_svm_tfidf=TF-IDF" \ 
 --final

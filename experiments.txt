@@ -317,6 +317,9 @@ dir_svm_glove_avg_mbm (980)
 dir_svm_glove_avg_dir_below20flip (990)
 
 
+compile_results.py -e run_0/dir_svm_glove_avg,run_0/dir_svm_glove_avg_allsides_all,run_0/dir_svm_glove_avg_mbm,run_0/dir_svm_glove_avg_dir_below20flip -o dir_sel_0
+
+
 ======================================
 Determining which embedding is better for reliability
 "dir_sentic"
@@ -330,7 +333,7 @@ dir_svm_w2v_sentic_avg_std (920)
 dir_svm_w2v_sentic_full_avg_std (930)
 
 
-dir_svm_glove_avg (1000)
+dir_svm_glove_avg (820) [run]
 dir_svm_glove_limit_avg (1010)
 dir_svm_glove_sentic_avg (1020)
 dir_svm_glove_sentic_full_avg (1030)
