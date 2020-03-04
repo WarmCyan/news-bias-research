@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import pandas as pd
 import sys
+import re
 sys.path.append('..')
 
 from bias import vis
@@ -19,6 +20,7 @@ args = parser.parse_args()
 
 
 THREEWAY = False
+BIAS = True
 
 results_collection = []
 results_collection_al = []
@@ -81,8 +83,18 @@ for result_path in results_paths:
             row["rc"] = results["rc"]
             row["rr"] = results["rr"]
 
+            row["l_rec"] = results["ll"]/(results["ll"] + results["cl"] + results["rl"])
+            row["c_rec"] = results["cc"]/(results["lc"] + results["cc"] + results["rc"])
+            row["r_rec"] = results["rr"]/(results["lr"] + results["cr"] + results["rr"])
+
+            row["l_prec"] = results["ll"]/(results["ll"] + results["lc"] + results["lr"])
+            row["c_prec"] = results["cc"]/(results["cl"] + results["cc"] + results["cr"])
+            row["r_prec"] = results["rr"]/(results["rl"] + results["rc"] + results["rr"])
+
             row["total"] = row["ll"] + row["lc"] + row["lr"] + row["cl"] + row["cc"] + row["cr"] + row["rl"] + row["rc"] + row["rr"]
         else:
+            if row["selection_problem"] == "reliability":
+                BIAS = False
             row["tn"] = results["tn"]
             row["tp"] = results["tp"]
             row["fn"] = results["fn"]
@@ -333,8 +345,8 @@ def make_latex_cm_table(data, output='table', caption="Caption", label="tab:my_l
     \\midrule
         \\multirow{2}{*}{Predicted}
 '''
-        tabletext += "& " + name_true + " & " + data["tp"] + "\\% & " + data["fp"] + "\\% \\\\ \n"
-        tabletext += "& " + name_false + " & " + data["fn"] + "\\% & " + data["tn"] + "\\% \\\\ \n"
+        tabletext += "& " + name_true + " & " + "{0:.2f}".format(data["tp"]) + "\\% & " + "{0:.2f}".format(data["fp"]) + "\\% \\\\ \n"
+        tabletext += "& " + name_false + " & " + "{0:.2f}".format(data["fn"]) + "\\% & " + "{0:.2f}".format(data["tn"]) + "\\% \\\\ \n"
 
     ending = '''
     \\bottomrule
@@ -389,6 +401,8 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
     tabletext += "\n\\midrule"
 
     for index, row in df.iterrows():
+        if str(index) in ["ll", "lr", "lc", "cl", "cc", "cr", "rl", "rc", "rr", "tp", "tn", "fp", "fn"]:
+            continue
 
         rowmax=row.iloc[0]
         if bold:
@@ -454,14 +468,22 @@ def make_combined_table(df):
                 "rc": group.rc.mean()*100,
                 "rr": group.rr.mean()*100,
             })
-                
+
+            row.update({
+                "L Precision": group.l_prec.mean()*100,
+                "C Precision": group.c_prec.mean()*100,
+                "R Precision": group.r_prec.mean()*100,
+                "L Recall": group.l_rec.mean()*100,
+                "C Recall": group.c_rec.mean()*100,
+                "R Recall": group.r_rec.mean()*100,
+            })
         else:
             for index, localrow in group.iterrows():
                 total = localrow["tp"] + localrow["fp"] + localrow["fn"] + localrow["tn"]
-                group[index, "tp"] = localrow["tp"] / total
-                group[index, "fp"] = localrow["fp"] / total
-                group[index, "fn"] = localrow["fn"] / total
-                group[index, "tn"] = localrow["tn"] / total
+                group.loc[index, "tp"] = localrow["tp"] / total
+                group.loc[index, "fp"] = localrow["fp"] / total
+                group.loc[index, "fn"] = localrow["fn"] / total
+                group.loc[index, "tn"] = localrow["tn"] / total
 
             row.update({
                 "Precision": group.precision.mean()*100,
@@ -516,18 +538,30 @@ if args.columns is not None:
     combined_df_al = fix_column_names(combined_df_al, args.columns)
     combined_df_al_unseen = fix_column_names(combined_df_al_unseen, args.columns)
 
-if not THREEWAY:
-    sl_name = name_prefix + "_sl"
-    make_latex_table(combined_df, sl_name, caption=args.caption + " (Source-level.)", label="tab:" + sl_name)
+sl_name = name_prefix + "_sl"
+make_latex_table(combined_df, sl_name, caption=args.caption + " (Source-level.)", label="tab:" + sl_name)
 
-    al_name = name_prefix + "_al"
-    make_latex_table(combined_df_al, al_name, caption=args.caption + " (Article-level.)", label="tab:" + al_name)
+al_name = name_prefix + "_al"
+make_latex_table(combined_df_al, al_name, caption=args.caption + " (Article-level.)", label="tab:" + al_name)
 
-    al_unseen_name = name_prefix + "_al_unseen"
-    make_latex_table(combined_df_al_unseen, al_unseen_name, caption=args.caption + " (Article-level, from only unseen sources.)", label="tab:" + al_unseen_name)
+al_unseen_name = name_prefix + "_al_unseen"
+make_latex_table(combined_df_al_unseen, al_unseen_name, caption=args.caption + " (Article-level, from only unseen sources.)", label="tab:" + al_unseen_name)
 
 
 print(combined_df_al)
 
 for index, row in combined_df_al.transpose().iterrows():
-    make_latex_cm_table(row, name_prefix + "_" + str(index), caption=args.caption + " (" + str(index) + ")", three_way=THREEWAY)
+    safe_index = re.sub(r'[^\w]', '', str(index))
+
+    labelT = "Biased"
+    labelF = "Unbiased"
+
+    if not BIAS:
+        labelT = "Reliable"
+        labelF = "Unreliable"
+        
+    
+    make_latex_cm_table(row, name_prefix + "_" + str(safe_index), caption=args.caption + " (" + str(index) + ")", three_way=THREEWAY, name_true=labelT, name_false=labelF)
+
+
+

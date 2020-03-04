@@ -23,7 +23,7 @@ echo "----------- Supporting Avg w stddev (rel) ----------- "
 compile_results.py \
 -e run_0/rel_svm_w2v_avg,run_0/rel_svm_w2v_avg_std,run_0/rel_w2v_avg,run_0/rel_w2v_avg_std,run_1/rel_svm_w2v_avg,run_1/rel_svm_w2v_avg_std,run_1/rel_w2v_avg,run_1/rel_w2v_avg_std \
 -o rel_avg \
---caption "Average vector versus average and standard deviation vector."
+--caption "Average vector versus average and standard deviation vector." \
 --column-replacements "rel_svm_w2v_avg=Average,rel_svm_w2v_avg_std=Average + \\sigma" \
 --final
 
@@ -107,5 +107,21 @@ compile_results.py \
 -e run_0/dir_svm_w2v_avg,run_0/dir_svm_glove_avg,run_0/dir_svm_ft_avg,run_0/dir_svm_tfidf \
 -o dir_embed \
 --caption "Bias direction embedding comparisons." \
---column-replacements "dir_svm_w2v_avg=Word2Vec,dir_svm_glove_avg=GloVe,dir_svm_ft_avg=FastText,dir_svm_tfidf=TF-IDF" \ 
+--column-replacements "dir_svm_w2v_avg=Word2Vec,dir_svm_glove_avg=GloVe,dir_svm_ft_avg=FastText,dir_svm_tfidf=TF-IDF" \
 --final
+
+
+echo "----------- Dir Selection Set ----------- "
+
+compile_results.py \
+-e run_0/dir_svm_glove_avg,run_0/dir_svm_glove_avg_allsides_all,run_0/dir_svm_glove_avg_mbm,run_0/dir_svm_glove_avg_dir_below20flip \
+-o dir_sel \
+--caption "Bias direction selection set comparisons." \
+--column-replacements "dir_svm_glove_avg=Combined,dir_svm_glove_avg_allsides_all=AllSides,dir_svm_glove_avg_mbm=MBM,dir_svm_glove_avg_dir_below20flip=Combined (\\textless20\\%)" \
+--final
+
+
+echo "----------- Dir Algorithm ----------- "
+
+compile_results.py -e seq/dir_w2v_seq,seq/dir_glove_seq,seq/dir_ft_seq -o seq_dir_embed_0
+
