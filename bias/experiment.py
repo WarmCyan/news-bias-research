@@ -398,7 +398,7 @@ def experiment_model(
 
         loss_al, acc_al, predictions_al = nn.test(X_al_test, y_al_test, model_batch_size, model)
     elif model_type == "svm":
-        model = svm.LinearSVC()
+        model = svm.LinearSVC(random_state=42)
         model.fit(X, y)
         history = None
         loss = 0

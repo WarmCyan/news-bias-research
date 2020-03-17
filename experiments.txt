@@ -342,8 +342,6 @@ dir_svm_glove_sentic_full_avg (1030)
 compile_results.py -e run_0/dir_svm_w2v_avg,run_0/dir_svm_w2v_limit_avg,run_0/dir_svm_w2v_sentic_avg,run_0/dir_svm_w2v_sentic_full_avg,run_0/dir_svm_w2v_sentic_avg_std,run_0/dir_svm_w2v_sentic_full_avg_std -o dir_sentic_0
 
 
-RERUN WITH GLOVE
-
 
 Times run: 1
 
@@ -362,6 +360,12 @@ compile_results.py -e seq/dir_w2v_seq,seq/dir_glove_seq,seq/dir_ft_seq -o seq_di
 
 
 
+=====================
+Also:
+dir_alg
+
+dir_w2v_avg (1070)
+dir_glove_avg (1080)
 
 
 
@@ -500,3 +504,11 @@ compile_results.py \
 -o bias_alg \
 --caption "ML algorithm comparison." \
 --column-replacements "bias_svm_w2v_avg=SVM,bias_w2v_avg=NN,bias_w2v_seq=LSTM"
+
+
+
+
+
+compile_results.py -e run_0/rel_svm_w2v_avg,run_1/rel_svm_w2v_avg -o quick_diff_test
+compile_results.py -e run_0/bias_svm_tfidf,run_1/bias_svm_tfidf -o quick_diff_test2
+compile_results.py -e run_0/bias_svm_tfidf,run_1/bias_svm_tfidf,bias_svm_tfidf -o quick_diff_test3

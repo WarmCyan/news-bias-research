@@ -16,11 +16,14 @@ parser.add_argument("-o", dest="output_path", help="compiled output path", requi
 parser.add_argument("--caption", dest="caption", default="CAPTION")
 parser.add_argument("--column-replacements", dest="columns")
 parser.add_argument("--final", dest="final", action="store_true") #
+parser.add_argument("--ALL", dest="ALL", action="store_true")
+parser.add_argument("--row-order", dest="row_order")
 args = parser.parse_args()
 
 
 THREEWAY = False
 BIAS = True
+ALL = args.ALL
 
 results_collection = []
 results_collection_al = []
@@ -90,6 +93,10 @@ for result_path in results_paths:
             row["l_prec"] = results["ll"]/(results["ll"] + results["lc"] + results["lr"])
             row["c_prec"] = results["cc"]/(results["cl"] + results["cc"] + results["cr"])
             row["r_prec"] = results["rr"]/(results["rl"] + results["rc"] + results["rr"])
+
+            row["l_f1"] = 2*(row["l_prec"]*row["l_rec"])/(row["l_prec"]+row["l_rec"])
+            row["c_f1"] = 2*(row["c_prec"]*row["c_rec"])/(row["c_prec"]+row["c_rec"])
+            row["r_f1"] = 2*(row["r_prec"]*row["r_rec"])/(row["r_prec"]+row["r_rec"])
 
             row["total"] = row["ll"] + row["lc"] + row["lr"] + row["cl"] + row["cc"] + row["cr"] + row["rl"] + row["rc"] + row["rr"]
         else:
@@ -335,9 +342,9 @@ def make_latex_cm_table(data, output='table', caption="Caption", label="tab:my_l
         \\multirow{3}{*}{Predicted}
 '''
 #"{0:.2f}".format(data)
-        tabletext += "& Left & " + "{0:.2f}".format(data["ll"]) + "\\% & " + "{0:.2f}".format(data["lc"]) + "\\% & " + "{0:.2f}".format(data["lr"]) + "\\% \\\\ \n"
-        tabletext += "& Center & " + "{0:.2f}".format(data["cl"]) + "\\% & " + "{0:.2f}".format(data["cc"]) + "\\% & " + "{0:.2f}".format(data["cr"]) + "\\% \\\\ \n"
-        tabletext += "& Right & " + "{0:.2f}".format(data["rl"]) + "\\% & " + "{0:.2f}".format(data["rc"]) + "\\% & " + "{0:.2f}".format(data["rr"]) + "\\% \\\\ \n"
+        tabletext += "& Left & \\cellcolor{lightgray}" + "{0:.0f}".format(data["ll"]) + " & " + "{0:.0f}".format(data["lc"]) + " & " + "{0:.0f}".format(data["lr"]) + " \\\\ \n"
+        tabletext += "& Center & " + "{0:.0f}".format(data["cl"]) + " & \\cellcolor{lightgray}" + "{0:.0f}".format(data["cc"]) + " & " + "{0:.0f}".format(data["cr"]) + " \\\\ \n"
+        tabletext += "& Right & " + "{0:.0f}".format(data["rl"]) + " & " + "{0:.0f}".format(data["rc"]) + " & \\cellcolor{lightgray}" + "{0:.0f}".format(data["rr"]) + " \\\\ \n"
 
     else:
         tabletext += '''
@@ -345,8 +352,8 @@ def make_latex_cm_table(data, output='table', caption="Caption", label="tab:my_l
     \\midrule
         \\multirow{2}{*}{Predicted}
 '''
-        tabletext += "& " + name_true + " & " + "{0:.2f}".format(data["tp"]) + "\\% & " + "{0:.2f}".format(data["fp"]) + "\\% \\\\ \n"
-        tabletext += "& " + name_false + " & " + "{0:.2f}".format(data["fn"]) + "\\% & " + "{0:.2f}".format(data["tn"]) + "\\% \\\\ \n"
+        tabletext += "& " + name_true + " & \\cellcolor{lightgray}" + "{0:.2f}".format(data["tp"]) + " & " + "{0:.2f}".format(data["fp"]) + " \\\\ \n"
+        tabletext += "& " + name_false + " & " + "{0:.2f}".format(data["fn"]) + " & \\cellcolor{lightgray}" + "{0:.2f}".format(data["tn"]) + " \\\\ \n"
 
     ending = '''
     \\bottomrule
@@ -370,6 +377,10 @@ def make_latex_cm_table(data, output='table', caption="Caption", label="tab:my_l
 def make_latex_table(df, output='table', caption="Caption", label="tab:my_label", alignment=None, bold=True):
     global output_path
     global args
+    global ALL
+
+    if ALL:
+        bold = False
     
     runstring = " ".join(sys.argv[:])
     beginning = '''
@@ -404,6 +415,8 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
         if str(index) in ["ll", "lr", "lc", "cl", "cc", "cr", "rl", "rc", "rr", "tp", "tn", "fp", "fn"]:
             continue
 
+        row_label = index
+
         rowmax=row.iloc[0]
         if bold:
             for data in row:
@@ -416,8 +429,11 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
                 tabletext += "& \\textbf{" + "{0:.2f}".format(data) + "} "
             else: 
                 tabletext += "& " + "{0:.2f}".format(data) + " "
-        #tabletext += "\\\\\n\\midrule"
-        tabletext += "\\\\\n"
+            
+        if THREEWAY and (row_label == "Accuracy" or row_label == "R Precision" or row_label == "R Recall"):
+            tabletext += "\\\\\n\\midrule\n"
+        else:
+            tabletext += "\\\\\n"
     
 
     latex_text = "%" + runstring + beginning + tabletext + ending
@@ -435,38 +451,40 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
 
 def make_combined_table(df):
     global THREEWAY
+    global ALL
     table_rows = []
     
     groups = df.groupby(df.experiment_tag)
     for group_name, group in groups:
+        print("="*30, group_name)
         row = {
             "Name": group_name,
             "Accuracy": group.accuracy.mean()*100,
         }
         
         if THREEWAY:
-            for index, localrow in group.iterrows():
-                total = localrow["ll"] + localrow["lc"] + localrow["lr"] + localrow["cl"] + localrow["cc"] + localrow["cr"] + localrow["rl"] + localrow["rc"] + localrow["rr"]
-                group.loc[index, "ll"] = localrow["ll"] / total
-                group.loc[index, "lc"] = localrow["lc"] / total
-                group.loc[index, "lr"] = localrow["lr"] / total
-                group.loc[index, "cl"] = localrow["cl"] / total
-                group.loc[index, "cc"] = localrow["cc"] / total
-                group.loc[index, "cr"] = localrow["cr"] / total
-                group.loc[index, "rl"] = localrow["rl"] / total
-                group.loc[index, "rc"] = localrow["rc"] / total
-                group.loc[index, "rr"] = localrow["rr"] / total
-
+            # for index, localrow in group.iterrows():
+            #     total = localrow["ll"] + localrow["lc"] + localrow["lr"] + localrow["cl"] + localrow["cc"] + localrow["cr"] + localrow["rl"] + localrow["rc"] + localrow["rr"]
+            #     group.loc[index, "ll"] = localrow["ll"] / total
+            #     group.loc[index, "lc"] = localrow["lc"] / total
+            #     group.loc[index, "lr"] = localrow["lr"] / total
+            #     group.loc[index, "cl"] = localrow["cl"] / total
+            #     group.loc[index, "cc"] = localrow["cc"] / total
+            #     group.loc[index, "cr"] = localrow["cr"] / total
+            #     group.loc[index, "rl"] = localrow["rl"] / total
+            #     group.loc[index, "rc"] = localrow["rc"] / total
+            #     group.loc[index, "rr"] = localrow["rr"] / total
+               
             row.update({
-                "ll": group.ll.mean()*100,
-                "lc": group.lc.mean()*100,
-                "lr": group.lr.mean()*100,
-                "cl": group.cl.mean()*100,
-                "cc": group.cc.mean()*100,
-                "cr": group.cr.mean()*100,
-                "rl": group.rl.mean()*100,
-                "rc": group.rc.mean()*100,
-                "rr": group.rr.mean()*100,
+                "ll": group.ll.mean(),
+                "lc": group.lc.mean(),
+                "lr": group.lr.mean(),
+                "cl": group.cl.mean(),
+                "cc": group.cc.mean(),
+                "cr": group.cr.mean(),
+                "rl": group.rl.mean(),
+                "rc": group.rc.mean(),
+                "rr": group.rr.mean(),
             })
 
             row.update({
@@ -476,34 +494,45 @@ def make_combined_table(df):
                 "L Recall": group.l_rec.mean()*100,
                 "C Recall": group.c_rec.mean()*100,
                 "R Recall": group.r_rec.mean()*100,
+                "L F1": group.l_f1.mean()*100,
+                "C F1": group.c_f1.mean()*100,
+                "R F1": group.r_f1.mean()*100,
             })
         else:
-            for index, localrow in group.iterrows():
-                total = localrow["tp"] + localrow["fp"] + localrow["fn"] + localrow["tn"]
-                group.loc[index, "tp"] = localrow["tp"] / total
-                group.loc[index, "fp"] = localrow["fp"] / total
-                group.loc[index, "fn"] = localrow["fn"] / total
-                group.loc[index, "tn"] = localrow["tn"] / total
+            # for index, localrow in group.iterrows():
+            #     total = localrow["tp"] + localrow["fp"] + localrow["fn"] + localrow["tn"]
+            #     group.loc[index, "tp"] = localrow["tp"] / total
+            #     group.loc[index, "fp"] = localrow["fp"] / total
+            #     group.loc[index, "fn"] = localrow["fn"] / total
+            #     group.loc[index, "tn"] = localrow["tn"] / total
 
             row.update({
                 "Precision": group.precision.mean()*100,
                 "Recall": group.recall.mean()*100,
                 "F1": group.f1.mean()*100,
-                "tp": group.tp.mean()*100,
-                "fp": group.fp.mean()*100,
-                "fn": group.fn.mean()*100,
-                "tn": group.tn.mean()*100,
+                "tp": group.tp.mean(),
+                "fp": group.fp.mean(),
+                "fn": group.fn.mean(),
+                "tn": group.tn.mean(),
             })
             
+        print(row)
         table_rows.append(row)
     combined_df = pd.DataFrame(table_rows)
+    print(combined_df)
     combined_df.index = combined_df.Name
     combined_df = combined_df.drop(columns=["Name"])
-
-    return combined_df.transpose()
+    
+    if ALL:
+        combined_df = combined_df.rename(columns={"tp":"TP","fp":"FP","fn":"FN","tn":"TN", "ll":"LL","lc":"LC","lr":"LR","cl":"CL","cc":"CC","cr":"CR","rl":"RL", "rc":"RC", "rr":"RR"})
+        combined_df = combined_df.reindex(args.row_order.split(","))
+        return combined_df
+    else:
+        return combined_df.transpose()
 
 
 def fix_column_names(df, replacement_string):
+    global ALL
     replacements = replacement_string.split(",")
 
     col_redefs = {}
@@ -516,8 +545,18 @@ def fix_column_names(df, replacement_string):
         col_redefs[tag] = newname
         order.append(newname)
 
-    df = df.rename(columns=col_redefs)
-    df = df[order]
+    if ALL:
+        df = df.rename(index=col_redefs)
+        print(col_redefs)
+        print(order)
+        print("#"*50)
+        print(df)
+        df = df.reindex(order)
+        print("8"*50)
+        print(df)
+    else:
+        df = df.rename(columns=col_redefs)
+        df = df[order]
     return df
     
 
@@ -529,6 +568,8 @@ name_prefix = args.output_path
 
 combined_df = make_combined_table(df)
 combined_df_al = make_combined_table(al_df)
+print("*"*50)
+print(combined_df_al)
 combined_df_al_unseen = make_combined_table(al_unseen_df)
 
 # print(combined_df_al)
@@ -550,6 +591,9 @@ make_latex_table(combined_df_al_unseen, al_unseen_name, caption=args.caption + "
 
 print(combined_df_al)
 
+if ALL:
+    exit()
+
 for index, row in combined_df_al.transpose().iterrows():
     safe_index = re.sub(r'[^\w]', '', str(index))
 
@@ -562,6 +606,3 @@ for index, row in combined_df_al.transpose().iterrows():
         
     
     make_latex_cm_table(row, name_prefix + "_" + str(safe_index), caption=args.caption + " (" + str(index) + ")", three_way=THREEWAY, name_true=labelT, name_false=labelF)
-
-
-
