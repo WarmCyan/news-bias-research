@@ -378,6 +378,7 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
     global output_path
     global args
     global ALL
+    global THREEWAY
 
     if ALL:
         bold = False
@@ -424,11 +425,18 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
                     rowmax = data
         
         tabletext += "\n" + index + " "
-        for data in row:
-            if bold and data == rowmax:
-                tabletext += "& \\textbf{" + "{0:.2f}".format(data) + "} "
-            else: 
-                tabletext += "& " + "{0:.2f}".format(data) + " "
+        for index,data in enumerate(row):
+
+            if ALL:
+                if index >= 4 and not THREEWAY:
+                    tabletext += "& " + str(int(data)) + " "
+                else:
+                    tabletext += "& " + "{0:.2f}".format(data) + " "
+            else:
+                if bold and data == rowmax:
+                    tabletext += "& \\textbf{" + "{0:.2f}".format(data) + "} "
+                else: 
+                    tabletext += "& " + "{0:.2f}".format(data) + " "
             
         if THREEWAY and (row_label == "Accuracy" or row_label == "R Precision" or row_label == "R Recall"):
             tabletext += "\\\\\n\\midrule\n"
@@ -525,6 +533,7 @@ def make_combined_table(df):
     
     if ALL:
         combined_df = combined_df.rename(columns={"tp":"TP","fp":"FP","fn":"FN","tn":"TN", "ll":"LL","lc":"LC","lr":"LR","cl":"CL","cc":"CC","cr":"CR","rl":"RL", "rc":"RC", "rr":"RR"})
+        combined_df = combined_df.drop(columns=["LL", "LC", "LR", "CL", "CC", "CR", "RL", "RC", "RR"])
         combined_df = combined_df.reindex(args.row_order.split(","))
         return combined_df
     else:
