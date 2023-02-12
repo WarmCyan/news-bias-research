@@ -137,7 +137,7 @@ compile_results.py \
 -e seq/dir_w2v_seq,run_0/dir_svm_w2v_avg,run_0/dir_w2v_avg,run_1/dir_svm_w2v_avg,run_1/dir_w2v_avg,run_2/dir_svm_w2v_avg,run_2/dir_w2v_avg \
 -o dir_alg \
 --caption "Bias direction algorithm comparisons." \
---column-replacements "dir_svm_w2v_avg=SVM,dir_w2v_seq=LSTM" \
+--column-replacements "dir_svm_w2v_avg=SVM,dir_w2v_avg=NN,dir_w2v_seq=LSTM" \
 --final
 
 
@@ -171,7 +171,11 @@ echo "----------- ALL OF THE DIR ----------- "
 compile_results.py \
 -e run_0/dir_svm_w2v_avg,run_0/dir_svm_glove_avg,run_0/dir_svm_ft_avg,run_0/dir_svm_tfidf,run_0/dir_svm_glove_avg_allsides_all,run_0/dir_svm_glove_avg_dir_below20flip,run_0/dir_svm_glove_avg_mbm,run_0/dir_svm_w2v_limit_avg,run_0/dir_svm_w2v_sentic_avg,run_0/dir_svm_w2v_sentic_full_avg,run_0/dir_w2v_avg,run_1/dir_svm_w2v_avg,run_1/dir_svm_glove_avg,run_1/dir_svm_ft_avg,run_1/dir_svm_tfidf,run_1/dir_svm_glove_avg_allsides_all,run_1/dir_svm_glove_avg_dir_below20flip,run_1/dir_svm_glove_avg_mbm,run_1/dir_svm_w2v_limit_avg,run_1/dir_svm_w2v_sentic_avg,run_1/dir_svm_w2v_sentic_full_avg,run_1/dir_w2v_avg,run_2/dir_svm_w2v_avg,run_2/dir_svm_glove_avg,run_2/dir_svm_ft_avg,run_2/dir_svm_tfidf,run_2/dir_svm_glove_avg_allsides_all,run_2/dir_svm_glove_avg_dir_below20flip,run_2/dir_svm_glove_avg_mbm,run_2/dir_svm_w2v_limit_avg,run_2/dir_svm_w2v_sentic_avg,run_2/dir_svm_w2v_sentic_full_avg,run_2/dir_w2v_avg,seq/dir_w2v_seq,seq/dir_glove_seq,seq/dir_ft_seq \
 -o dir_ALL \
---row-order "dir_svm_w2v_avg,dir_svm_glove_avg,dir_svm_ft_avg,dir_svm_tfidf,dir_svm_glove_avg_allsides_all,dir_svm_glove_avg_dir_below20flip,dir_svm_glove_avg_mbm,dir_svm_w2v_limit_avg,dir_svm_w2v_sentic_avg,dir_svm_w2v_sentic_full_avg,dir_w2v_avg,dir_w2v_seq,dir_glove_seq,dir_ft_seq" \
+--row-order "dir_svm_w2v_avg,dir_svm_glove_avg,dir_svm_ft_avg,dir_svm_tfidf,dir_svm_glove_avg_allsides_all,dir_svm_glove_avg_below20,dir_svm_glove_avg_mbm,dir_svm_w2v_limit_avg,dir_svm_w2v_sentic_avg,dir_svm_w2v_sentic_full_avg,dir_w2v_avg,dir_w2v_seq,dir_glove_seq,dir_ft_seq" \
 --caption "All bias direction experiments." \
 --final \
 --ALL
+
+
+
+# --row-order "dir_svm_w2v_avg,dir_svm_glove_avg,dir_svm_ft_avg,dir_svm_tfidf,dir_svm_glove_avg_allsides_all,dir_svm_glove_avg_dir_below20flip,dir_svm_glove_avg_mbm,dir_svm_w2v_limit_avg,dir_svm_w2v_sentic_avg,dir_svm_w2v_sentic_full_avg,dir_w2v_avg,dir_w2v_seq,dir_glove_seq,dir_ft_seq" \

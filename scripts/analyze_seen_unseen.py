@@ -112,10 +112,12 @@ for path in tqdm(unseenlist_pathlist):
     #for source in unseenlist:
     for source in sources:
         if source in sources_list:   
+            if source != "MSNBC": continue
             # meaning this is one we have data both for and not, depending on fold
 
             # get the score
             tp, fp, fn, tn = calculate_cm_counts(predictions_df[predictions_df.Source == source], "biased")
+            print(tp, fp, fn, tn)
             acc = (tp + tn) / (tp + fp + fn + tn)
             
             if source not in source_scores:
@@ -142,5 +144,21 @@ for source in source_scores:
         str(seen_avg).ljust(25),
         str(source_scores[source]["unseen"]).ljust(25),
         str(source_scores[source]["count"]).ljust(25)
+    )
+    
+print("") 
+print("") 
+print("") 
+for source in source_scores:
+    seen_avg = 0
+    for val in source_scores[source]["seen"]:
+        seen_avg += val
+    seen_avg /= 9
+
+    print(
+        source, "\t",
+        str(seen_avg), "\t",
+        str(source_scores[source]["unseen"]), "\t",
+        str(source_scores[source]["count"])
     )
     

@@ -424,9 +424,8 @@ def make_latex_table(df, output='table', caption="Caption", label="tab:my_label"
                 if data > rowmax:
                     rowmax = data
         
-        tabletext += "\n" + index + " "
+        tabletext += "\n" + index.replace("_",'\_') + " "
         for index,data in enumerate(row):
-
             if ALL:
                 if index >= 4 and not THREEWAY:
                     tabletext += "& " + str(int(data)) + " "
@@ -530,10 +529,16 @@ def make_combined_table(df):
     print(combined_df)
     combined_df.index = combined_df.Name
     combined_df = combined_df.drop(columns=["Name"])
+
+    # dir_svm_glove_avg_dir_below20flip
     
     if ALL:
-        combined_df = combined_df.rename(columns={"tp":"TP","fp":"FP","fn":"FN","tn":"TN", "ll":"LL","lc":"LC","lr":"LR","cl":"CL","cc":"CC","cr":"CR","rl":"RL", "rc":"RC", "rr":"RR"})
-        combined_df = combined_df.drop(columns=["LL", "LC", "LR", "CL", "CC", "CR", "RL", "RC", "RR"])
+        combined_df = combined_df.rename(columns={"tp":"TP","fp":"FP","fn":"FN","tn":"TN", "ll":"LL","lc":"LC","lr":"LR","cl":"CL","cc":"CC","cr":"CR","rl":"RL", "rc":"RC", "rr":"RR"}, index={"dir_svm_glove_avg_dir_below20flip":"dir_svm_glove_avg_below20"})
+        combined_df = combined_df.rename(columns={"L Precision":"L Prec", "C Precision":"C Prec", "R Precision": "R Prec", "L Recall": "L Rec", "C Recall": "C Rec", "R Recall": "R Rec"})
+        try:
+            combined_df = combined_df.drop(columns=["LL", "LC", "LR", "CL", "CC", "CR", "RL", "RC", "RR"])
+        except:
+            pass
         combined_df = combined_df.reindex(args.row_order.split(","))
         return combined_df
     else:
@@ -614,4 +619,4 @@ for index, row in combined_df_al.transpose().iterrows():
         labelF = "Unreliable"
         
     
-    make_latex_cm_table(row, name_prefix + "_" + str(safe_index), caption=args.caption + " (" + str(index) + ")", three_way=THREEWAY, name_true=labelT, name_false=labelF)
+    make_latex_cm_table(row, name_prefix + "_" + str(safe_index), caption=args.caption + " (" + str(index) + ")", label=(name_prefix + "_" + safe_index), three_way=THREEWAY, name_true=labelT, name_false=labelF)
